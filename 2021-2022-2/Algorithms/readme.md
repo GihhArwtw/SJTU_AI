@@ -1,4 +1,4 @@
-# Algorithm (算法分析与设计)
+# Algorithm （算法分析与设计）
 
 I took the course given by Dr. Chihao Zhang（张驰豪）.
 
@@ -13,6 +13,8 @@ The pattern of the filenames is as follows.
 *e.g.*
 
 Code `04-1433,0416.cpp` is the solution to Problem 1433 on SJTU ACM OJ, which is a part of Homework 04. I accomplished AC on the problem at Apr. 16th.
+
+不要直接抄代码哦，这门课有查重的，嗯。
 
 ## Notes
 
