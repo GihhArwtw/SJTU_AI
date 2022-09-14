@@ -1,0 +1,503 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\labelitemii}{\textbullet}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\newcommand{\bigstaExp}[2][]{\mathbb{E}_{#1}\big[#2\big]}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.5}
+\title{\textbf{Stochastic Process Homework 04}}
+\author{Qiu Yihang}
+\date{Apr.30 - May.8, 2022}
+
+\begin{document}
+
+\maketitle
+
+\setcounter{section}{-1}
+\section{Reference and Notations}
+
+\hspace{2em}
+In the following sections, we use the following notations.
+
+\vspace{-0.6em}
+\begin{table}[htbp]
+    \centering
+    \setstretch{1.5}
+    \begin{tabular}{ll}
+        \hline
+        Notaion & Meaning \\
+        \hline 
+        $\overline{X_{1,n}}$ & $X_1,X_2,...X_n$ \\
+        \hline
+\end{tabular}
+\caption{Notations.}
+\end{table}
+
+\vspace{-0.5em} \hspace{0.7em}
+This homework is completed with the help of discussions with \textbf{Ji Yikun}.
+
+\vspace{1em}
+\section{Doob's Martingale Inequality}
+\vspace{1em}
+
+\begin{proof}
+    For any given $n\in\mathbb{N}$,
+    
+    \hspace{1.3em}
+    Let $X_{\tau}=\underset{0\le t\le n}{\max}{X_t\geq\alpha}$. By \textbf{Markov's Inequality}, we have
+    
+    \vspace{-1em}
+    $$\Pr{}{X_{\tau}\geq\alpha}\le\frac{\staExp{}{X_{\tau}}}{\alpha}.$$
+    
+    \vspace{-0.5em} \hspace{1.3em}
+    Consider the stopping time $\tau$.
+    
+    \vspace{-1em}
+    $$\tau=\left\{\begin{array}{ll}
+        t, & \exists\ t\in [0,n]\text{ s.t. }X_t\geq\alpha  \\
+        n, & \forall\ 0\le t\le n,\ X_t<\alpha
+    \end{array}\right.$$
+    
+    \vspace{0.25em} \hspace{1.3em}
+    Thus, $\Pr{}{\tau\le n}=1$.
+    
+    \hspace{1.3em}
+    Since $\set{X_t}$ is a martingale w.r.t. $\set{X_t}$ and $\exists\ N=n\in\mathbb{N}$ s.t. $\Pr{}{\tau\le N}=1$ for the stopping time $\tau$, by \textbf{Optional Stopping Time Theorem}, we have $\staExp{}{X_{\tau}}=\staExp{}{X_0}.$
+    
+    \vspace{1em}
+    \hspace{1.3em}
+    Therefore, 
+    
+    \vspace{-1em}
+    $$\Pr{}{X_{\tau}\geq\alpha}\le\frac{\staExp{}{X_0}}{\alpha}.$$
+    
+    \hspace{38em} \textit{Qed.}
+\end{proof}
+
+\newpage
+\vspace{1em}
+\section{Biased One-dimensional Random Walk}
+\vspace{1em}
+\subsection{$\boldsymbol{\set{S_t}_{t\geq 0}}$ is a Martingale}
+\vspace{1em}
+\begin{proof}
+    We have
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \staExp{}{S_{t+1}\mid\overline{Z_{1,t}}} & = \staExp{}{S_t+Z_{t+1}+2p-1\mid\overline{Z_{1,t}}} = S_t+2p-1+\staExp{}{Z_{t+1}\mid\overline{Z_{1,t}}} \\
+        & = S_t+2p-1+(-1)\cdot p + 1\cdot(1-p) = S_t.
+    \end{align*}
+    
+    \hspace{1.3em}
+    Thus, $\set{S_t}_{t\geq0}$ is a martingale.
+\end{proof}
+
+\vspace{3em}
+\subsection{$\boldsymbol{\set{P_t}_{t\geq0}}$ is a Martingale}
+\vspace{1em}
+\begin{proof}
+    We have
+        
+    \vspace{-2em}
+    \begin{align*}
+        \staExp{}{P_{t+1}\mid\overline{Z_{1,t}}} & = \staExp{}{P_t\left(\frac{p}{1-p}\right)^{Z_{t+1}} \mid \overline{Z_{1,t}}} = P_t\cdot\staExp{}{\left(\frac{p}{1-p}\right)^{Z_{t+1}}\mid\overline{Z_{1,t}}} \\
+        & = P_t\cdot\left(p\cdot\frac{1-p}{p}+(1-p)\cdot\frac{p}{1-p}\right) = P_t.
+    \end{align*}
+    
+    \vspace{-0.25em} \hspace{1.3em}
+    Thus, $\set{P_t}_{t\geq0}$ is a martingale.
+\end{proof}
+
+\vspace{3em}
+\subsection{Average Number of Steps, i.e. $\boldsymbol{\staExp{}{\tau}}$}
+\vspace{1em}
+\begin{proof}
+    Define $p_a\triangleq\Pr{}{X_{\tau}=a}, p_b\triangleq\Pr{}{X_{\tau}=b}=1-p_a$, $q=\max(p,1-p).$
+
+    \vspace{0.3em} \hspace{1.3em}
+    For any $N\in\mathbb{N}$, we have 
+    
+    \vspace{-0.5em}
+    $$\Pr{}{\tau\le N(a+b)}\geq\sum_{k=0}^{N}\Pr{}{\tau=k(a+b)}\geq\sum_{k=0}^{N}q^{k(a+b)} = \frac{1-q^{(N+1)(a+b)}}{1-q^{a+b}}$$
+    
+    \vspace{-0em} \hspace{1.3em}
+    Thus, for any $t\in\mathbb{N}$, let $m=\left\lfloor\frac{t}{a+b}\right\rfloor(a+b)\le t.$
+    
+    \vspace{-2em}
+    \begin{align*}
+        \Pr{}{\tau>t} &= 1-\Pr{}{\tau\le t}\le 1-\Pr{}{\tau\le m}\le q^{a+b}\frac{1-q^m}{1-q^{a+b}}\rightarrow 0\text{ (as } t\rightarrow\infty\text{) } \\
+        t\cdot\Pr{}{\tau=t} &= t(1-\Pr{}{\tau\le m})\le tq^{a+b}\frac{1-q^m}{1-q^{a+b}}\rightarrow 0\text{ (as } t\rightarrow\infty\text{) }
+    \end{align*}
+    
+    \vspace{-0em} \hspace{1.3em}
+    Thus, we know $\Pr{}{\tau<\infty}=1,\ \staExp{}{\tau}<\infty.$ 
+        
+    \vspace{2em} \hspace{1.3em}
+    \textbf{CASE 01.} $p\neq\frac{1}{2}.$ 
+    
+    \hspace{1.3em}
+    We have already shown that $\set{P_t}_{t\geq0}$ is a martingale. Obvious for all $t\le\tau$, $|P_t|\le 1.$ Meanwhile, we have $\Pr{}{\tau<\infty}=1.$ By \textbf{Optional Stopping Time Theorem}, we know
+    
+    \vspace{-1em}
+    $$\staExp{}{P_t}=\staExp{}{P_1} \Longleftrightarrow p_a\left(\frac{p}{1-p}\right)^{-a}+p_b\left(\frac{p}{1-p}\right)^b=p\cdot\frac{1-p}{p}+(1-p)\cdot\frac{p}{1-p}=1.$$
+    
+    \hspace{1.3em}
+    This yields that
+    
+    \vspace{-1.5em} 
+    $$p_a = \frac{1-\left(\frac{p}{1-p}\right)^b}{\left(\frac{p}{1-p}\right)^{-a}-\left(\frac{p}{1-p}\right)^b},\quad p_b = \frac{\left(\frac{p}{1-p}\right)^{-a}-1}{\left(\frac{p}{1-p}\right)^{-a}-\left(\frac{p}{1-p}\right)^b}.$$
+    
+    \vspace{1em} \hspace{1.3em}
+    Meanwhile, we have already proved that $\set{S_t}_{t\geq0}$ is a martingale.
+    
+    \hspace{1.3em}
+    Also, $\forall t\le\tau$, $\staExp{}{|S_{t+1}-S_t|\mid\overline{Z_{1,t}}}=\staExp{}{2p-1+Z_{t+1}\mid \overline{Z_{1,t}}} = 2p-1+\staExp{}{Z_{t+1}\mid\overline{Z_{1,t}}} < 2p. $
+    
+    \hspace{1.3em} 
+    Moreover, $\staExp{}{\tau}<\infty$. 
+    
+    \hspace{1.3em}
+    Therefore, by \textbf{Optional Stopping Time Theorem}, we have 
+    
+    \vspace{-2em}
+    \begin{align*}
+    \staExp{}{S_\tau}=\staExp{}{S_1}=0 \Longleftrightarrow \staExp{}{S_\tau}&=\staExp{}{\sum_{i=1}^{\tau}(Z_i+2p-1)}=\staExp{}{(2p-1)\tau+\sum_{i=1}^{\tau}Z_i} \\
+    &= (2p-1)\staExp{}{\tau} + p_a\cdot a + p_b \cdot (-b) = 0.
+    \end{align*}
+    
+    \vspace{-1.2em} \hspace{1.3em}
+    Thus,
+    
+    \vspace{-3.3em}
+    \begin{align*}
+        \staExp{}{\tau} &= \frac{ap_a-bp_b}{2p-1} = 
+    \frac{a+b-a\left(\frac{p}{1-p}\right)^b-b\left(\frac{p}{1-p}\right)^{-a}}{(2p-1)\left[\left(\frac{p}{1-p}\right)^{-a}-\left(\frac{p}{1-p}\right)^b\right]} \\
+    &=\frac{(a+b)(1-p)^bp^a-ap^{a+b}-b(1-p)^{a+b}}{(2p-1)[(1-p)^{a+b}-p^{a+b}]}.
+    \end{align*}
+    
+    \vspace{1em} \hspace{1.3em}
+    \textbf{CASE 02.} $p=\frac{1}{2}.$
+    
+    \hspace{1.3em}
+    Since $\staExp{}{X_{t+1}\mid\overline{Z_{1,t}}}=\staExp{}{X_t+Z_{t+1}\mid\overline{Z_{1,t}}}=\staExp{}{X_t\mid\overline{Z_{1,t}}}+\staExp{}{Z_{t+1}\mid\overline{Z_{1,t}}} = X_t+0=X_t,$ we know $\set{X_t}_{t\geq0}$ is a martingale.
+    
+    \hspace{1.3em}
+    Meanwhile, $\Pr{}{\tau<\infty}=1$; $\forall\ t\le\tau,\ |X_t|\le\max(a,b)$.
+    
+    \hspace{1.3em}
+    By \textbf{Optional Stopping Time Theorem}, we have $\staExp{}{X_\tau}=\staExp{}{X_1}=0,$ i.e. $ap_a+bp_b=0.$
+    
+    \hspace{1.3em}
+    This yields that 
+    
+    \vspace{-2em}
+    $$p_a=\frac{b}{a+b},\ \ p_b=\frac{a}{a+b}.$$
+    
+    \vspace{0.5em} \hspace{1.3em}
+    Construct $Y_t=X_t^2-t.$ Since
+    
+    \vspace{-3em}
+    \begin{align*}
+        \staExp{}{Y_{t+1}\mid\overline{Z_{1,t}}} &= \staExp{}{X_{t+1}^2-(t+1)\mid\overline{Z_{1,t}}}=\staExp{}{(X_t+Z_{t+1})^2-(t+1)\mid\overline{Z_{1,t}}} \\
+        &= \staExp{}{X_t^2+2X_tZ_{t+1}+Z_{t+1}^2-(t+1)\mid\overline{Z_{1,t}}} \\
+        &= \staExp{}{X_t^2\mid\overline{Z_{1,t}}}+2\staExp{}{X_tZ_{t+1}\mid\overline{Z_{1,t}}}+\staExp{}{Z_{t+1}^2\mid\overline{Z_{1,t}}}-(t+1) \\
+        &= X_t^2 + 2X_t\staExp{}{Z_{t+1}\mid\overline{Z_{1,t}}} + \staExp{}{Z_{t+1}^2\mid\overline{Z_{1,t}}} -(t+1) \\
+        &= X_t^2+0+1-(t+1) = X_t^2-t = Y_t,
+    \end{align*}
+    
+    \vspace{-1em} \hspace{1.3em}
+    we know $\set{Y_t}_{t\geq0}$ is a martingale. 
+    
+    \hspace{1.3em}
+    Also, we have
+    
+    \vspace{-3em}
+    \begin{align*}
+        \staExp{}{|Y_{t+1}-Y_t|\mid\overline{Z_{1,t}}} &= \staExp{}{2X_tZ_{t+1}+Z_{t+1}^2-1\mid \overline{Z_{1,t}}} \\
+        &= X_t\cdot\staExp{}{Z_{t+1}\mid \overline{Z_{1,t}}}+\staExp{}{Z_{t+1}^2\mid\overline{Z_{1,t}}}-1 \\
+        &= 0+1-1= 0. 
+    \end{align*}
+    
+    \vspace{-1em} \hspace{1.3em}
+    Moreover, $\staExp{}{\tau}<\infty.$
+    
+    \hspace{1.3em}
+    By \textbf{Optional Stopping Time Theorem}, we have
+    
+    \vspace{-3em}
+    \begin{align*}
+        \staExp{}{Y_\tau}=\staExp{}{Y_1}=0 &\Longleftrightarrow \staExp{}{X_\tau^2-\tau}=\staExp{}{X_\tau^2}-\staExp{}{\tau} = 0 \\
+        &\Longleftrightarrow \staExp{}{\tau}=\staExp{}{X_\tau^2} = p_a\cdot a^2 + p_b\cdot b^2 = \frac{a^2b+b^2a}{a+b} = ab.
+    \end{align*}
+    
+    \vspace{2em} \hspace{1.3em}
+    In conclusion,
+    
+    \vspace{-2em}
+    \begin{align*}
+        \staExp{}{\tau}=\left\{\begin{array}{ll}
+            \frac{(a+b)(1-p)^bp^a-ap^{a+b}-b(1-p)^{a+b}}{(2p-1)[(1-p)^{a+b}-p^{a+b}]}, & p\neq\frac{1}{2} \\
+            ab, & p=\frac{1}{2}
+        \end{array}\right.
+    \end{align*}
+    
+    \vspace{-3.9em}
+\end{proof}
+
+
+\vspace{6em}
+\section{Longest Common Subsequence}
+\vspace{1em}
+\textbf{\textit{Notation:}} \textit{In this section, we define}
+    
+    \vspace{-0.75em}
+    \begin{itemize}
+        \item[] \begin{itemize}
+            \item[] \begin{itemize}
+                \item[\textbullet] $X_{(i,j)}$ as the length of longest common subsequence of $x[i:j]$ and $y$.
+                \item[\textbullet] $X_{(i,j),(k,l)}$ as the length of longest common subsequence of $x[i:j]$ and $y[k:l]$.
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+    
+\vspace{0.5em}
+\subsection{Range of $\boldsymbol{\staExp{}{X}}$}
+\vspace{1em}
+\begin{proof}
+    \underline{First we prove the existence of $c_1.$}
+
+    \vspace{0.5em} \hspace{1.3em}
+    \textbf{CASE 01.} When $n=2,$ all possible cases are as follows.
+    
+    \vspace{-0.25em}
+    \begin{table}[htbp]
+    \centering
+    \setstretch{1.2}
+    \begin{tabular}{ccc|ccc|ccc|ccc}
+        \hline
+        $x$ & $y$ & $X$ & $x$ & $y$ & $X$ & $x$ & $y$ & $X$ & $x$ & $y$ & $X$ \\
+        \hline 
+        00 & 00 & 2 & 00 & 01 & 1 & 00 & 10 & 1 & 00 & 11 & 0 \\
+        01 & 00 & 1 & 01 & 01 & 2 & 01 & 10 & 1 & 01 & 11 & 1 \\
+        10 & 00 & 1 & 10 & 01 & 1 & 10 & 10 & 2 & 10 & 11 & 1 \\
+        11 & 00 & 0 & 11 & 01 & 1 & 11 & 10 & 1 & 11 & 11 & 2 \\
+        \hline
+    \end{tabular}
+    \caption{All Possible Cases.}
+    \end{table}
+    
+    \vspace{-1em} \hspace{1.3em}
+    Thus,
+    
+    \vspace{-1.2em}
+    $$\staExp{}{X}=\frac{2\left(2+1+1+0+1+2+1+1\right)}{2^2\cdot2^2} = \frac{9}{8} > c_1\cdot 2.$$
+    
+    \hspace{1.3em}
+    Therefore, we have $c_1 < \frac{9}{16}.$ 
+    
+    \vspace{2.5em} \hspace{1.3em}
+    Let $c_1^*\triangleq\frac{9}{16}.$
+    
+    \vspace{.5em} \hspace{1.3em}
+    \textbf{CASE 02}. When $n=3$, 
+    
+    \begin{table}[htbp]
+    \centering
+    \setstretch{1.2}
+    \begin{tabular}{ccc|ccc|ccc|ccc}
+        \hline
+        $x$ & $y$ & $X$ & $x$ & $y$ & $X$ & $x$ & $y$ & $X$ & $x$ & $y$ & $X$ \\
+        \hline 
+        000 & 000 & 3 & 000 & 001 & 2 & 000 & 010 & 2 & 000 & 011 & 2 \\
+        000 & 100 & 2 & 000 & 101 & 1 & 000 & 110 & 1 & 000 & 111 & 0 \\
+        \hline
+        001 & 000 & 2 & 001 & 001 & 3 & 001 & 010 & 2 & 001 & 011 & 2 \\
+        001 & 100 & 2 & 001 & 101 & 2 & 001 & 110 & 1 & 001 & 111 & 1 \\
+        \hline
+    \end{tabular}
+    \caption{Some Typical Cases.}
+    \end{table}
+    
+    \vspace{-1em} \hspace{1.3em}
+    Thus, we know
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \staExp{}{X} &=\frac{2\cdot(3+2+2+2+2+1+1+0)+6\cdot(2+3+2+2+2+2+1+1)}{2^3\cdot2^3} \\
+        &=\frac{29}{16} > \frac{9}{16}\cdot 3 = c_1^*\cdot 3 \geq c_1\cdot 3.
+    \end{align*}
+    
+    \vspace{-0.5em} \hspace{1.3em}
+    The inequality already holds.
+    
+    \vspace{2.5em} \hspace{1.3em}
+    \textbf{CASE 03.} When $n\geq 4,$ we can divide $x$ and $y$ into smaller pieces with length 2 or 3. 
+    
+    \hspace{1.3em}
+    When $n$ is even, we have
+    
+    \vspace{-2.8em}
+    \begin{align*}
+        \staExp{}{X} \geq \sum_{k=1}^{n/2}\staExp{}{X_{(2k-1,2k),(2k-1,2k)}} = \sum_{k=1}^{n/2}c_1^*\cdot 2 =  c_1^*\cdot n.
+    \end{align*}
+    
+    \vspace{-0.75em} \hspace{1.3em}
+    When $n$ is odd, we have
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \staExp{}{X} 
+        &\geq \sum_{k=1}^{(n-3)/2}\staExp{}{X_{(2k-1,2k),(2k-1,2k)}}+\staExp{}{X_{(n-2,n),(n-2,n)}} \\
+        & > \sum_{k=1}^{(n-3)/2} c_1^*\cdot 2 + c_1^*\cdot 3 = c_1^*\cdot n.
+    \end{align*}
+    
+    \vspace{1.5em} \hspace{1.3em}
+    In conclusion, for any $n\geq2, n\in\mathbb{N}$, $\staExp{}{X}\geq\frac{9}{16}n.$
+    
+    \vspace{0.5em} \hspace{1.3em}
+    In other words, there exists $c_1\in(\frac{1}{2},\frac{9}{16})$ s.t. 
+    
+    \vspace{-1em}
+    $$\frac{1}{2}<c_1<1\text{ while }\staExp{}{X}\geq\frac{9}{16}n>c_1n\text{ holds for sufficiently }n. $$ \
+    
+    \vspace{-1.5em} \hspace{1.3em}
+    (For example, $c_1=17/32$ is a feasible constant.) \whiteqed
+    
+    \vspace{3em} \hspace{1.3em}
+    \underline{Now we prove the existence of $c_2$.}
+    
+    \vspace{0.5em} \hspace{1.3em}
+    Inspired by the hint, consider $X_{(i,j),(k,l)}$ when $j-i+1$ and $l-k+1$ are large enough. 
+    
+    \vspace{0.25em} \hspace{1.3em}
+    Let $j-i+1=l-k+1=m,\ x'=x[i:j],\ y'=y[k:l]$. We have
+    
+    \vspace{-3em}
+    \begin{align*}
+        \Pr{}{X_{(i,j),(k,l)}\geq t} &=\Pr{}{\text{exists $S,T\subset[m], |S|=|T|=t$ s.t. $x'_S=y'_T$}} \\
+        & \le\frac{2^t\binom{m}{t}\binom{m}{t}\cdot2^{m-t}\cdot2^{m-t}}{2^m\cdot 2^m} = \frac{1}{2^{t}}\binom{m}{t}^2 \\
+        &\quad\ \text{(Since the RHS might count the same sequence more than once.)}
+    \end{align*}
+    
+    \vspace{-1em} \hspace{1.3em}
+    Since $m$ is large enough, by \textbf{Stirling's Formula}, we know
+    
+    \vspace{-2.7em}
+    \begin{align*}
+        \Pr{}{X_{(i,j),(k,l)}\geq t} &\le\frac{1}{2^{t}}\left(\frac{m!}{t!(m-t)!}\right)^2 \\
+        &\approx 2^{-t}\left(\frac{\sqrt{2\pi m}\left(\frac{m}{e}\right)^m}{\sqrt{2\pi t}\left(\frac{t}{e}\right)^t\sqrt{2\pi (m-t)}\left(\frac{m-t}{e}\right)^{m-t}}\right)^2 \\
+        &= \frac{1}{\pi}\frac{m^{2m+1}}{2^{t+1}\cdot t^{2t+1}\cdot (m-t)^{2m-2t+1}} 
+    \end{align*}
+    
+    \vspace{-0.75em} \hspace{1.3em}
+    We know $X=X_{(1,n),(1,n)}$. Let $t=\mu n$. This yields
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \Pr{}{X\geq \mu n} &\le\frac{1}{\pi}\frac{n^{2n+1}}{2^{\mu n+1}(\mu n)^{2\mu n+1}\left((1-\mu)n\right)^{2n-2\mu n +1}} \\
+        & = \frac{1}{2\pi\mu(1-\mu)}\frac{1}{n}\left(\frac{1}{2^{\mu/2} \mu^\mu (1-\mu)^{1-\mu}}\right)^{2n} \rightarrow 0 \quad \text{ (as  $n\rightarrow \infty$)} \\
+        \text{i.e. } \Pr{}{X<\mu n}&= 1 - \Pr{}{X\geq\mu n}\rightarrow 1\quad \text{ (as }n\rightarrow\infty)
+    \end{align*}
+    
+    \vspace{-1em} \hspace{1.3em}
+    When $\mu\geq0.91,$ we have $\frac{1}{2^{\mu/2} \mu^\mu (1-\mu)^{1-\mu}}<1,$ i.e.
+    
+    \vspace{-1.2em}
+    $$n\cdot\Pr{}{X\geq \mu n} \le \frac{1}{2\pi\mu(1-\mu)}\cdot\left(\frac{1}{2^{\mu/2} \mu^\mu (1-\mu)^{1-\mu}}\right)^{2n}\rightarrow 0\quad\ \text{ (as }n\rightarrow\infty)$$
+    
+    \vspace{-0.5em} \hspace{1.35em}
+    Let $\mu<c_2<1$. Then 
+    
+    \vspace{-2.7em}
+    \begin{align*}
+        \staExp{}{X} &=\staExp{}{X | X<\mu n}\cdot\Pr{}{X<\mu n}+\staExp{}{X | X\geq \mu n}\cdot\Pr{}{X\geq \mu n} \\
+        &\le \mu n\cdot\Pr{}{X<\mu n} + \sum_{\mu \le k\le 1}kn\cdot\Pr{}{X=kn} \\
+        &< \mu n\cdot\Pr{}{X<\mu n} + n\cdot\Pr{}{X\geq \mu n} = \mu n + (1-\mu)n\cdot\Pr{}{X\geq\mu n} \\
+        &\le \mu n + \frac{1}{2\pi\mu}\cdot\left(\frac{1}{2^{\mu/2} \mu^\mu (1-\mu)^{1-\mu}}\right)^{2n} \rightarrow \mu n\qquad \text{ (as $n\rightarrow\infty$)} \\
+        &< c_2 n.\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\ \text{ (for sufficiently $n$)}
+    \end{align*}
+    
+    \vspace{-1em} \hspace{1.3em}
+    In other words, $c_2$ exists.
+    
+    \hspace{1.3em}
+    (For example, set $\mu=0.96.$ Then $c_2=0.99$ is a reasonable constant for $n\geq3 $.) \whiteqed
+    
+    \vspace{3em} \hspace{1.3em}
+    In conclusion, exist constants $c_1,c_2$ s.t. for sufficiently $n$,
+    
+    \vspace{-1.2em}
+    $$\frac{1}{2}<c_1<c_2<1,\ c_1n<\staExp{}{X}<c_2n.$$
+    
+    \vspace{-2.7em}
+\end{proof}
+
+\newpage
+\vspace{2em}
+\subsection{$\boldsymbol{X}$ is Well-Concentrated around $\boldsymbol{\staExp{}{X}}$}
+\vspace{1em}
+\begin{proof}
+    We can construct a function $f(\boldsymbol{z})\triangleq f(x_1,x_2,...,x_n,y_1,y_2,...y_n)\triangleq X$. 
+    
+    \hspace{1.3em}
+    Obvious $f(\boldsymbol{z})-f(\boldsymbol{z'})\le\Vert\boldsymbol{z-z'}\Vert_1 = \sum_{i=1}^n|x_i-x'_i|+\sum_{i=1}^n|y_i-y'_i|.$
+    
+    \hspace{1.3em}
+    Thus, $f$ is 1\textit{-Lipschitz}.
+    
+    \hspace{1.3em}
+    By \textbf{McDiarmid's Inequality}, since $f$ is 1-\textit{Lipschitz} and $x_1,x_2,...x_n,y_1,y_2,...y_n$ are obviously independent to each other, we have
+    
+    \vspace{-3em}
+    \begin{align*}
+        &\Pr{}{\Big|\ f(x_1,x_2,...x_n,y_1,y_2,...y_n)-\staExp{}{f(x_1,x_2,...x_n,y_1,y_2,...y_n)}\Big|\geq t}\le 2e^{-\frac{2t^2}{n}} \\
+        \Longleftrightarrow\  &\Pr{}{\big|X-\staExp{}{X}\big|\geq t}\le 2e^{-\frac{2t^2}{n}} \\
+    \end{align*}
+    
+    \vspace{-1em} \hspace{1.3em}
+    i.e. $X$ is well-concentrated around $\staExp{}{X}$.
+\end{proof}
+
+\vspace{3em}
+\subsection{(Optional) Dynamic Programming for LCS}
+\vspace{1em}
+\begin{solution}
+    Let $f(i,j)$ be the length of LCS between $x[1:i]$ and $y[1:j]$.
+    
+    \vspace{1em} \hspace{2.5em}
+    \textit{State Transition Equation.}
+    $$f(i,j)=\left\{\begin{array}{ll}
+        f(i-1,j-1)+1, & x[i]=y[j] \\
+        \max(f(i-1,j),f(i,j-1)), & x[i]\neq y[j] \\
+    \end{array}\right.$$
+    
+    \vspace{1em} \hspace{2.5em}
+    \textit{Boundaries.} $f(\cdot,0)=0,\ f(0,\cdot)=0.$
+    
+    \vspace{1em} \hspace{2.5em}
+    \textit{The final result.} $f(n,n)$.
+\end{solution}
+    
+
+\end{document}

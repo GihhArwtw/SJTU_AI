@@ -1,0 +1,501 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\labelitemii}{\textbullet}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\newcommand{\bigstaExp}[2][]{\mathbb{E}_{#1}\big[#2\big]}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.5}
+\title{\textbf{Stochastic Process Homework 03}}
+\author{Qiu Yihang}
+\date{Apr.05 - Apr.16, 2022}
+
+\begin{document}
+
+\maketitle
+
+\setcounter{section}{-1}
+\section{Reference and Notations}
+
+\hspace{2em}
+In the following sections, we use the following notations.
+
+\vspace{-0.6em}
+\begin{table}[htbp]
+    \centering
+    \setstretch{1.5}
+    \begin{tabular}{ll}
+        \hline
+        Natotaion & Meaning \\
+        \hline 
+        $T_i$ & $\underset{\tau}{\min}\ \set{\tau>0\mid X_{\tau}=i}$ \\
+        $T_{i\rightarrow j}$ & $\underset{\tau}{\min}\ \set{\tau>0\mid X_0 = i\land X_{\tau}=j}$ \\
+        $N_i$ & $\sum_{t=0}^{\infty}\mathbbm{1} \left[X_t=i\right]$\\
+        $\Pr{i}{\cdot}$ & $\Pr{}{\ \cdot\mid X_0=i\ }$ \\
+        $\staExp{i}{\cdot}$ & $\staExp{}{\ \cdot\mid\ X_0=i\ }$ \\
+        \hline
+\end{tabular}
+\caption{Notations.}
+\end{table}
+
+\vspace{-0.5em} \hspace{0.7em}
+This homework is completed with the help of discussions with \textbf{Ji Yikun} and \textbf{Sun Yilin}.
+
+\vspace{1em}
+\section{FTMC for Countably Infinite Chains}
+\vspace{1em}
+\subsection{[PR]+[A]+[I] $\Rightarrow$ [S]+[U]+[C] is A Generalization}
+\vspace{1em}
+
+\begin{proof}
+    To prove [PR]+[A]+[I] $\Rightarrow$ [S]+[U]+[C] implies that [F]+[A]+[I] $\Rightarrow$ [S]+[U]+[C], 
+    
+    \hspace{3.9em}
+    we just to need to prove [F]+[A]+[I] implies [PR].
+    
+    \hspace{1.3em}
+    First we prove that [F]+[A]+[I] implies [Recurrence] by contradiction.
+    
+    \hspace{1.3em}
+    Assume exists a finite, aperiodic, and irreducable Markov Chain which is not recurrent. Then exists state $i$ s.t. $\Pr{i}{T_i<\infty}<1$, i.e. $\Pr{i}{N_i=\infty}<1.$ Then state $i$ will never be visited after certain finite steps, which yields state $i$ can not be reached from other states. \underline{\textbf{Contradiction}} to the assumption that the Markov Chain is irreducable.
+    
+    \vspace{1em} \hspace{1.3em}
+    Now we prove [F]+[A]+[I]+[Recurrence] implies [PR] by contradiction.
+    
+    \hspace{1.3em}
+    Assume exsits a finite, aperiodic, irreducable, and recurrent Markov Chain s.t. there exists a state $i,\  \staExp{i}{T_i}=\infty.$ 
+    
+    \hspace{1.3em}
+    Since the Markov Chain is finite and irreducable, we know 
+    
+    \vspace{-3em}
+    \begin{align*}
+        &\qquad\forall j\in [n], \exists t>0\ \mathrm{s.t.}\ P^t(i,j)>0. \\
+        &\Longrightarrow \staExp{i}{T_j} \geq t\cdot P^t(i,j) + \left(1-P^t(i,j)\right)(t+\staExp{i}{T_i}) \geq \infty
+    \end{align*}
+    
+    \vspace{-1em} \hspace{1.3em}
+    Thus, $\forall j\in [n],\ \staExp{i}{T_j}=\infty.$
+    
+    \hspace{1.3em}
+    This means $\forall t, \forall j\in[n], \underset{t\rightarrow \infty}{\lim}t\cdot\Pr{i}{X_t=j \land \text{$j$ is never visited}}>0$.
+    
+    \hspace{1.3em}
+    Meanwhile, since the Markov Chain is finite and irreducable, $\forall j\in [n], \exists \tau>0,\ \mathrm{s.t.}\ \Pr{i}{X_\tau=j}$ $= P^\tau(i,j) > 0.$ Let $\beta=\Pr{i}{X_\tau=j}$. Thus, 
+    
+    \vspace{-1.5em}
+    $$t\cdot\Pr{i}{X_t=j \land \text{$j$ is never visited}}\le t\cdot(1-\beta)^{\lceil\frac{t}{\tau}\rceil}\beta \rightarrow 0.\ \text{(When $t\rightarrow\infty$)}$$
+    
+    \vspace{-0.7em} \hspace{1.3em}
+    \underline{\textbf{Contradiction.}}
+    
+    \hspace{1.3em}
+    Thus, [F]+[A]+[I] implies [PR].
+    
+    \vspace{2em} \hspace{1.3em}
+    If [PR]+[A]+[I] $\Rightarrow$ [S]+[U]+[C], since [F]+[A]+[I] implies [PR], 
+    
+    \hspace{6em}
+    we know [F]+[A]+[I] $\Rightarrow$ [PR]+[A]+[I] $\Rightarrow$ [S]+[U]+[C].
+    
+    \hspace{1.3em}
+    In other words, [PR]+[A]+[I] $\Rightarrow$ [S]+[U]+[C] is a generalization.
+\end{proof}
+
+\vspace{2em}
+\subsection{$\boldsymbol{\Pr{(i,j)}{T_{(k,k)}<\infty}=1}$ for Any $\boldsymbol{i,j,k}$ in the Given Markov Chain}
+\vspace{1em}
+\begin{proof}
+    Let $Q\in[0,1]^{\Omega\times\Omega}$ be the transition function of the Markov Chain. Then we have
+    
+    \vspace{-1.5em}
+    $$Q\left((i,j),(i',j')\right)=P(i,i')P(j,j')$$
+    
+    \vspace{-0.5em} \hspace{1.3em}
+    First we prove $Q$ is also irreducable.
+    
+    \hspace{1.3em}
+    $\forall i,j,i',j'\in\Omega,$ since $P$ is irreducable, we know $\exists t_1, t_2,\ \mathrm{s.t.}\ P^{t_1}(i,i')>0, P^{t_2}(j,j')>0.$ Then exists $t=t_1\cdot t_2$ s.t. $\ Q^{t}\left((i,j),(i',j')\right)=P^{t}(i,i')P^{t}(j,j')>0.$ Thus, $Q$ is irreducable.
+    
+    \vspace{1em} \hspace{1.3em}
+    Now we prove $Q$ has a stationary distribution.
+    
+    \hspace{1.3em}
+    From \underline{\textbf{Lecture 5}}, [I]+[PR] implies [S]+[U]. Thus, $P$ has a unique stationary distribution $\pi$. 
+    
+    \hspace{1.3em}
+    Define $\pi'(i,j) = \pi(i)\pi(j).$
+    
+    \vspace{-3em}
+    \begin{align*}
+        \pi'(i,j) &= \pi(i)\pi(j) = \left(\sum_{i'}P(i',i)\pi(i)\right)\left(\sum_{j'}P(j',j)\pi(j)\right) \\
+       & = \sum_{i'}\sum_{j'}P(i',i)P(j',j)\pi(i)\pi(j) \\
+       & = \sum_{(i',j')}P(i',i)P(j',j)\pi(i)\pi(j) \\
+       & = \sum_{(i',j')}Q((i',j'),(i,j))\pi'(i,j) 
+    \end{align*}
+    
+    \vspace{-0.5em} \hspace{1.3em}
+    Thus, we know $(\pi')^T = Q(\pi')^T$, i.e. $\pi'$ is a stationary distribution of $Q.$
+    
+    \hspace{1.3em}
+    By \textbf{the Strong Law of Large Number for Markov Chain}, since $Q$ is irreducable, 
+    
+    \vspace{-0.5em}
+    $$\forall i,j,i',j'\in\Omega,\ \Pr{(i,j)}{\underset{n\rightarrow\infty}{\lim}\ \frac{1}{n}\sum_{t=1}{\mathbbm{1}\left[X_t=(i',j')\right]}=\frac{1}{\staExp{(i',j')}{T_{(i',j')}}}}=1.$$
+    
+    \vspace{0.3em} \hspace{1.3em}
+    i.e.
+    
+    \vspace{-5.1em}
+    \begin{align*}
+        \underset{n\rightarrow\infty}{\lim}\ \frac{1}{n}\sum_{i=1}^n Q^t((i,j),(i',j')) & = \underset{n\rightarrow\infty}{\lim}\ \frac{1}{n}\sum_{t=1}{\staExp{(i,j)}{\mathbbm{1}\left[X_t=(i',j')\right]}} \\
+        & = \underset{n\rightarrow\infty}{\lim}\ {\staExp{(i,j)}{\frac{1}{n}\sum_{t=1}\mathbbm{1}\left[X_t=(i',j')\right]}} \\
+        & = \staExp{(i,j)}{\underset{n\rightarrow\infty}{\lim}\ \frac{1}{n}\sum_{t=1}\mathbbm{1}\left[X_t=(i',j')\right]} \\
+        &\quad \text{ (By \textbf{Bounded Convergence Theorem})}\\
+        & = \frac{1}{\staExp{(i',j')}{T_{(i',j')}}}
+    \end{align*}
+    
+    \hspace{1.3em}
+    Set $(i,j)=(i',j')$, and we have
+    
+    \vspace{-0.5em}
+    $$\forall i,j\in\Omega,\ \pi'(i,j) = \underset{n\rightarrow\infty}{\lim}\ \frac{1}{n}\sum_{i=1}^n Q^t((i,j),(i,j)) = \frac{1}{\staExp{(i,j)}{T_{(i,j)}}} > 0,$$
+    
+    \hspace{1.3em}
+    i.e. $\Pr{(i,j)}{T_{(i,j)}<\infty}=1,$ i.e. $Q$ is positive recurrent.
+    
+    \vspace{0.3em} \hspace{1.3em}
+    Meanwhile, $Q$ is irreducable. Thus, $\forall i,j,k\in\Omega,\ \Pr{(i,j)}{T_{(k,k)}<\infty}=1$.
+\end{proof}
+
+\vspace{2em}
+\subsection{FTMC for Countably Infinite Chains}
+\vspace{1em}
+\begin{proof}
+    In \underline{\textbf{Lecture 5}}, we already proved [I]+[PR] implies [S]+[U].
+    
+    \hspace{1.3em}
+    Thus, irreducable, aperiodic, and positive recurrent Markov Chain $P$ has a unique stationary distribution $\pi$. Now we just need to prove [PR]+[I]+[A] implies [C].
+    
+    \hspace{1.3em}
+    We construct a coupling $\omega$ as follows. Set $X_0\sim\mu_0, Y_0\sim\pi$. Let $X_t\sim\mu_t$.
+    
+    \vspace{-2.3em}
+    \begin{align*}
+         (X,Y)\sim\omega, \ 
+         \left\{\begin{array}{ll}
+            X_{t+1}=X_t,\ Y_{t+1}=Y_t,  &  X_t=Y_t\\
+            X_t\rightarrow X_{t+1},\ Y_t\rightarrow Y_{t+1}\ \text{randomly, }\quad  & X_t\neq Y_t
+         \end{array}\right.
+    \end{align*}
+    
+    \vspace{-0.5em} \hspace{1.3em}
+    By \underline{\textbf{Coupling Lemma}}, we know
+    
+    \vspace{-1.5em}
+    $$D_{\mathrm{TV}}(\mu_t,\pi)\le\Pr{(X,Y)\sim\omega}{X_t\neq Y_t}.$$
+    
+    \vspace{-0.39em} \hspace{1.3em}
+    Obvious $\Pr{(X,Y)\sim\omega}{X_t\neq Y_t}\geq\Pr{(X,Y)\sim\omega}{X_{t+1}\neq Y_{t+1}}$. 
+    
+    \vspace{0.5em} \hspace{1.3em}
+    Since $P$ is aperiodic, we know $\underset{t\rightarrow\infty}{\lim}\ \Pr{(X,Y)\sim\omega}{X_t\neq Y_t} = 0$.
+    
+    \vspace{0.3em} \hspace{1.3em}
+    Therefore, when $t\rightarrow\infty,\ \mu_t\rightarrow\pi$, i.e. Markov Chain $P$ converges to $\pi.$
+    
+    \vspace{2em} \hspace{1.3em}
+    In conclusion, [PR]+[I]+[A] implies [S]+[U]+[C].
+\end{proof}
+
+\newpage
+\vspace{1em}
+\section{A Randomized Algorithm for 3-SAT}
+\vspace{1em}
+
+\textit{In this section, we assume the same notations in the class.}
+
+\vspace{3.9em}
+\subsection{The Probability of Correctness of the Given Algorithm}
+\vspace{1em}
+\begin{solution}
+From \underline{\textbf{Lecture 6}}, we know $\staExp{}{T_{Y_0\rightarrow n}}\le n^2$.
+
+\hspace{2.6em}
+Thus,
+
+\vspace{-1.5em}
+$$1-\Pr{}{\exists t\in[0,2n^2]\text{ s.t. } Y_t=n} = \Pr{}{T_{Y_0\rightarrow n}>2n^2} \le\frac{\staExp{}{T_{Y_0\rightarrow n}}}{2n^2}=\frac{1}{2}. $$
+
+\vspace{-0.5em} \hspace{2.6em}
+i.e. after $2n^2$ flipping operations, the correctness of the algorithm is at least 0.5.
+
+\hspace{2.6em}
+Since we repeat it for 50 times, 
+
+\hspace{6em}
+we know the probability that the algorithm returns a faulty result is less than $0.5^{50}$.
+
+\vspace{2em} \hspace{2.6em}
+Thus, the probability of correctness of our algorithm is at least \underline{$\boldsymbol{1-0.5^{50}}$}.
+\end{solution}
+
+\vspace{3em}
+\subsection{$\boldsymbol{\Pr{}{X_{t+1}=X_t+1}\geq\frac{1}{3},\  \Pr{}{X_{t+1}=X_t-1}\le\frac{2}{3}}$}
+\vspace{1em}
+\begin{proof}
+Without loss of generality, suppose we choose the clause $x\lor y\lor z$ in round $t$. 
+
+\hspace{1.3em}
+We know assignment $\sigma_t$ does not satisfy $x\lor y\lor z$, otherwise we would not choose the clause. Then $\sigma_t(x)=\sigma_t(y)=\sigma_t(z)=\mathtt{False}$. Let the satisfying assignment be $\sigma$. Possible cases are as follows.
+
+\begin{table}[htbp]
+    \centering
+    \setstretch{1.2}
+    \begin{tabular}{lllcc}
+        \hline
+        $\sigma(x)$ & $\sigma(y)$ & $\sigma(z)$ & $\Pr{}{X_{t+1}=X_{t}+1}$ & $\Pr{}{X_{t+1}=X_{t}-1}$ \\
+        \hline 
+        $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$ & 1 & 0 \\
+        $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{False}$ & 2/3 & 1/3 \\
+        $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{True}$ & 2/3 & 1/3 \\
+            $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{False}$ & 1/3 & 2/3 \\
+        $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{True}$ & 2/3 & 1/3 \\
+        $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{False}$ & 1/3 & 2/3 \\
+        $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{True}$ & 1/3 & 2/3 \\
+        \hline
+\end{tabular}
+\end{table}
+
+\hspace{1.3em}
+Therefore, 
+
+\vspace{-2em}
+$$\Pr{}{X_{t+1}=X_{t}+1}\geq\frac{1}{3},\  \Pr{}{X_{t+1}=X_{t}-1}\le\frac{2}{3}.$$
+
+\hspace{39em}
+\textit{Qed.}
+\end{proof}
+
+\newpage
+
+%\vspace{3em}
+\subsection{$\boldsymbol{\Theta(2^n)}$ Flipping Operations Are Needed to Ensure 0.99 Correctness}
+\vspace{1em}
+\begin{proof}
+    Similar to the proof of 2-SAT Random Algorithm, we design a random walk $\left\{Y_t\right\}_{t\le0}$ as follows. 
+    
+    \hspace{1.3em}
+    Suppose we need to repeat the random flipping operations for at least $C$ times to ensure the probability of the correctness of our algorithm is 0.99.
+    
+    \hspace{1.3em}
+    For $Y_t\notin \set{0,n},$
+    
+    \vspace{-3em}
+    \begin{align*}
+        Y_{t+1}=\left\{\begin{array}{ll}
+            Y_t+1  &  \mathrm{w.p.}\ \frac{1}{3}\\
+            Y_t-1  &  \mathrm{w.p.}\ \frac{2}{3}
+         \end{array}\right.
+    \end{align*}
+    
+    \vspace{-0.3em} \hspace{1.3em}
+    For $Y_t=0$, $Y_{t+1}=Y_t+1$ w.p. 1.
+    
+    \hspace{1.3em}
+    For $Y_t=n$, $Y_{t+1}=Y_t-1$ w.p. 1.
+    
+    \vspace{1em} \hspace{1.3em}
+    Then we have 
+    
+    \vspace{-3.3em}
+    \begin{align*}
+        \Pr{}{\text{the algorithm is correct.}}&\geq \mathbf{Pr}\Big[\exists t\in[0,C]\text{ s.t. }X_t=n\Big]\\
+        &\geq \mathbf{Pr}\Big[\exists t\in[0,C]\text{ s.t. }Y_t=n\Big]
+    \end{align*}
+    
+    \vspace{-1.2em} \hspace{21em}
+    (Since $\Pr{}{X_{t+1}=X_t+1}\geq\Pr{}{Y_{t+1}=Y_t+1}$)
+    
+    \hspace{1.3em}
+    Let $X_0=Y_0=i$. 
+    
+    \hspace{1.3em}
+    Use $\mathscr{A}$ to denote the event that the first step is towards the right, i.e. $X_{t+1}=X_t+1$.
+    
+    \hspace{1.3em}
+    Then 
+    
+    \vspace{-3em}
+    \begin{align*}
+        T_{k\rightarrow k+1} &= \mathbbm{1}\left[\mathscr{A}\right]+\mathbbm{1}\bar{\left[\mathscr{A}\right]}(1+T_{k-1\rightarrow k+1}) \\ 
+        & =\mathbbm{1}\left[\mathscr{A}\right]+\mathbbm{1}\bar{\left[\mathscr{A}\right]}(1+T_{k-1\rightarrow k}+T_{k\rightarrow k+1}) \\
+        \Longrightarrow\ \qquad\quad\staExp{}{T_{k\rightarrow k+1}} & = \frac{1}{3}+\frac{2}{3}(1+\staExp{}{T_{k-1\rightarrow k}}+\staExp{}{T_{k\rightarrow k+1}}) \\
+        \Longrightarrow\ \qquad\quad\staExp{}{T_{k\rightarrow k+1}} & = 2\staExp{}{T_{k-1\rightarrow k}}+3 \\
+        \Longrightarrow\quad\ \ \staExp{}{T_{k\rightarrow k+1}}+3 & = 2\left(\staExp{}{T_{k-1\rightarrow k}}+3\right).
+    \end{align*}
+    
+    \vspace{-0.6em} \hspace{1.3em}
+    Since $\staExp{}{T_{0\rightarrow 1}}=1$, we know $\staExp{}{T_{k\rightarrow k+1}}=2^{k+2}-3$.
+    
+    \hspace{1.3em}
+    Thus,
+    
+    \vspace{-3em}
+    \begin{align*}
+        \staExp{}{T_{i\rightarrow n}} & = \staExp{}{\sum_{k=i}^{n-1}T_{k\rightarrow k+1}}  = \sum_{k=i}^{n-1}\staExp{}{T_{k\rightarrow k+1}} \\
+        & = \sum_{k=i}^{n-1}\left(2^{k+2}-3\right) = 2^{n+2}-2^{i+2}-3(n-i) \le 2^{n+2}
+    \end{align*}
+    
+    \vspace{-0.6em} \hspace{1.3em}
+    Therefore, we have
+    
+    \vspace{-1.5em}
+    $$1-\Pr{}{\exists t\in[0,C]\text{ s.t. } Y_t=n} = \Pr{}{T_{Y_0\rightarrow n}>C} \le\frac{\staExp{}{T_{Y_0\rightarrow n}}}{C}. $$
+    
+    \hspace{1.3em}
+    We want to ensure the probability of correctness of the random algorithm is at least 0.99, i.e.
+    
+    \vspace{-1em}
+    $$\frac{\staExp{}{T_{Y_0\rightarrow n}}}{C}=\frac{2^{n+2}}{C}\le 0.01 \Longrightarrow C\geq 400\cdot 2^{n} \Longleftrightarrow C = \Theta(2^n).$$
+    
+    \hspace{39em}
+    \textit{Qed.}
+\end{proof}
+
+\newpage
+\subsection{Lower Bound for $\boldsymbol{\Pr{}{\exists t\in[1,3n]: X_t=n}}$}
+\vspace{1em}
+\begin{solution}
+Let $N_r = \sum_{t=0}^{3n-1}\mathbbm{1}\left[X_{t+1}=X_t+1\right], N_l = \sum_{t}^{3n-1}\mathbbm{1}\left[X_{t+1}=X_t-1\right]$.
+
+\hspace{2.5em}
+Then $N_r$ is the number of steps to the right and $N_l$ is the number of steps to the left.
+
+\hspace{2.6em}
+Start with $Y_0=n-i$. The event $\exists t\in[1,3n]$ s.t. $X_t=n$ only occurs when $N_r - N_l = i,$ i.e.
+
+\vspace{-3em}
+\begin{align*}
+    \Pr{}{\exists t\in[1,3n]: X_t=n} & = \Pr{}{N_r - N_l = i} \\
+    &\geq \binom{3i}{i}\left(\frac{1}{3}\right)^{2i}\left(\frac{2}{3}\right)^{i} \\
+    & \approx \frac{\sqrt{2\pi(3i)}\left(\frac{3i}{\mathrm{e}}\right)^{3i}}{\sqrt{2\pi(2i)}\left(\frac{2i}{\mathrm{e}}\right)^{2i}\sqrt{2\pi i}\left(\frac{i}{\mathrm{e}}\right)^{i}}\cdot\frac{2^i}{3^{3i}} \ \text{(By Stirling Equation)} \\
+    & = \sqrt{\frac{3}{4\pi i}}\cdot\frac{1}{2^i}
+\end{align*}
+
+\hspace{2.6em}
+Thus, a good lower bound for $\Pr{}{\exists t\in[1,3n]: X_t=n}$ is 
+
+\vspace{-0.3em}
+$$\sqrt{\frac{3}{4\pi i}}\cdot\frac{1}{2^i}$$
+
+\vspace{-2.5em}
+\end{solution}
+
+\vspace{3em}
+\subsection{The Probability of Correctness of the Advanced Algorithm}
+\vspace{1em}
+\begin{solution}
+    From \textbf{2.4}, we know if we start with $X_0=Y_0=n-i,$
+    
+    \vspace{-1em}
+    $$\Pr{}{\exists t\in[1,3n]: X_t=n}\geq\sqrt{\frac{3}{4\pi i}}\cdot\frac{1}{2^i}.$$
+    
+    \vspace{-0.3em} \hspace{2.6em}
+    Use $\mathscr{S}$ to denote the event that the algorithm outputs a satisfying assignment.
+    
+    \hspace{2.6em}
+    Since $\sigma_0$ is uniform at random from all $2^n$ assignments, we have
+    
+    \vspace{-2.2em}
+    \begin{align*}
+        \Pr{}{\mathscr{S}} & = \sum_{k=0}^{n} \binom{n}{k}\left(\frac{1}{2}\right)^{n}\Pr{}{\exists t\in[1,3n]: X_0=i \land X_t=n}\\
+        & \geq \frac{1}{2^n}\sum_{k=0}^{n} \binom{n}{k}\sqrt{\frac{3}{4\pi k}}\cdot\frac{1}{2^k} \geq \frac{1}{2^n}\sqrt{\frac{3}{4\pi n}}\sum_{k=0}^{n} \binom{n}{k}\frac{1}{2^k} \\
+        & = \frac{1}{2^n}\sqrt{\frac{3}{4\pi n}}\left(1+\frac{1}{2}\right)^{n} \\
+        & = \sqrt{\frac{3}{4\pi n}}\left(\frac{3}{4}\right)^{n}
+    \end{align*}
+    
+    \vspace{0.3em}\hspace{2.6em}
+    Thus, the probability that the algorithm outputs a satisfying assignment is at least
+    
+    \vspace{-0.3em}
+    $$\sqrt{\frac{3}{4\pi n}}\left(\frac{3}{4}\right)^{n}$$
+    
+    \vspace{-2.5em}
+\end{solution}
+
+
+\newpage
+\subsection{Advanced Algorithm Design}
+\begin{solution}
+    Inspired by \textbf{2.1}, we can make some adjustments to the original 3-SAT Random Algorithm.
+    
+    \hspace{2.6em}
+    We start with an assignment $\sigma_0$ which is uniform from all $2^n$ assignments of the variables. 
+    
+    \hspace{2.6em}
+    We repeat the flipping operations for $3n$ times until a 
+    satisfying assignment is returned (and 
+    
+    we output the assignment) or the number of epochs of repetitions have reached $N$.
+    
+    \hspace{27.5em}\textit{End of the Advanced Algorithm.}\qedsymbol
+    
+    \vspace{2em}\hspace{2.6em}
+    Now we determine $N$.
+    
+    \hspace{2.6em}
+    From \textbf{2.5}, we know the algorithm returns a satisfying assignment w.p. $\sqrt{\frac{3}{4\pi n}}\left(\frac{3}{4}\right)^n$. Thus, 
+    
+    the probability that the algorithm can not find a satisfying assignment after $N$ repetitions is
+    
+    \vspace{-0.6em}
+    $$\left(1-\sqrt{\frac{3}{4\pi n}}\left(\frac{3}{4}\right)^n\right)^N$$
+    
+    \hspace{2.6em}
+    Meanwhile, we want the probability of the correctness of our algorithm is at least 0.99, i.e.
+    
+    $$\Pr{}{\text{The algorithm is correct.}}\geq 1-\left(1-\sqrt{\frac{3}{4\pi n}}\left(\frac{3}{4}\right)^n\right)^N\geq 0.99 $$
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \Longrightarrow\qquad\qquad\quad N & \geq\log_{1-\sqrt{\frac{3}{4\pi n}}\left(\frac{3}{4}\right)^n} 0.01 = \frac{\log_{10}{0.01}}{\log_{10}{\left(1-\sqrt{\frac{3}{4\pi n}}\left(\frac{3}{4}\right)^n\right)}} \\
+        & \approx \frac{-2}{-\sqrt{\frac{3}{4\pi n}}\left(\frac{3}{4}\right)^n\ln(10)}\\
+        & = \frac{2}{\ln(10)}\sqrt{\frac{4\pi}{3}}\cdot\sqrt{n}\left(\frac{4}{3}\right)^n \\
+        & = O\left(n^{1/2}\left(\frac{4}{3}\right)^n\right).
+    \end{align*}
+    
+    \vspace{-3.3em}\hspace{35.5em} \textit{Choice of N.} \qedsymbol
+    
+    \vspace{3em} \hspace{2.6em}
+    The time complexity of our algorithm is at most $O(N\cdot 3n) = O(nN) = O\left(n^{3/2}\left(\frac{4}{3}\right)^n\right).$
+    
+    \hspace{2.6em}
+    Therefore, 
+    
+    \vspace{-1.5em}
+    $$c = \frac{4}{3}.$$
+    
+    \vspace{-2.4em}
+\end{solution}
+
+
+\end{document}

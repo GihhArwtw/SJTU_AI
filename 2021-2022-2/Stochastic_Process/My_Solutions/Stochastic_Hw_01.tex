@@ -1,0 +1,585 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Algorithm Homework 01}}
+\author{Qiu Yihang}
+\date{March 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Problem 01}
+
+\vspace{1em}
+\begin{proof}
+    We can plot the process of dividing and conquering as follows.
+
+    \begin{figure}[htbp]
+    	\centering
+    	\put(-20,0){\includegraphics[width=18cm]{AlgoHw01-fig01.pdf}}
+    \end{figure}
+    
+    \hspace{1.3em}
+    From the recursion tree above, we know for all $a^{k}$ subproblems in level $k$,  the time consumption is at most $a^{k}\left(\frac{n}{b^{k}}\right)^d\log^{w}\left(\frac{n}{b^{k}}\right)=a^{k}\left(\frac{n}{b^{k}}\right)^d\left(\log^{w}n-k\log^{w}b\right)$. 
+    
+    \hspace{1.3em}
+    Let $q = \frac{a}{b^d} $. Thus, the total time consumption is
+    
+    \vspace{-1.75em}
+    \begin{align*}
+        T(n) &= \sum_{k=0}^{\log_{b}n}a^{k}\left(\frac{n}{b^{k}}\right)^d\left(\log^{w}n-k\log^{w}b\right) \\
+        & = n^d\log^{w}n\sum_{k=0}^{\log_b{n}}\left(\frac{a}{b^d}\right)^k - n^d\log^{w}b\sum_{k=0}^{\log_{b}n}k\left(\frac{a}{b^d}\right)^k \\
+        &= n^d\left( \log^{w}n \sum_{k=0}^{\log_{b}n}q^k - \log^{w}b\sum_{k=0}^{\log_{b}n}k q^k \right) 
+    \end{align*}
+    
+    \hspace{1.3em}
+    \textbf{CASE 1.} When $q=\frac{a}{b^d}<1$, i.e. $a<b^d$. Let $K=\log_{b}n$.
+    
+    \vspace{-2.5em} \hspace{3em}
+    \begin{align*}
+        T(n) &= n^d\left( \log^{w}n\ \frac{1-q^{K+1}}{1-q} - \log^{w}b \ \frac{K q^{K+2}-(K+1)q^{K+1}+q}{(q-1)^2}\right) \\
+        &= n^d \left(O\left(\log^{w}n\right)-O(1))\right) \\
+        &= O\left(n^d\log^{w}n\right)
+    \end{align*}
+    
+    \vspace{-1em} \hspace{1.3em}
+    \textbf{CASE 2.} When $q=\frac{a}{b^d}=1$, i.e. $a=b^d$,
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        T(n) &= n^d\left(\log^{w}n\log_{b}n-O\left(\left(\log_{b}n\right)^2\right)\right) 
+        = n^d\left(O\left(\log^{w+1}n\right)-O\left(\log_{b}n\right)^2\right) \\
+        &= n^d\left(O\left(\log^{w+1}n\right)\right) \\
+        &= O\left(n^d\log^{w+1}n\right)
+    \end{align*}
+    
+     \vspace{-1em} \hspace{1.3em}
+    \textbf{CASE 3.} When $q=\frac{a}{b^d}>1$, i.e. $a>b^d$. Let $K=\log_{b}n$.
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        T(n) &= n^d\left( \log^{w}n\ \frac{1-q^{K+1}}{1-q} - \log^{w}b \ \frac{K q^{K+2}-(K+1)q^{K+1}+q}{(q-1)^2}\right) \\
+        &= n^d \left(O\left(q^{K}\log^{w}n\right)-O(Kq^K))\right) \\
+        &= O\left(n^d\left(\frac{a}{b^d}\right)^{\log_{b}n}\left(\log^{w}n-\log_b{n}\right)\right) \\
+        &= O\left(n^d\frac{a^{\log_{b}n}}{n^d}\right) \\
+        &= O\left(n^{\log_{b}a}\right)
+    \end{align*}
+    
+    Thus, 
+    $T(n)=\left\{
+    \begin{array}{ll}
+        O\left(n^d\log^{w}n\right) & \mathrm{if\ }a<b^d. \\
+        O\left(n^d\log^{w+1}n\right) & \mathrm{if\ }a=b^d. \\
+        O\left(n^{\log_{b}a}\right) & \mathrm{if\ }a>b^d.
+    \end{array}
+    \right.$
+\end{proof}
+
+\newpage
+
+\vspace{3em}
+\section{Problem 02}
+
+\begin{solution}
+    Similar to the process of \textbf{Merge Sort}, the process of \textbf{One Third Merge Sort Algorithm} is as follows.
+    
+    \begin{algorithm}
+        \caption{One-Third Merge Sort Algorithm}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwInOut{return}{Return}
+        
+	    \function{One-Third Merge Sort $\left(a[1:n]\right)$}
+	    {
+	        $mid \gets \lceil n/3 \rceil$\;
+	        $left \gets \mathrm{OneThirdMergeSort}\left(a[1:mid]\right)$\;
+	        $right \gets \mathrm{OneThirdMergeSort}\left(a[mid+1:n]\right)$\;
+	        \return{Merge($left,right$)}
+	    }
+	    
+	    \BlankLine
+	    \BlankLine
+	    \BlankLine
+	    
+	    \function{Merge$\left(left,right\right)$}
+	    {
+	        $i \gets 1, j \gets 1, k \gets 1, n \gets \mathrm{Length}(left), m \gets \mathrm{Length}(right)$\;
+	        \While{$(i\le n$ and $j\le m)$} 
+	        {
+    	        \eIf{$left[i]\le right[j]$}
+    	        {
+    	           $a[k] \gets left[i]$\;
+	                $i \gets i+1$\;
+    	        }
+	            {
+	                $a[k] \gets right[j]$\;
+	                $j \gets j+1$\;
+	            }
+	            $k \gets k+1$\;
+	        }
+	        \While{$i\le n$}
+	        {
+	            $a[k] \gets left[i]$\;
+	            $i\gets i+1, k\gets k+1$\;	    
+	        }
+	        \While{$j\le m$}
+	        {
+	            $a[k] \gets right[j]$\;
+	            $j\gets j+1, k\gets k+1$\;
+	        }
+	        \return{$a[1:n+m]$}
+	    }
+    \end{algorithm}
+    
+    \hspace{1.3em}
+    Now we analyze the time complexity of \textbf{One-Third Merge Sort Algorithm}. Let the time consumption be $T(n).$
+    
+    \hspace{1.3em}
+    Obvious the time of \textbf{Merge} is $O(n)$. Then we have
+    
+    \vspace{-1.75em}
+    \begin{align*}
+        T(n) &= T\left(\frac{n}{3}\right)+T\left(\frac{2n}{3}\right)+O(n) \\
+        &\le  T\left(\frac{n}{3}\right)+T\left(\frac{2n}{3}\right)+cn \\
+        &= T\left(\frac{4n}{3^2}\right)+2T\left(\frac{2n}{3^2}\right)+T\left(\frac{n}{3^2}\right)+c\frac{n}{3}+c\frac{2n}{3}+cn \\
+        &= T\left(\frac{4n}{3^2}\right)+2T\left(\frac{2n}{3^2}\right)+T\left(\frac{n}{3^2}\right)+2cn \\
+        &= T\left(\frac{8n}{3^3}\right)+3T\left(\frac{4n}{3^3}\right)+3T\left(\frac{2n}{3^3}\right)+T\left(\frac{n}{3^3}\right) + 3cn \\
+        &= ... \\
+        &= \sum_{i=0}^{k}\binom{i}{k}T\left(\frac{2^i n}{3^k}\right) + kcn.
+    \end{align*}
+    
+    \hspace{1.3em}
+    Suppose $N=\lceil\log_{2/3}n\rceil.$ Then we have $k\le N, \frac{2^kn}{3^N}\sim O(1).$ Obvious $T(1)=O(1).$
+    
+    \vspace{-1.75em}
+    \begin{align*}
+        T(n) &\le \sum_{i=0}^{N} \binom{i}{N} T(1) + Ncn = O(2^N) + O(Nn) \\
+        &= O(n) + O(n\log_{2/3}{n}) = O(n) + O(n\log n ) \\
+        &= O(n\log n).
+    \end{align*}
+    
+    \hspace{1.3em}
+    Thus, the time complexity of \textbf{One-Third Merge Sort Algorithm} is $O(n\log n).$
+\end{solution}
+
+\vspace{5em}
+
+\section{Problem 03}
+\vspace{.5em}
+
+\subsection{$\boldsymbol{d=1}$}
+\vspace{1em}
+\begin{solution}
+    Based on sort algorithms, we design a $O(n\log n)$ algorithm as follows.
+
+
+    \begin{algorithm}
+        \caption{Unidimensional Pair Counting Algorithm}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwInOut{return}{Return}
+        
+	    \function{Uni-Dim Pair Count $\left(A,B\right)$}
+	    {
+	        $S \gets sort\left(A\cup B\right)$\;
+	        \qquad\qquad\tcp{$sort(\cdot)$ returns the array sorted from the largest to the smallest.}
+	        \BlankLine
+	        \BlankLine
+	        \BlankLine
+	        $count\gets 0, b\gets |B|$\;
+	        \For{$i=1\to n$}
+	        {
+	            \leIf{$S[i]\in A$}{$count \gets count+b$}{$b\gets b-1$}
+	        }
+	        \return{$count$}
+	    }
+    \end{algorithm}
+    
+    \hspace{2.5em}
+    The time complexity of $sort$ is $O(n\log n)$ while the remaining part of the algorithm takes $O(n)$ time. Thus, the time complexity of the algorithm above is $O(n\log n)$.
+\end{solution}
+
+\vspace{.5em}
+
+\subsection{$\boldsymbol{d=2}$}
+\vspace{1em}
+\begin{solution}
+    Inspired by the algorithm counting inverted-ordered pairs we discussed in class, a feasible algorithm to count two-dimensional $\boldsymbol{(a,b)}\in(A,B)$ s.t. $a$ is greater than $b$ is as follows.
+    
+    \hspace{2.5em} Let $\boldsymbol{a}=(a_1,a_2)$ for $\boldsymbol{a}\in A$, $\boldsymbol{b}=(b_1,b_2)$ for $\boldsymbol{b}\in B$. Use $\boldsymbol{a>b}$ to denote  $\boldsymbol{a}$ is greater than $\boldsymbol{b}$.
+    
+    \hspace{2.5em}
+    Each time, we can find a suitable $mid$ to divide arrays $A,B$ into four parts, $A_{left}, A_{right},B_{left},$ $B_{right}$, where $A_{left}=\left\{\boldsymbol{a}\in A\big|a_1<mid\right\}, A_{right}=\left\{\boldsymbol{a}\in A\big|a_1\geq mid\right\}, B_{left}=\left\{\boldsymbol{b}\in B\big|b_1<mid\right\},$ $B_{right}=\left\{\boldsymbol{b}\in B\big|b_1\geq mid\right\}.$ 
+    
+    \hspace{2.5em}
+    Let $N_{l,l},N_{r,r},N_{r,l},N_{l,r}$ be the number of pairs between $A_{left}$ and $B_{left}$, between $A_{right}$ and $B_{right}$, between $A_{right}$ and $B_{left}$, and between $A_{left}$ and $B_{right}$ respectively. Obvious we have $N_{r,l}=0$ since $\forall a\in A_{right}, \forall b\in B_{left}, a_1<mid\le b_1$. Meanwhile, since $\forall a\in A_{left},\forall b\in B_{right}, a_1\geq mid>b_1,$ we know $N_{l,r}$ is also the number of pairs between $A'=\left\{a_2\big|\boldsymbol{a}=(a_1,a_2),\boldsymbol{a}\in A_{left}\right\}$ and $B'=\left\{b_2\big|\boldsymbol{b}=(b_1,b_2),\boldsymbol{b}\in B_{right}\right\}$, i.e. $N_{l,r}=Uni\ Dim\ Pair\ Count(A',B')$.
+    
+    \hspace{2.5em}
+    Thus, we can divide the problem into three subproblems since the total number of pairs between $A$ and $B$ is $N=N_{l,l}+N_{l,r}+N_{r,l}+N_{r,r}=N_{l,l}+N_{r,r}+Uni\ Dim\ Pair\ Count(A',B')$.
+    
+    \hspace{2.5em}
+    The algorithm is as follows.
+    
+     \begin{algorithm}
+        \caption{Two-Dimensional Pair Counting Algorithm}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwInOut{return}{Return}
+        
+	    \function{Two-Dim Pair Count $\left(A,B\right)$}
+	    {
+	        \lIf{$A$ is empty or $B$ is empty}{\quad\textbf{Return:} 0}
+	        \BlankLine
+	        \BlankLine
+	        \BlankLine
+	        $S \gets sort\left(A\cup B\right)$\;
+	        \tcp{$sort(\cdot)$ returns the array sorted by the first element from the largest to the smallest.}
+	        $mid \gets$ the first element of $S[\mathrm{Length}(S)/2]$\;
+	        $A_{left}\gets\left\{\boldsymbol{a}=(a_1,a_2)\in A\ \big|\ a_1<mid\right\}, A_{right}\gets\left\{\boldsymbol{a}=(a_1,a_2)\in A\ \big|\ a_1\geq mid\right\}$\;
+	        $B_{left}\gets\left\{\boldsymbol{b}=(b_1,b_2)\in B\ \big|\ b_1<mid\right\},
+	        B_{right}\gets\left\{\boldsymbol{b}=(b_1,b_2)\in B\ \big|\ b_1\geq mid\right\}$\;
+	        \BlankLine
+	        \BlankLine
+	        \BlankLine
+	        $count\gets$\textit{Two-Dim Pair Count}$(A_{left},B_{left})$+\textit{Two-Dim Pair Count}$(A_{right},B_{right})$\;
+	        $A'\gets\left\{a_2\big|\boldsymbol{a}=(a_1,a_2),\boldsymbol{a}\in A_{left}\right\}$\; $B'\gets\left\{b_2\big|\boldsymbol{b}=(b_1,b_2),\boldsymbol{b}\in B_{right}\right\}$\;
+	        $count\gets count+$\textit{Uni-Dim Pair Count}$(A',B')$\;
+	        \return{$count$}
+	    }
+    \end{algorithm}
+    
+    \hspace{2.5em}
+    Now we analyze the time complexity of the algorithm above. Let the time complexity be $T(n)$, where $n=|A|+|B|$. Obvious $sort(A\cup B)$ takes $O(n\log n)$ time. From \textbf{3.1} we know \textit{Uni-Dim Pair Count}$(A',B')$ takes $O(n\log n)$ time.
+    
+    \hspace{2.5em}
+    We have
+    
+    \vspace{-1.5em}
+    $$T(n) = 2T\left(\frac{n}{2}\right)+O(n\log n).$$
+    
+    \hspace{2.5em}
+    According to \textbf{Problem 01}, set $a=b=2, d=w=1$ and we know $T(n)=O\left(n\log^2(n)\right)$. (Since $a=2=b^d$.)
+    
+    \hspace{2.5em}
+    We know $O(n\log^2n)=o(n^{1.1}).$ Therefore, the algorithm satisfies all requirements given by the problem.
+\end{solution}
+
+\vspace{1em}
+\subsection{$\boldsymbol{d\in\mathbb{N^+}}$}
+\vspace{1em}
+\begin{solution}
+    From \textbf{3.2} we know we can convert the $d$-dimensional problem into a $(d-1)$-dimensional one. It is quite natural to design the following algorithm. The proof of the correctness of the algorithm is similar to the one in \textbf{3.2}.
+    
+    \begin{algorithm}
+        \caption{Multi-Dimensional Pair Counting Algorithm}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwInOut{return}{Return}
+        
+	    \function{Multi-Dim Pair Count $\left(A,B,d\right)$}
+	    {
+	        \tcp{$A,B$: two arrays. $d$: the number of dimensions of elements in $A$ and $B$.}
+	        \BlankLine
+	        \BlankLine
+	        \BlankLine
+	        \lIf{$A$ is empty or $B$ is empty}{\quad\textbf{Return:} 0}
+	        \lIf{d=1}{\quad\textbf{Return: }\textit{Uni-Dim Pair Count$(A,B)$}}
+	        \BlankLine
+	        \BlankLine
+	        \BlankLine
+	        $S \gets sort\left(A\cup B\right)$\;
+	        \tcp{$sort(\cdot)$ returns the array sorted by the first element from the largest to the smallest.}
+	        $mid \gets$ the first element of $S[\mathrm{Length}(S)/2]$\;
+	        $A_{left}\gets\left\{\boldsymbol{a}=(a_1,...,a_d)\in A\ \big|\ a_1<mid\right\}, A_{right}\gets\left\{\boldsymbol{a}=(a_1,...,a_d)\in A\ \big|\ a_1\geq mid\right\}$\;
+	        $B_{left}\gets\left\{\boldsymbol{b}=(b_1,...,b_d)\in B\ \big|\ b_1<mid\right\},
+	        B_{right}\gets\left\{\boldsymbol{b}=(b_1,...,b_d)\in B\ \big|\ b_1\geq mid\right\}$\;
+	        \BlankLine
+	        \BlankLine
+	        \BlankLine
+	        $count\gets$\textit{Multi-Dim Pair Count}$(A_{left},B_{left},d)$+\textit{Multi-Dim Pair Count}$(A_{right},B_{right},d)$\;
+	        $A'\gets\left\{(a_2,...,a_d)\big|\boldsymbol{a}=(a_1,a_2,...,a_d),\boldsymbol{a}\in A_{left}\right\}$\; $B'\gets\left\{(b_2,...,b_d)\big|\boldsymbol{b}=(b_1,b_2,...,b_d),\boldsymbol{b}\in B_{right}\right\}$\;
+	        $count\gets count+$\textit{Multi-Dim Pair Count}$(A',B',d-1)$\;
+	        \return{$count$}
+	    }
+    \end{algorithm}
+    
+    \hspace{1.3em}
+    Now we analyze the time complexity of the algorithm above. We prove that $T(n,d)=O(n\log^dn)$ by induction.
+    
+    \hspace{1.3em}
+    \textbf{BASE STEP.} When $d=1$, from \textbf{3.1} we know $T(n,d)=n\log n$.
+    
+    \hspace{1.3em}
+    \textbf{INDUCTIVE HYPOTHESIS.} When $d=D$, $T(n,d)=n\log^dn.$
+    
+    \hspace{1.3em}
+    \textbf{INDUCTIVE STEP.} When $d=D+1,$ we have
+    
+    \vspace{-1em}
+    $$T(n,D+1)=2T\left(\frac{n}{2},D+1\right)+T\left(n,D\right)=2T\left(\frac{n}{2},D+1\right)+O(n\log^Dn)$$
+    
+    \hspace{1.3em}
+    From \textbf{Problem 01}, set $a=b=2, w=D, d=1$ and we know $T(n,D+1)=O(n\log^{D+1}n)$ (since $a=2=b^d$), i.e. $T(n,d)=O(n\log^dn)$ still holds for $d=D+1.$
+    
+    \hspace{1.3em}
+    Thus, $\forall n,d\in\mathbb{N}^+, T(n,d)=O(n\log^dn).$
+    
+    \vspace{1em}
+    \hspace{1.3em}
+    Therefore, the time complexity of the algorithm is $O(n\log^dn).$
+\end{solution}
+
+
+
+
+\section{Problem 04}
+\subsection{Median of Medians Is Close to the Actual Median}
+\vspace{.5em}
+\begin{proof}
+    Since $x$ is the median of $\frac{n}{3}$ medians, we know at least exist $\frac{n}{6}$ numbers smaller than $x$.
+    
+    \hspace{1.3em}
+    Meanwhile, by the definition of medians, we know each median is larger than a number in the triple group. Therefore, there exist at least $\frac{n}{6}$ numbers which are not medians but are smaller than $x$. 
+    
+    \hspace{1.3em}
+    In conclusion, there are $\frac{n}{6}+\frac{n}{6}=\frac{n}{3}$ numbers smaller than $x$.
+    
+    \hspace{1.3em}
+    Similarly, we know exist $\frac{n}{3}$ numbers larger than $x$.
+\end{proof}
+
+\vspace{0.5em}
+\subsection{Algorithm Design}
+\vspace{1em}
+\begin{solution}
+    The following algorithm requires $n$ to be the power of 3. This is easy to reach since we can add several numbers smaller than the minimal element in the original $a$ array into the array and extend the length to a power of 3, which takes only $O(n)$ time.
+    
+    \hspace{2.5em}
+    After extend the array $a$, the algorithm is as follows.
+    
+    \begin{algorithm}
+        \caption{Median of Medians Algorithm}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwInOut{return}{Return}
+
+	    \function{Find k-th Largest$\left(a[1:n],k\right)$}
+	    {
+	        \tcp{$a$: the array containing distinct numbers.} \tcp{\qquad We require $n=3^m,\ m\in\mathbb{N}^+.$}
+	        \tcp{$k$: the expected output should be the $k$-largest number in $a$.}
+	        \BlankLine
+	        \BlankLine
+	        \BlankLine
+	        \tcp{Generate medians.}
+	        $Medians\gets\varnothing$\;
+	        \For{$i=0\to\frac{n}{3}-1$}
+	        {
+	            $b\gets sort\left(a[3i+1:3i+3]\right)$\;
+	            Add element $b[2]$ into $Medians$\;
+	        }
+	        $mid\gets$\textit{Find k-th Largest}$\left(Medians,\lceil\frac{k}{6}\rceil\right)$\;
+	        \BlankLine
+	        \BlankLine
+	        \BlankLine
+	        $Left\gets\varnothing, Right\gets\varnothing$\;
+	        \For{$i=0\to n$}
+	        {
+	            \leIf{$a[i]\geq mid$}{\quad Add element $a[i]$ into $Right$\;}{\quad Add element $a[i]$ into $Left$}
+	        }
+	        \lIf{$|Right|=k$}{\quad\textbf{Return: }$mid$}
+	        \lIf{$|Right|>k$}{\quad\textbf{Return: }\textit{Find k-th Largest$\left(Right, k\right)$}}
+	        \return{\textit{Find k-th Largest}$\left(Left,k-|Right|\right)$}
+	    }
+    \end{algorithm}
+    
+    \hspace{2.5em}
+    Now we analyze the time complexity of \textit{Median of Medians} Algorithm. 
+    
+    \hspace{2.5em}
+    Let the time complexity be $T(n)$. 
+    
+    \hspace{2.5em}
+    Obvious median generation takes $O\left(\frac{n}{3}3\log3\right)=O\left(n\right)$ time and dividing $a$ takes $O(n)$ time.
+    
+    \hspace{2.5em}
+    From \textbf{4.1} we know $|Left|\geq\frac{n}{3}, |Right|\geq\frac{n}{3}$, i.e. $|Left|\le\frac{2n}{3}, |Right|\le\frac{2n}{3}$. Then we have
+    
+    \vspace{-1.5em}
+    \begin{align*}
+        T(n) &\le T\left(\frac{n}{3}\right)+T\left(\max{|Left|,|Right|}\right)+O(n) \\
+        &\le T\left(\frac{n}{3}\right)+T\left(\frac{2n}{3}\right)+O(n) 
+    \end{align*}
+    
+    \hspace{2.5em}
+    We find the equation above is exactly the form of time complexity in \textbf{Problem 02}. 
+    
+    \hspace{2.5em}
+    Thus, by \textbf{Problem 02}, we know $T(n)=O(n\log n)$.
+\end{solution}
+
+\vspace{0.5em}
+\subsection{Alter the Size of Group (The Problem In the Margin)}
+\vspace{1em}
+\begin{solution}
+    It's easy to improve the algorithm in \textbf{4.2} to a version with alterable group size. 
+    
+    \hspace{2.5em}
+    For even size, we select the $(size/{2}+1)$-largest number as the median; For odd size, we select the $\lceil{size}/{2}\rceil$-largest number as the median. Obvious there exist at least $\frac{n}{size}\left(\lceil size/2\rceil-1\right)$ numbers smaller than the median of medians, which is similar to \textbf{4.1}.
+    
+    \hspace{2.5em}
+    The altered algorithm is as follows.
+
+    \begin{algorithm}
+        \caption{Median of Medians Algorithm}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwInOut{return}{Return}
+
+	    \function{Find k-th Largest$\left(a[1:n],k,size\right)$}
+	    {
+	        \tcp{$a$: the array containing distinct numbers.} \tcp{\qquad We require $n={size}^m,\ m\in\mathbb{N}^+.$}
+	        \tcp{$k$: the expected output should be the $k$-largest number in $a$.}
+	        \tcp{$size$: the size of median group. We require $size\geq 3.$}
+	        \BlankLine
+	        \BlankLine
+	        \BlankLine
+	        \tcp{Generate medians.}
+	        $Medians\gets\varnothing$\;
+	        \For{$i=0\to\frac{n}{size}-1$}
+	        {
+	            $b\gets sort\left(a[size\cdot i+1:size\cdot (i+1)-1]\right)$\;
+	            Add element $b[\lceil\frac{size}{2}\rceil]$ into $Medians$\;
+	        }
+	        $mid\gets$\textit{Find k-th Largest}$\left(Medians,\lceil\frac{k}{2\cdot size}\rceil,size\right)$\;
+	        \BlankLine
+	        \BlankLine
+	        \BlankLine
+	        $Left\gets\varnothing, Right\gets\varnothing$\;
+	        \For{$i=0\to n$}
+	        {
+	            \leIf{$a[i]\geq mid$}{\quad Add element $a[i]$ into $Right$\;}{\quad Add element $a[i]$ into $Left$}
+	        }
+	        \lIf{$|Right|=k$}{\quad\textbf{Return: }$mid$}
+	        \lIf{$|Right|>k$}{\quad\textbf{Return: }\textit{Find k-th Largest$\left(Right, k,size\right)$}}
+	        \return{\textit{Find k-th Largest}$\left(Left,k-|Right|,size\right)$}
+	    }
+    \end{algorithm}
+    
+    \newpage
+    
+    \hspace{1.3em}
+    Obvious median generation takes $\left(\frac{n}{size}\cdot size\log size\right)$ operations and dividing $a$ takes $n$ operations. Also we know $|Left|\geq \frac{n}{size}\left(\lceil \frac{size}{2}\rceil-1\right), |Right|\geq \frac{n}{size}\left(\lceil \frac{size}{2}\rceil-1\right),$ $|Left|\le n- \frac{n}{size}\left(\lceil \frac{size}{2}\rceil-1\right),$ $|Right|\le n-\frac{n}{size}\left(\lceil \frac{size}{2}\rceil-1\right)$. Thus, we have 
+    \vspace{0.75em}
+    $$T(n) \le T\left(\frac{n}{size}\right)+T\left(n-\frac{n}{size}\left(\lceil \frac{size}{2}\rceil-1\right)\right)+O(n)$$.
+    
+    \vspace{-2em} \hspace{1.3em}
+    Considering
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \frac{n}{size}+n-\frac{n}{size}\left(\left\lceil \frac{size}{2}\right\rceil-1\right)+\frac{n}{size}\le n &\Longleftrightarrow \frac{2n}{size}\le\frac{n}{size}\left(\left\lceil \frac{size}{2}\right\rceil-1\right) \\
+        &\Longleftrightarrow\left\lceil \frac{size}{2}\right\rceil\geq 3 \\
+        &\Longleftrightarrow size\geq 5,
+    \end{align*}
+
+    \vspace{-1em} \hspace{1.3em}
+    we analyze time complexity by different $size$.
+    
+    \hspace{1.3em}
+    \textbf{CASE 01.} When $size\geq 5$. we prove that $T(n)=O(n)$ by induction.
+    
+    \hspace{3.9em} \textbf{BASE STEP.} When $n=1,$ Obvious $T(n)=O(n)$ (the time median generation need.)
+    
+    \hspace{3.9em} \textbf{INDUCTIVE HYPOTHESIS.} When $n\le N, T(n)=O(n).$
+    
+    \hspace{3.9em} \textbf{INDUCTIVE STEP.}
+    When $n=N+1,$
+    
+    \vspace{-2.5em}
+    \begin{align*}
+    T(N+1) &\le T\left(\frac{N+1}{size}\right)+T\left(N+1-\frac{N+1}{size}\left(\left\lceil\frac{size}{2}\right\rceil-1\right)\right)\\
+    &\quad+N+1+\frac{N+1}{size}\cdot size\log size\\
+    &\le c\cdot\frac{N+1}{size}+c\cdot\left(N+1-\frac{N+1}{size}\left(\left\lceil\frac{size}{2}\right\rceil-1\right)\right)\\
+    &\quad+N+1+\frac{N+1}{size}\cdot size\log size \\
+    &\le c\cdot(N+1)
+    \end{align*}
+    
+    \vspace{-1.5em}\hspace{6em}
+    when $c$ is large enough.
+    
+    \hspace{3.9em}
+    Thus, when $size\geq5,\ T(n)=O(n).$
+    
+    \vspace{0.75em} \hspace{1.3em}
+    \textbf{CASE 02.} When $size=4$,
+    
+    \vspace{-2em}
+    \begin{align*}
+        T(n)=T\left(\frac{n}{4}\right)+T\left(\frac{3n}{4}\right) + O(n)
+    \end{align*}
+    
+    \vspace{-0.5em} \hspace{3.9em}
+    By analyses similar to \textbf{Problem 02}, we get $T(n)=O(n\log n).$
+    
+    \vspace{0.75em} \hspace{1.3em}
+    \textbf{CASE 03.} When $size=3$, from \textbf{4.2}, we know $T(n)=O(n\log n).$
+    
+    \vspace{3em}
+    \hspace{1.3em}
+    Thus, $T(n)=\left\{
+    \begin{array}{ll}
+        O(n),  & size\geq 5 \\
+        O(n\log n), & size=3,4
+    \end{array}\right.$
+    
+    \vspace{0.75em} \hspace{1.3em}
+    Obvious the best choice of $size$ is 5.
+\end{solution}
+
+
+\vspace{3em}
+\section{Rating and Feedback}
+\vspace{1em} \hspace{1.2em}
+The completion of this homework takes me seven days, about $40$ hours in total. Writing formal proof and solution by $latex$ is the most time-consuming part.
+
+The ratings of each problem is as follows.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{lr}
+        \hline
+        Problem & Rating \\
+        \hline 
+        1 & 3 \\
+        2 & 2 \\
+        3.1 & 2 \\
+        3.2 & 3 \\
+        3.3 & 3 \\
+        4.1 & 1 \\
+        4.2 & 3 \\
+        4 problem in margin & 4 \\
+        \hline
+\end{tabular}
+\caption{Ratings.}
+\end{table}
+
+Most problems are completed on my own, except \textbf{\textit{the one in the margin of the} Problem 04}. The solution of this additional problem is completed with discussions with \textbf{Yilin Sun}.
+
+\end{document}

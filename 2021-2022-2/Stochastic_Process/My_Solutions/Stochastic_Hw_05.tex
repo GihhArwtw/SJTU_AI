@@ -1,0 +1,192 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\labelitemii}{\textbullet}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\newcommand{\bigstaExp}[2][]{\mathbb{E}_{#1}\big[#2\big]}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.5}
+\title{\textbf{Stochastic Process Homework 05}}
+\author{Qiu Yihang}
+\date{May.17-May.23, 2022}
+
+\begin{document}
+
+\maketitle
+
+\setcounter{section}{-1}
+\section{Reference}
+
+\hspace{2em}
+This time, I finish the homework on my own.
+
+\vspace{1em}
+\section{Get Off Work Earlier}
+\vspace{1em}
+
+\subsection{Probability that Joe Achieves the Goal}
+\vspace{1em}
+\begin{solution}
+    Let $N(t)$ be the number of customers arrive between $T-s$ and $T-s+t$. 
+    
+    \hspace{2.6em}
+    Obvious $N(t)$ is a Poisson Process.
+    
+    \hspace{2.6em}
+    Suppose the first customer after $T-s$ arrives at $T-s+\tau_1$. Then $\tau_1\sim\mathtt{Exp}(\lambda)$.
+    
+    \hspace{2.6em}
+    Suppose the second customer after $T-s$ arrives at $T-s+\tau_1+\tau_2$. Then $\tau_2\sim\mathtt{Exp}(\lambda)$.
+    
+    \hspace{2.6em}
+    Therefore, we have
+    
+    \vspace{-3em}
+    \begin{align*}
+        \Pr{}{\text{Joe achieves his goal}}&=\Pr{}{0\le\tau_1\le s\land \tau_1+\tau_2>s} \\
+        &=\int_{0}^{s}\lambda e^{-\lambda t}\cdot\Pr{}{\tau_2>s-t} \mathrm{d}t\\
+        &=\lambda\int_{0}^{s} e^{-\lambda t}e^{-\lambda(s-t)}\mathrm{d}t =\lambda\int_0^s e^{-\lambda s} \mathrm{d}t \qquad \\
+        &= \lambda s e^{-\lambda s}
+    \end{align*}
+    
+    \vspace{-0.75em} \hspace{2.6em}
+    Thus, the probability that Joe achieves his goal is \underline{$\boldsymbol{\lambda s e^{-\lambda s}}$}.
+\end{solution}
+
+\vspace{0.5em}
+\subsection{Optimal Value of $\boldsymbol{s}$}
+\vspace{1em}
+\begin{solution}
+    Let $f(s)=\lambda se^{-\lambda s}$. 
+    
+    \vspace{-1em}
+    $$f'(s)=\lambda\left(1-\lambda s\right)e^{-\lambda s}=0\ \Longrightarrow\ s^* = \frac{1}{\lambda},\ f(s^*)=e^{-1}.$$
+    
+    \hspace{2.6em}
+    Thus, the optimal value of $s$ is \underline{$\boldsymbol{\lambda^{-1}}$} and the corresponding probability is \underline{$\boldsymbol{e^{-1}}$}.
+\end{solution}
+
+\newpage
+\vspace{1em}
+\section{Poisson Process}
+\vspace{1em}
+\subsection{$\boldsymbol{\Pr{}{X\geq\lambda}\geq\frac{1}{2}}$}
+\vspace{1em}
+\begin{proof}
+    Since $X\sim\mathtt{Poisson}(\lambda)$, for $k=0,1,2,...\lambda-1$,
+    
+    \vspace{-2em}
+    \begin{align*}
+        \quad\ \ \Pr{}{X=\lambda+k} &= \frac{\lambda^{\lambda+k}}{(\lambda+k)!}e^{-\lambda} = \frac{\lambda^{2k+1}}{\prod_{i=-k}^k(\lambda+i)}\frac{\lambda^{\lambda-k-1}}{(\lambda-k-1)!} \\
+        &= \frac{\lambda^2}{(\lambda-k)(\lambda+k)}\cdot\frac{\lambda^2}{(\lambda-k+1)(\lambda+k-1)}\cdot...\frac{\lambda^2}{(\lambda-1)(\lambda+1)}\cdot\frac{\lambda^{\lambda-k-1}\cdot e^{-\lambda}}{(\lambda-k-1)!}\\
+        &= \frac{\lambda^2}{\lambda^2-k^2}\cdot\frac{\lambda^2}{\lambda^2-(k-1)^2}\cdot...\frac{\lambda^2}{\lambda^2-1}\cdot\Pr{}{X=\lambda-k-1} \\
+        & \geq \Pr{}{X=\lambda-k-1}.
+    \end{align*}
+    
+    \vspace{-3.3em} \qedsymbol
+    
+    \vspace{0.8em} \hspace{1.3em}
+    Then we have
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        2\Pr{}{X\geq\lambda} &= \Pr{}{X\geq2\lambda}+\sum_{k=0}^{\lambda-1}\Pr{}{X=\lambda+k}+\Pr{}{X\geq\lambda} \\
+        &\geq \Pr{}{X\geq2\lambda}+\sum_{k=0}^\lambda \Pr{}{X=k}+\Pr{}{X\geq\lambda} = \Pr{}{X\geq2\lambda}+1 \geq 1.\\
+        \quad\ \Longleftrightarrow \quad \Pr{}{X\geq\lambda}&\geq\frac{1}{2}.
+    \end{align*}
+    
+    \vspace{-3em}
+\end{proof}
+
+\vspace{1em}
+\subsection{$\boldsymbol{\staExp{}{f(X_1,X_2,...X_n)}\le2\cdot\staExp{}{f(Y_1,Y_2,...Y_n)}}$}
+\vspace{1em}
+\begin{proof}
+    Since $Y_i\sim\mathtt{Poisson}(\frac{m}{n})$, we know $\sum_{i=1}^nY_i\sim\mathtt{Poisson}(m)$.
+        
+    \vspace{-2em}
+    \begin{align*}
+        \staExp{}{f(Y_1,Y_2,...Y_n)}&=\sum_{k=0}^{\infty}\staExp{}{f(Y_1,Y_2,...Y_n)\Bigg|\sum_{i=1}^n Y_i=k}\Pr{}{\sum_{i=1}^n Y_i=k} \\
+        &\geq \sum_{k=m}^{\infty} \staExp{}{f(Y_1,Y_2,...Y_n)\Bigg|\sum_{i=1}^nY_i=k}\Pr{}{\sum_{i=1}^nY_i=k} \\
+        &=\sum_{k=m}^{\infty}\staExp{}{f(X_1,X_2,...X_n)\Bigg|\staExp{}{X_i}=\frac{k}{n}}\Pr{}{\sum_{i=1}^nY_i=k} \\
+        &\geq\sum_{k=m}^{\infty}\staExp{}{f(X_1,X_2,...X_n)\Bigg|\staExp{}{X_i}=\frac{m}{n}}\Pr{}{\sum_{i=1}^nY_i=k} \\
+        &\quad\text{(Since $\staExp{}{f(X_1,X_2,...X_n)}$ is monotonously increasing in $m$)} \\
+        &= \staExp{}{f(X_1,X_2,...X_n)}\Pr{}{\sum_{i=1}^nY_i\geq m}\\
+        &\geq \frac{1}{2}\staExp{}{f(X_1,X_2,...X_n)} \qquad\qquad\qquad\qquad\qquad\text{(By \textbf{2.1})}
+    \end{align*}
+    
+    \vspace{-0.25em} \hspace{1.3em}
+    Thus, $\staExp{}{f(X_1,X_2,...X_n)}\le 2\cdot\staExp{}{f(Y_1,Y_2,...Y_n)}$.
+\end{proof}
+
+\vspace{3em}
+\subsection{Poisson Approximation of Birthday Problem}
+\vspace{1em}
+\begin{proof}
+    $n=365, m=50.$
+
+    \hspace{1.3em}
+    Let $X_i$ be the number of students whose birthday is the $i$-th day of a year ($i=1,2,...,365$).
+    
+    \hspace{1.3em}
+    Then we know 
+    
+    \vspace{-1.5em}
+    $$\sum_{i=1}^{365}X_i=m=50,\ X_i\sim\mathtt{Binom}\left(50,\frac{1}{365}\right).$$
+    
+    \hspace{1.3em}
+    Let $f(X_1,X_2,...X_n)=\mathbbm{1}\left[\exists i\ \mathrm{s.t.}\ X_i\geq4\right]$. Then $\staExp{}{f(X_1,X_2,...X_n)}=\Pr{}{\exists i\ \mathrm{s.t.}\ X_i\geq4}$ is the probability of the event \textit{“there exists four students who share the same birthday”}.
+    
+    \vspace{1.5em} \hspace{1.3em}
+    \textbf{Poisson Approximation}. 
+    
+    \hspace{1.3em}
+    Construct i.i.d. $Y_i\sim\mathtt{Poisson}\left(\frac{50}{365}\right)\ (i=1,2,...365)$ conditioned on $\sum_{i=1}^{365}Y_i=50$.
+    
+    \hspace{1.3em}
+    Let $\lambda\triangleq\frac{50}{365}$. Then we have
+    
+    \vspace{-2.7em}
+    \begin{align*}
+        \Pr{}{\exists i\ \mathrm{s.t.}\ Y_i\geq4}=1-\Pr{}{\forall i, Y_i\le3} = 1-\left[\left(\frac{1}{0!}+\frac{\lambda}{1!}+\frac{\lambda^2}{2!}+\frac{\lambda^3}{3!}\right)e^{-\lambda}\right]^{365}.
+    \end{align*}
+    
+    \vspace{0.5em} \hspace{1.3em}
+    Meanwhile, it is trivial that $\staExp{}{f(X_1,X_2,...X_{365})}=\Pr{}{\exists i\ \mathrm{s.t.}\ X_i\geq4}$ is monotonously increasing in $m$. (The more students there are, the more likely that $\staExp{}{X_i}$ are larger, which leads to higher probability that exists four students who share the same birthday). 
+    
+    \hspace{1.3em}
+    By \textbf{2.2}, we know
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \Pr{}{\exists i\ \mathrm{s.t.}\ X_i\geq4} &=\staExp{}{f(X_1,X_2,...X_n)} \\
+        &\le 2\cdot\staExp{}{f(Y_1,Y_2,...Y_n)}=2\cdot\Pr{}{\exists i\ \mathrm{s.t.}\ Y_i\geq4}\\
+        &=2-2\left[\frac{6+6\lambda+3\lambda^2+\lambda^3}{6}e^{-\lambda}\right]^{365} \\
+        &\approx 0.9578\%<1\%
+    \end{align*}
+    
+    \hspace{1.3em}
+    Thus, the probability that \textit{exists four students who share the same birthday} is at most 1\%.
+\end{proof}
+    
+
+\end{document}

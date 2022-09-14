@@ -1,0 +1,387 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\labelitemii}{\textbullet}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\staExp}[2][]{\mathbf{E}_{#1}\left[#2\right]}
+\newcommand{\bigstaExp}[2][]{\mathbf{E}_{#1}\big[#2\big]}
+\newenvironment{solution}{\begin{proof}[\indent\it Solution]}{\end{proof}}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.5}
+\title{\textbf{Stochastic Process Homework 02}}
+\author{Qiu Yihang}
+\date{Mar.07 - Mar.22, 2022}
+
+\begin{document}
+
+\maketitle
+
+\setcounter{section}{-1}
+\section{Reference}
+\hspace{2em}
+This homework is completed with the help of discussions with Sun Yilin and Ji Yikun. The completion of \textbf{2.3} is based on the notes of AI2613 last year.
+
+\section{Optimal Coupling}
+\vspace{1em}
+\begin{proof}
+Since
+
+\vspace{-2em}
+\begin{align}
+    D_{\mathrm{TV}}\left(\mu,\nu\right)=\frac{1}{2}\sum_{i\in\Omega}\left|\mu(i)-\nu(i)\right|=\sum_{i\in\Omega,\nu(i)\geq\mu(i)}\left(\nu(i)-\mu(i)\right),\label{D_TV}
+\end{align}
+
+\vspace{-0.5em} \hspace{1.3em}
+it is natural to maximize $\omega(i,i)$, i.e. set $\omega(i,i)=\min\left\{\mu(i),\nu(i)\right\}$.
+
+\hspace{1.3em}
+Considering $\mu(i)-\min\left\{\mu(i),\nu(i)\right\}=\max\left\{0,\mu(i)-\nu(i)\right\}, \nu(j)-\min\left\{\mu(j),\nu(j)\right\}=\max\{0,$ $\nu(j)-\mu(j)\}$, we construct a feasible coupling $\omega$ as follows.
+
+$$\omega(i,j)=\left\{
+\begin{array}{ll}
+    \min\left\{\mu(i),\nu(i)\right\}, & i=j \\
+    C\max\left\{0,\mu(i)-\nu(i)\right\}\max\left\{0,\nu(j)-\mu(j)\right\}, & i\neq j
+\end{array}\right.$$
+
+\vspace{3em} \hspace{1.3em}
+Now we solve $C$. We know
+
+\vspace{-2.5em}
+\begin{align*}
+    \mu(i) &= \sum_{j\in\Omega}\omega(i,j) \\
+    &= \sum_{j\neq i\in\Omega}C\max\left\{0,\mu(i)-\nu(i)\right\}\max\left\{0,\nu(j)-\mu(j)\right\} + \min\left\{\mu(i),\nu(i)\right\} \\
+    &= \min\left\{\mu(i),\nu(i)\right\} + C\max\left\{0,\mu(i)-\nu(i)\right\}\sum_{j\neq i\in\Omega}\max\left\{0,\nu(j)-\mu(j)\right\}
+\end{align*}
+
+\vspace{-1em} \hspace{3.9em}
+\textbf{CASE 01.} When $\min\left(\mu(i),\nu(i)\right)=\mu(i)$, obvious the equation above holds.
+
+\hspace{3.9em}
+\textbf{CASE 02.} When $\min\left(\mu(i),\nu(i)\right)=\nu(i)$, 
+
+\hspace{3.9em}
+by \eqref{D_TV}, we have
+
+\vspace{-2.5em}
+\begin{align*}
+    \mu(i) &= \nu(i) + C\left(\mu(i)-\nu(i)\right)\sum_{j\neq i\in\Omega, \nu(j)\geq\mu(j)}\left(\nu(j)-\mu(j)\right) \\
+    &= \nu(i) + C\left(\mu(i)-\nu(i)\right)D_{\mathrm{TV}}\left\{\mu,\nu\right\}
+\end{align*}
+
+\vspace{-1em}
+\hspace{3.9em}
+Thus,
+
+\vspace{-1em}
+$$C=\frac{1}{D_{\mathrm{TV}}\left(\mu,\nu\right)}$$
+
+\vspace{-1em} \hspace{3.9em}
+i.e.
+
+\vspace{-2em}
+\begin{align*}
+    \omega(i,j)=\left\{
+    \begin{array}{ll}
+    \min\left\{\mu(i),\nu(i)\right\}, & i=j \\
+    \frac{1}{D_{\mathrm{TV}}\left(\mu,\nu\right)}\max\left\{0,\mu(i)-\nu(i)\right\}\max\left\{0,\nu(j)-\mu(j)\right\}, & i\neq j
+    \end{array}\right.
+\end{align*}
+
+\vspace{-0.5em} \hspace{3.9em}
+By the symmetry of $\mu$ and $\nu$, $i$ and $j$ in the equation, we know 
+
+\vspace{-1.2em}
+$$\nu(j) = \sum_{i\in\Omega}\omega(i,j)$$
+
+\vspace{-0.5em} \hspace{3.9em}
+also holds. Thus, $\omega$ is a valid coupling.
+
+\vspace{3em} \hspace{1.3em}
+Now we prove $\mathbf{Pr}_{(X,Y)\sim\omega}\left[X\neq Y\right]=D_{\mathrm{TV}}\left(\mu,\nu\right)$.
+
+\vspace{-2.5em}
+\begin{align*}
+    \mathbf{Pr}_{(X,Y)\sim\omega}\left[X=Y\right] &= \sum_{i\in\Omega}\omega_(i,i) \\
+    &= \sum_{i\in\Omega}\min\left\{\mu(i),\nu(i)\right\} \\
+    &= \sum_{i\in\Omega, \mu(i)\geq \nu(i)}\nu(i) + \sum_{i\in\Omega, \mu(i)<\nu(i)}\mu(i) \\
+    &= \sum_{i\in\Omega} \nu(i) + \sum_{i\in\Omega, \nu(i)\geq\mu(i)}(\mu(i)-\nu(i)) \\
+    &= 1 - \sum_{i\in\Omega, \nu(i)\geq\mu(i)}(\nu(i)-\mu(i)) \\
+    &= 1 - D_{\mathrm{TV}}\left(\mu,\nu\right)\qquad\qquad\qquad\qquad(\mathrm{by\ }\eqref{D_TV})
+\end{align*}
+
+\vspace{-1.2em} \hspace{3.9em}
+i.e.,
+
+\vspace{-3em}
+\begin{align*}
+    \mathbf{Pr}_{(X,Y)\sim\omega}\left[X\neq Y\right] = 1 - \mathbf{Pr}_{(X,Y)\sim\omega}\left[X=Y\right] = D_{\mathrm{TV}}\left(\mu,\nu\right).
+\end{align*}
+
+\vspace{2em} \hspace{1.3em}
+Thus, there exists a coupling
+
+\vspace{-1.8em}
+\begin{align*}
+    \omega(i,j)=\left\{
+    \begin{array}{ll}
+    \min\left\{\mu(i),\nu(i)\right\}, & i=j \\
+    \frac{1}{D_{\mathrm{TV}}\left(\mu,\nu\right)}\max\left\{0,\mu(i)-\nu(i)\right\}\max\left\{0,\nu(j)-\mu(j)\right\}, & i\neq j
+    \end{array}\right.
+\end{align*}
+
+\hspace{1.3em}
+s.t. $\mathbf{Pr}_{(X,Y)\sim\omega}\left[X\neq Y\right]=D_{\mathrm{TV}}\left(\mu,\nu\right)$.
+\end{proof}
+
+\newpage
+
+
+\section{Stochastic Dominance}
+\vspace{1em}
+
+\subsection{Binomial Distribution Case}
+\vspace{1em}
+
+\begin{proof}
+First we prove the sufficiency.
+
+\hspace{1.3em}
+Assume $p\geq q$. Let $X\sim\mathtt{Binom}(n,p), Y\sim\mathtt{Binom}(n,q).$ 
+
+\hspace{1.3em}
+For any $a\in\Omega$,
+
+\hspace{1.3em}
+\textbf{CASE 01.} When $a\geq n+1$, $\mathbf{Pr}\left[X\geq a\right]=\mathbf{Pr}\left[Y\geq a\right]=0.$
+
+\hspace{1.3em}
+\textbf{CASE 02.} When $a\le -1$, $\mathbf{Pr}\left[X\geq a\right]=\mathbf{Pr}\left[Y\geq a\right]=1.$
+
+\hspace{1.3em}
+\textbf{CASE 03.} When $1\le a\le n$, we have
+
+\vspace{-2.5em}
+\begin{align*}
+   \mathbf{Pr}\left[X\geq a\right] &= \sum_{i=a}^{n}\mathbf{Pr}\left[X=i\right] = \sum_{i=a}^n\binom{n}{i}p^i(1-p)^{n-i}
+   \\
+   \mathbf{Pr}\left[Y\geq a\right] &= \sum_{i=a}^{n}\mathbf{Pr}\left[Y=i\right] = \sum_{i=a}^n\binom{n}{i}q^i(1-q)^{n-i}
+\end{align*}
+
+\vspace{-1em} \hspace{1.3em}
+Consider $f(x)=\sum_{i=a}^{n}\binom{n}{i}x^i(1-x)^{n-i}.$ When $x\in[0,1],$
+
+\vspace{-2.25em}
+\begin{align*}
+    \frac{\mathrm{d}f}{\mathrm{d}x} &= nx^{n-1}+\sum_{i=a}^{n-1} \binom{n}{i}\left(ix^{i-1}(1-x)^{n-i}-(n-i)x^i(1-x)^{n-i-1}\right) \\
+    &= nx^{n-1}+\sum_{i=a}^{n-1}\binom{n}{i}\left(i-nx)x^{i-1}(1-x)^{n-i-1}\right) \geq 0
+\end{align*}
+
+\vspace{-1em} \hspace{6em}
+i.e. $f(x)$ is monotonously increasing on $[0,1].$ 
+
+\vspace{0.3em} \hspace{1.3em}
+Since $p,q\in[0,1],\ p\geq q$, we know $f(p)\geq f(q)$, i.e. 
+
+\vspace{-1.5em}
+$$\mathbf{Pr}\left[X\geq a\right]\geq\mathbf{Pr}\left[Y\geq a\right].$$
+
+\vspace{-0.75em} \hspace{1.3em}
+Thus, for any $a\in\Omega,\ \mathbf{Pr}\left[X\geq a\right]\geq\mathbf{Pr}\left[Y\geq a\right]$, i.e. $\mathtt{Binom}(n,p)\succeq\mathtt{Binom}(n,q).$
+
+\vspace{5em} \hspace{1.3em}
+Now we prove the necessity.
+
+\hspace{1.3em}
+Assume $\mathtt{Binom}(n,p)\succeq\mathtt{Binom}(n,q)$. Let $X\sim\mathtt{Binom}(n,p), Y\sim\mathtt{Binom}(n,q).$ 
+
+\hspace{1.3em}
+Then we have
+
+\vspace{-2.5em}
+\begin{align*}
+    \mathbf{Pr}\left[X\geq n\right]\geq\mathbf{Pr}\left[Y\geq n\right] &\Longleftrightarrow \mathbf{Pr}\left[X= n\right]\geq\mathbf{Pr}\left[Y= n\right] \\
+    &\Longleftrightarrow p^n \geq q^n \\
+    &\Longleftrightarrow p \geq q.
+\end{align*}
+
+\vspace{3em}
+\hspace{1.3em}
+In conclusion, for any $p,q\in[0,1], \mathtt{Binom}(n,p)\succeq\mathtt{Binom}(n,q)$ \textbf{iff.} $p\geq q.$
+\end{proof}
+
+
+\subsection{Monotone Coupling}
+\vspace{1em}
+\begin{proof}
+    First we prove the sufficiency.
+    
+    \hspace{1.3em}
+    Assume exists a monotone coupling $\omega$ of $\mu$ and $\nu$. Then we know 
+    
+    \vspace{-1.5em}
+    $$1 = \mathbf{Pr}_{(X,Y)\sim\omega}\left[X\geq Y\right] = \sum_{i\in\Omega} \sum_{j\le i}\omega(i,j) = 1 = \sum_{i\in\Omega}\sum_{j\in\Omega}\omega(i,j)$$
+    
+    \vspace{-1em} \hspace{1.3em}
+    Thus, when $i<j,\ \omega(i,j)=0.$
+    
+    \vspace{-3em}
+    \begin{align*}
+        \forall a\in \Omega,\quad \mathbf{Pr}_{X\sim\mu}\left[X\geq a\right] &= \mathbf{Pr}_{(X,Y)\sim\omega}\left[X\geq a\right] = \sum_{i\in\Omega, i\geq a\ }\mathbf{Pr}_{(X,Y)\sim\omega}\left[X=i\right] \quad \\
+        &= \sum_{i\in\Omega, i\geq a\ }\sum_{j\in\Omega}\omega(i,j) 
+        \ = \sum_{j\in\Omega\ } \sum_{i\in\Omega, i\geq a} \omega(i,j) \\
+        &\geq \sum_{j\in\Omega, j\geq a\ } \sum_{i\in\Omega, i\geq j} \omega(i,j) \ \ = \sum_{j\in\Omega, j\geq a\ } \sum_{i\in\Omega, i\geq j} \omega(i,j) + 0\\
+        & = \sum_{j\in\Omega, j\geq a\ } \sum_{i\in\Omega, i\geq j} \omega(i,j)\ + \sum_{j\in\Omega, j\geq a\ } \sum_{i\in\Omega, i<j} \omega(i,j) \\
+        &= \sum_{j\in\Omega, j\geq a\ } \sum_{i\in\Omega} \omega(i,j)\  = \sum_{j\in\Omega, j\geq a} \mathbf{Pr}_{(X,Y)\sim\omega}\left[Y=j\right] \\
+        &= \mathbf{Pr}_{(X,Y)\sim\omega}\left[Y\geq a\right] \\
+        &= \mathbf{Pr}_{Y\sim\nu}\left[Y\geq a\right].
+    \end{align*}
+
+    \vspace{-1em} \hspace{1.3em}
+    i.e. \qquad $\mu\succeq\nu.$
+    
+    
+    \vspace{3em} \hspace{1.3em}
+    Now we prove the necessity, i.e. to construct a coupling $\omega$ s.t. $\mathbf{Pr}_{(X,Y)\sim\omega}\left[X\geq Y\right]=1.$
+    
+    \hspace{1.3em}
+    Assume $\mu\succeq\nu$. We construct $\omega$ as follows. 
+    
+    \hspace{1.3em}
+    First we set $\omega(i,j)=0$ for $i<j.$
+    
+    \hspace{1.3em}
+    We have $\mu(n)=\mathbf{Pr}_{X\sim\mu}\left[X\geq n\right]\geq\mathbf{Pr}_{Y\sim\nu}\left[Y\geq n\right]=\nu(n).$ Set $\omega(n,n)=\nu(n).$
+    
+    \hspace{1.3em}
+    For the remaining part, we determine $\omega(i,j)$ in the following order
+    
+    \vspace{-3em}
+    \begin{align*}
+        &\omega(n,n-1),\omega(n-1,n-1),\\
+        &\omega(n,n-2),\omega(n-1,n-2),\omega(n-2,n-2),
+        \\
+        &...,\\
+        &\omega(n,1),\omega(n-1,1),...,\omega(1,1)
+    \end{align*}
+    
+    \vspace{-1em} \hspace{1.3em}
+    by the following method.
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \omega(i,j) = \min\left\{\mu(i)-\sum_{k=j+1}^n\omega(i,k),\quad \nu(j)-\sum_{k=i+1}^n\omega(k,j)\right\}
+    \end{align*}
+    
+    \vspace{-0.5em} \hspace{1.3em}
+    We prove $\omega$ is a valid coupling as follows. Obvious $\mu(i)=\sum_{j\in\Omega}\omega(i,j),\nu(j)=\sum_{j\in\Omega}\omega(i,j),$ which is maintained and guaranteed by how we determined $\omega(i,j)$.
+    
+    \hspace{1.3em}
+    Meanwhile, $\omega(i,j)\geq0,$ (since $\sum_{k=j+1}^n\omega(i,k)\le\mu(i),\sum_{k=i+1}^n\omega(k,j)\le\nu(j)$).
+    
+    \hspace{1.3em}
+    Thus, $\omega$ is a valid coupling s.t. $\mathbf{Pr}_{(X,Y)\sim\omega}\left[X\geq Y\right]=1.$
+    
+    \vspace{2em} \hspace{1.3em}
+    In conclusion, $\mu\succeq\nu$ \textbf{iff.} exists a coupling $\omega$ s.t. $\mathbf{Pr}_{(X,Y)\sim\omega}\left[X\geq Y\right]=1.$
+\end{proof}
+
+\vspace{9em}
+\subsection{Erdős–Rényi Model Random Graph}
+\vspace{1em}
+
+\begin{itemize}
+    \item \textit{The completion of this problem is based on the notes of}\textbf{ AI2613 }\textit{last year.}
+\end{itemize}
+
+\vspace{2em}
+\begin{proof}
+We can generate $G\sim\mathcal{G}(n,p)$ and $H\sim\mathcal{G}(n,q)$ simultaneously, where $p,q\in[0,1],\ p\geq q.$
+
+\hspace{1.3em}
+For each pair of vertices $(u,v)$, we independently pick $r_{\left\{u,v\right\}}\sim\mathtt{Uniform}(0,1)$. We determine whether graph $G$ and $H$ has edge $\left\{u,v\right\}$ as follows.
+
+\vspace{-2em}
+\begin{align*}
+    \left\{\begin{array}{ll}
+        \mathrm{both\ }G\mathrm{\ and\ }H\mathrm{\ have\ edge}\left\{u,v\right\}, & r_{\left\{u,v\right\}}\in[0,q] \\
+        \mathrm{only\ }G\mathrm{\ has\ edge}\left\{u,v\right\}, & r_{\left\{u,v\right\}}\in(q,p] \\
+        \mathrm{neither\ has\ edge}\left\{u,v\right\}, & r_{\left\{u,v\right\}}\in(p,1]
+    \end{array}\right.
+\end{align*}
+
+\vspace{-0.5em} \hspace{1.3em}
+Obvious $H$ is always a subgraph of $G$. If $H$ is connected, $G$ is for sure connected.
+
+\hspace{1.3em}
+Thus, $\mathbf{Pr}\left[G\mathrm{\ is\ connected}\right]\geq\mathbf{Pr}\left[H\mathrm{\ is\ connected}\right]$.
+
+\vspace{1em} \hspace{1.3em}
+Therefore, for any $p,q\in[0,1]$ s.t. $p\geq q$, 
+
+\vspace{-1em}
+$$\mathbf{Pr}_{G\sim\mathcal{G}(n,p)}\left[G\mathrm{\ is\ connected}\right]\geq\mathbf{Pr}_{H\sim\mathcal{G}(n,q)}\left[H\mathrm{\ is\ connected}\right].$$
+
+\hspace{38em}
+\textit{Qed.}
+\end{proof}
+
+
+\newpage
+
+\section{Total Variation Distance is Non-Increasing}
+\vspace{1em}
+
+\begin{proof}
+    By \textbf{Coupling Lemma}, we know
+    
+    \vspace{-1em}
+    $$\Delta(t)\le\mathbf{Pr}_{(X,Y)\sim\omega_t}\left[X\neq Y\right],$$
+    
+    \vspace{-0.3em}\hspace{5.3em}
+    where $\omega_t$ is a coupling of $\mu_t$ and $\pi$.
+    
+    \vspace{0.7em} \hspace{1.3em}
+    We construct a coupling $\omega_{t}$ as follows, where $(X_t,Y_t)\sim\omega_t,(X_{t+1},Y_{t+1})\sim\omega_{t+1}$.
+    
+    \vspace{-2.2em}
+    \begin{align*}
+        \left\{\begin{array}{ll}
+            X_{t+1}=X_t=Y_t=Y_{t+1}, & \mathrm{if\ }X_t=Y_t \\
+            X_{t+1}\sim\mu_t,\ Y_{t+1}\sim\pi, & \mathrm{if\ }X_t\neq Y_t
+        \end{array}\right.
+    \end{align*}
+    
+    \hspace{1.3em}
+    Then we have
+    
+    \vspace{-3em}
+    \begin{align*}
+        \Delta(t+1) &\le \mathbf{Pr}_{(X,Y)\sim\omega_{t+1}}\left[X\neq Y\right] \\
+        &= \mathbf{Pr}\left[X_{t+1}\neq Y_{t+1}\right] \\
+        &\le \mathbf{Pr}\left[X_{t}\neq Y_{t}\right] \\
+        &= \Delta(t).
+    \end{align*}
+    
+    \hspace{38em}
+    \textit{Qed.}
+\end{proof}
+
+
+
+
+
+\end{document}
