@@ -40,3 +40,6 @@ Please enjoy. Comments and suggestions are welcome.
 大二下的时候，我开始试着用latex作答作业了，所以这部分的作业也会上传`tex`文件。
 
 总之欢迎留言啦（或者找我扩列（？））
+
+**NOTE**
+对同专业的学弟学妹：部分课程的授课学期有所改动，如算法分析与设计（Algorithm）在20届是大二下的课程，而从21届起在大二上授课。部分课程可能已经不再开设，如随机过程（Stochastic Process），我们（20届）貌似是有这节课的最后一届。
