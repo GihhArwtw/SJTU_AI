@@ -1,0 +1,423 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{bbm}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Algorithm Homework 05}}
+\author{Qiu Yihang}
+\date{May 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Running Time of Randomized Algorithm}
+\vspace{1em}
+\subsection{Expected Running Time of the Best Algorithm for $\boldsymbol{\Pi}$}
+\vspace{1em}
+\begin{proof}
+    Define $\mathbf{A}\triangleq\set{\overline{A}\mid\overline{A}\text{ is a randomized algorithm solving }\Pi.}$
+    Note that $\mathcal{A}\subset\mathbf{A}$.
+
+    \vspace{1em} \hspace{1.3em}
+    \textbf{CASE 01.} $\overline{A}$ is a deterministic algorithm, i.e. $\overline{A}\in\mathcal{A}$. 
+    
+    \hspace{1.3em}
+    Obvious exists $\mathscr{A}$,
+    
+    \vspace{-2.5em}
+    $$\forall A\in\mathcal{A},\quad\mathscr{A}(A)=\left\{\begin{array}{ll}
+        1, & A=\overline{A} \\
+        0, & \text{otherwise}
+    \end{array}\right.\text{ s.t. }\staExp{}{T(\overline{A},x)}=T(\overline{A},x)=\staExp{A\sim\mathscr{A}}{T(A,x)}.\quad$$
+    
+    \vspace{0.5em} \hspace{1.3em}
+    \textbf{CASE 02.} $\overline{A}\notin\mathcal{A}$.
+    
+    \hspace{1.3em}
+    Assume the running time of $\overline{A}$ is only related to random variables $Y_1,Y_2,...Y_{N_{\overline{A}}}.$ 
+    In other words, if $Y_1,Y_2,...Y_{N_{\overline{A}}}$ are given fixed values, $T(x,\overline{A})$ is deterministic for given $x$.
+    
+    \hspace{1.3em}
+    Let $\overline{A}(y_1,y_2,...y_{N_{\overline{A}}})$ be the $\overline{A}$ when $Y_1=y_1,Y_2=y_2,...Y_{N_{\overline{A}}}=y_{N_{\overline{A}}}$.
+    
+    \hspace{1.3em}
+    Obvious for any $\overline{A}\in\mathbf{A}$, $N_{\overline{A}}<\infty$. 
+    (Otherwise, $\overline{A}$ can not terminate in finite time, i.e. $\overline{A}\notin\mathbf{A}.$)
+    
+    \hspace{1.3em}
+    Then $\forall y_1,y_2,...y_{N_{\overline{A}}}$, $\overline{A}(y_1,y_2,...y_{N_{\overline{A}}})\in\mathcal{A}$.
+    
+    \hspace{1.3em}
+    Thus, for a given input $x$,
+    
+    \vspace{-1.3em}
+    $$\staExp{}{T(\overline{A},x)}=\staExp{Y_1,Y_2,...Y_{N_{\overline{A}}}}{T\left(\overline{A}\left(Y_1,Y_2,...Y_{N_{\overline{A}}}\right),x\right)}.$$
+    
+    \vspace{-0.5em} \hspace{1.3em}
+    We can construct a distribution $\mathscr{A}$,
+    
+    \vspace{-2em}
+    $$\forall A\in\mathcal{A},\quad\mathscr{A}(A)=\sum_{y_1,y_2,...y_{N_{\overline{A}}}\text{ s.t. }\overline{A}(y_1,y_2,...y_{N_{\overline{A}}})=A}\Pr{}{Y_1=y_1,Y_2=y_2,...Y_{N_{\overline{A}}}=y_{N_{\overline{A}}}}.$$
+    
+    \vspace{-1.2em} \hspace{1.5em}
+    s.t.
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \staExp{A\sim\mathscr{A}}{T(A,x)} &= \sum_{A\in\mathcal{A}}\mathscr{A}(A)T(A,x) \\ &=\sum_{y_1,y_2,...y_{N_{\overline{A}}}}\Pr{}{Y_1=y_1,Y_2=y_2,...Y_{N_{\overline{A}}}=y_{N_{\overline{A}}}}T(\overline{A}(y_1,y_2,...y_{N_{\overline{A}}}),x)\\
+        &=\staExp{Y_1,Y_2,...Y_{N_{\overline{A}}}}{T\left(\overline{A}\left(y_1,y_2,...y_{N_{\overline{A}}}\right),x\right)} \\
+        &=\staExp{}{T(\overline{A},x)}.
+    \end{align*}
+    
+    \hspace{1.3em}
+    In conclusion, for any $\overline{A}$, we can find a distribution $\mathscr{A}$ over $\mathcal{A}$ s.t. the expected running time of $\overline{A}$ on $x$ is $T(\overline{A},x)=\staExp{A\sim\mathscr{A}}{T(A,x)}.$
+    
+    \vspace{-2em}
+    \qedsymbol
+    
+    \vspace{2em} \hspace{1.3em}
+    Therefore, the expected running time of the best algorithm of $\Pi$ is
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        T_{\mathtt{best}} &= \underset{\mathtt{randomized\ algorithm\ }\overline{A}\text{ solving }\Pi}{\min}\ \underset{x\in\mathcal{X}}{\max}\  \staExp{}{T(\overline{A},x)} \\
+        &= \underset{\overline{A}\in\mathbf{A}}{\min}\ \underset{x\in\mathcal{X}}{\max}\ \staExp{}{T(\overline{A},x)} = \underset{\mathtt{distribution\ }\mathscr{A}\mathtt{\ over\ }\mathcal{A}}{\min}\ \underset{x\in\mathcal{X}}{\max}\ \staExp{A\sim\mathscr{A}}{T(A,x)}
+    \end{align*}
+    
+    \vspace{-3.3em}
+\end{proof}
+
+\vspace{2em}
+\subsection{Yao's Minimax Principle}
+\vspace{1em}
+\begin{proof}
+    Consider a game with two player, $\mathcal{P}_A$ and $\mathcal{P}_X$.
+    
+    \hspace{1.3em}
+    Player $\mathcal{P}_A$ can determine the algorithm $A$ while player $\mathcal{P}_X$ can determine the input $X$. Let $\mathcal{P}_X$ be the row player and $\mathcal{P}_A$ be the column player. When $\mathcal{P}_A$ pick an algorithm $A\in\mathcal{A}$ and $\mathcal{P}_X$ pick an input $X\in\mathcal{X}$, both of them can receive a payoff of $T(A,X)$.
+    
+    \hspace{1.3em}
+    Then strategies of $\mathcal{P}_A$ and $\mathcal{P}_X$ are actually distribution $\mathscr{A}$ over $\mathcal{A}$ and distribution $\mathscr{X}$ over $\mathcal{X}$. 
+    
+    \hspace{1.3em}
+    The goal of $\mathcal{P}_X$ is to maximize the expected payoff of $\mathcal{P}_X$, i.e.
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \underset{\mathtt{distribution\ }\mathscr{X}\mathtt{\ over\ }\mathcal{X}}{\max}\ \underset{\mathtt{distribution\ }\mathscr{A}\mathtt{\ over\ }\mathcal{A}}{\min}\ \sum_{a\in\mathcal{A},x\in\mathcal{X}}T(a,x)\mathscr{X}(x)\mathscr{A}(a) &= \underset{\mathtt{distribution\ }\mathscr{X}\mathtt{\ over\ }\mathcal{X}}{\max}\ \underset{a\in \mathcal{A}}{\min}\ \sum_{x\in\mathcal{X}}T(a,x)\mathscr{X}(x)
+        \\
+        &= \underset{\mathtt{distribution\ }\mathscr{X}\mathtt{\ over\ }\mathcal{X}}{\max}\ \underset{a\in \mathcal{A}}{\min}\ \staExp{X\sim\mathscr{X}}{T(a,X)}
+    \end{align*}
+    
+    \hspace{1.3em}
+    The goal of $\mathcal{P}_A$ is to minimize the expected payoff of $\mathcal{P}_X$, i.e.
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \underset{\mathtt{distribution\ }\mathscr{A}\mathtt{\ over\ }\mathcal{A}}{\min}\ \underset{\mathtt{distribution\ }\mathscr{X}\mathtt{\ over\ }\mathcal{X}}{\max}\ \sum_{a\in\mathcal{A},x\in\mathcal{X}}T(a,x)\mathscr{X}(x)\mathscr{A}(a)&= \underset{\mathtt{distribution\ }\mathscr{A}\mathtt{\ over\ }\mathcal{A}}{\min}\ \underset{x\in \mathcal{X}}{\max}\ \sum_{a\in\mathcal{A}}T(a,x)\mathscr{A}(a) \\
+        &= \underset{\mathtt{distribution\ }\mathscr{A}\mathtt{\ over\ }\mathcal{A}}{\min}\ \underset{x\in \mathcal{X}}{\max}\ \staExp{A\sim\mathscr{A}}{T(A,x)}
+    \end{align*}
+    
+    
+    \hspace{1.3em}
+    By \textbf{Von Neumann's Minimax Theorem}, we have
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        &\underset{\mathtt{distribution\ }\mathscr{X}\mathtt{\ over\ }\mathcal{X}}{\max}\ \underset{\mathtt{distribution\ }\mathscr{A}\mathtt{\ over\ }\mathcal{A}}{\min}\ \sum_{a\in\mathcal{A},x\in\mathcal{X}}T(a,x)\mathscr{X}(x)\mathscr{A}(a) \\
+        =&\underset{\mathtt{distribution\ }\mathscr{A}\mathtt{\ over\ }\mathcal{A}}{\min}\ \underset{\mathtt{distribution\ }\mathscr{X}\mathtt{\ over\ }\mathcal{X}}{\max}\ \sum_{a\in\mathcal{A},x\in\mathcal{X}}T(a,x)\mathscr{X}(x)\mathscr{A}(a)
+    \end{align*}
+    
+    \vspace{-0.75em} \hspace{1.3em}
+    i.e.
+    
+    \vspace{-1em}
+    $$\underset{\mathtt{distribution\ }\mathscr{X}\mathtt{\ over\ }\mathcal{X}}{\max}\ \underset{a\in \mathcal{A}}{\min}\ \staExp{X\sim\mathscr{X}}{T(a,X)} =  \underset{\mathtt{distribution\ }\mathscr{A}\mathtt{\ over\ }\mathcal{A}}{\min}\ \underset{x\in \mathcal{X}}{\max}\ \staExp{A\sim\mathscr{A}}{T(A,x)}$$
+    
+    \vspace{-2.55em}
+\end{proof}
+
+\subsection{Locating Problem}
+\vspace{1em}
+\begin{solution}
+    In any deterministic algorithm, we probe $A[i]$ in a fixed order of $i$. 
+    
+    \hspace{2.6em}
+    The worst case is that $x$ will be probed in the last place of the order. Note that if the first $(n-1)$ probing does not give $x$, we already know the only index not visited yet is the index of $x$. 
+    
+    \hspace{2.6em}
+    Thus, the worst running time for a deterministic algorithm is $n-1$. \qedsymbol
+    
+    \vspace{1em} \hspace{2.6em}
+    To improve the performance, we introduce randomization. Instead of probing $A[i]$ in a fixed order of $i$, we uniformly pick an unvisited $i$, i.e. $A[i]$ has not been probed yet, and probe $A[i]$ to see if $A[i]=x$. Note that after at most $(n-1)$ probings, we can determine the index of $x$.
+    
+    \hspace{2.6em}
+    For any fixed $x$, the expected time cost of the randomized algorithm is 
+    
+    $$T(n)=\frac{1}{n}\left(\sum_{k=1}^{n-1}k+(n-1)\right)=\frac{1}{n}\left[\left(\sum_{k=1}^nk\right)-1\right]=\frac{n+1}{2}-\frac{1}{n}.$$
+    
+    \vspace{-2.7em}
+\end{solution}
+
+\vspace{3em}
+\subsection{The Lower Bound of Running Time on Locating Problem}
+\vspace{1em}
+\begin{proof}
+    By \textbf{1.1} and \textbf{1.2} (Yao's Minimax Principle), we know
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        T_{\mathtt{best}} &= \underset{\mathtt{distribution}\ \mathscr{A}\mathtt{\ over\ }\mathcal{A}}{\min}\ \underset{x\in\mathcal{X}}{\max}\ \staExp{A\sim\mathscr{A}}{T(A,x)} \\
+        &= \underset{\mathtt{distribution\ }\mathscr{X}\mathtt{\ over\ }\mathcal{X}}{\max}\ \underset{a\in \mathcal{A}}{\min}\ \staExp{X\sim\mathscr{X}}{T(a,X)} \\
+        &= \underset{\mathtt{distribution\ }\mathscr{X}\mathtt{\ over\ }\mathcal{X}}{\max}\underset{\mathtt{where\ }\set{i_1,i_2,...i_n}=\set{1,2,...n},\mathscr{X}(i_1)\geq\mathscr{X}(i_2)\geq...\mathscr{X}(i_n)}{\left(\sum_{k=1}^{n-1}k\cdot\mathscr{X}(i_k)+(n-1)\cdot\mathscr{X}(i_n)\right)} \\
+        &= \sum_{k=1}^{n-1}k\cdot\frac{1}{n} + (n-1)\frac{1}{n} \\
+        &= \frac{n+1}{2}-\frac{1}{n}
+    \end{align*}
+    
+    \hspace{1.3em}
+    Thus, any randomized algorithm for the problem in \textbf{1.3} costs at least $\left(\frac{n+1}{2}-\frac{1}{n}\right)$ in expectation in the worst case. \qedsymbol
+    
+    \hspace{1.3em}
+    Our algorithm in \textbf{1.3} also matches this lower bound.
+\end{proof}
+
+\vspace{1em}
+\section{Perfect Matching}
+\vspace{1em}
+\subsection{Solution by Max-Flow}
+\vspace{1em}
+\begin{solution}
+    We can convert the problem into a max-flow problem as follows.
+    
+    \hspace{2.6em}
+    First consider $|V_1|$ and $|V_2|$. If $|V_1|\neq|V_2|$, obvious there does not exist a perfect matching.
+    
+    \hspace{2.6em}
+    When $|V_1|=|V_2|$, construct a graph $G'=(V',E',\mathtt{capacity})$. 
+    
+    \hspace{2.6em}
+    Construct source vertex $s$ and sink vertex $t$. Then $V'=V1\cup V_2\cup\set{s,t}.$
+    
+    \hspace{2.6em}
+    Preserve all edges in $E$ with capacity $+\infty$. Add edges from $s$ to all $u\in V_1$ with capacity $1$. Add edges from all $v\in V_2$ to $t$ with capacity $1$.
+    
+    \hspace{2.6em}
+    Then the original problem is equivalent to computing the max-flow on the graph $G'$. If the max-flow is exactly $|V_2|$ (which is also $|V_1|$), there exists a perfect matching.
+\end{solution}
+
+\vspace{.5em}
+
+\subsection{Hall's Condition}
+\vspace{.5em}
+\textit{\textbf{Assumption.} $|V_1|=|V_2|.$}
+
+\begin{proof}
+    Define $N_M(S)\triangleq\set{u\in V_2\mid \set{u,v}\in M\text{ for some }v\in S}.$
+    
+    \hspace{1.3em}
+    \underline{\textbf{Proof of Necessity.}} When graph $G$ contains a perfect matching $M$, for any $v\in V_1$, exists exactly one edge in $M$, i.e. exists exactly one neighbor in $V_2$. Thus, $\forall S\subset V_1,\ |N_M(S)|=|S|$.
+    
+    \hspace{1.3em}
+    We know $M\subset E\Longrightarrow \forall S\subset V_1,\ N_M(S)\subset N(S)$, i.e. $\forall S\subset V_1,\ |N(S)|\geq|N_M(S)|=|S|.$ \whiteqed
+    
+    \vspace{1em} \hspace{1.3em}
+    \underline{\textbf{Proof of Sufficiency.}} Consider the min cut on the graph $G'$.
+    
+    \hspace{1.3em}
+    Since $(\set{s},V_1\cup V_2\cup\set{t})$ is a cut with $\mathtt{capacity}\left((\set{s},V_1\cup V_2\cup\set{t})\right)=\mathtt{degree}(s)=|V_1|$, we know the min cut is no larger than $|V_1|$. Now we prove that the min cut is exactly $|V_1|$ by contradiction.
+    
+    \hspace{1.3em}
+    Assume exists a cut $\mathtt{cut}^*\triangleq(\set{s}\cup A_2\cup B_2,\set{s}\cup A_1\cup B_1)$ s.t. $\mathtt{capacity}(\mathtt{cut}^*)<|V_1|$, where $A_1\cap A_2=\varnothing, A_1\cup A_2=V_1, B_1\cap B_2=\varnothing, B_1\cup B_2=V_2$. 
+    
+    \hspace{1.3em}
+    Obvious, $\forall e\in\mathtt{cut}^*,\ e\notin E$. Otherwise, $\mathtt{capacity}(\mathtt{cut}^*)\geq+\infty>|V_1|$.
+    
+    \hspace{1.3em}
+    Thus, any edge in $\mathtt{cut}^*$ is either from $s$ to some $v\in V_1$ or from some $u\in V_2$ to $t$. Then we know there are no edges between $A_2$ and $B_1$. Also, $\mathtt{capacity}(\mathtt{cut}^*)=|A_1|+|B_2|<|V_1|=|V_2|$.
+    
+    \hspace{1.3em}
+    This yields $|B_2|-|A_2| = |B_2|-|V_1|+|A_1| < |V_1|-|V_1|=0\Longrightarrow |B_2|<|A_2|.$ 
+    
+    \hspace{1.3em}
+    There are no edges between $A_2$ and $B_1\Longrightarrow N(A_2)\subset V_2\setminus B_1=B_2$, i.e. $|N(A_2)|\le|B_2|<|A_2|$.
+    
+    \hspace{1.3em}
+    Thus, exists $S=A_2\subset V_1$ s.t. $|N(S)|<|S|$. \underline{\textbf{Contradiction}} to $\forall S\subset V_1, |N(S)|\geq|S|$.
+    
+    \hspace{1.3em}
+    Therefore, the min cut on graph $G'$ is exactly $|V_1|.$ By \textbf{Max-flow Min-cut Thm.}, we know the max flow on graph $G'$ is $|V_1|$. By \textbf{2.1}, we know exists a perfect matching.
+    
+    \vspace{2em} \hspace{1.3em}
+    In conclusion, graph $G$ contains a perfect matching \underline{\textbf{iff.}} $\forall S\subset V_1,\ |N(S)|\geq|S|$.
+\end{proof}
+
+
+\vspace{1em}
+\section{Debt Network}
+\vspace{1em}
+\begin{proof}
+    Inspired by the process of \textbf{Fold-Fulkerson} Algorithm, we design the following algorithm to remove cycles from the debt network to convert it into one with $(n-1)$ edges.
+    
+    \begin{itemize}
+        \item[]
+        \begin{enumerate}
+        \setstretch{1.35}
+        \item Initialization: $G^{(0)}=G,\ t\gets0.$
+        \item Regard $G^{(t)}=(V,E^{(t)},w^{(t)})$ as an undirected graph. Try to find a cycle $C_t$ on $G^{(t)}$. 
+        
+        If cannot find such cycle, jump to step 6.
+        
+        \item Find the edge $e^*=\set{u^*,v^*}\in C_t$ with minimum weight. Let $w^* = w^{(t)}(u^*,v^*).$
+        
+        Let the direction of $C_t$ be the same as the direction of $e^*$, i.e. $C: v_0=u^*\rightarrow v_1=v^*\rightarrow v_2 \rightarrow...\rightarrow v_k=u.$
+        
+        \item Update the weight of all edges in $C_t$. $G^{(t+1)}\gets G^{(t)}=(V,E^{(t)},w^{(t)}).$
+        
+        For each edge $e$ in the cycle $C_t$,
+        \begin{itemize}
+            \setstretch{1.5}
+            \item[$\bullet$] If $e=\set{v_i,v_{i+1}}$ for some $i$, $w^{(t+1)}(v_i,v_{i+1})\gets w^{(t)}(v_i,v_{i+1})-w^*.$
+            
+            If $w^{(t+1)}(v_i,v_{i+1})$ is $0$ after the update, remove edge $\set{v_i,v_{i+1}}$ from $G^{(t+1)}$.
+            \item[$\bullet$] If $e=\set{v_{i+1},v_i}$ for some $i$, $w^{(t+1)}(v_{i+1},v_i)\gets w^{(t)}(v_{i+1},v_i)+w^*$.
+        \end{itemize}
+        
+        \setstretch{1.35}
+        \item $t\gets t+1$. Jump to step 2.
+        
+        Repeat step 2-5 on the updated graph $G^{(t)}$ (here $t$ is already incremented).
+        
+        \item Suppose $t=T$ when the algorithm arrives at step 6. 
+        
+        We know $G^{(T)}$ contains no cycle when regarded as an undirected graph. 
+        
+        Obvious there are at most $(n-1)$ edges in $G^{(T)}$. 
+        
+        Then $G^{(T)}$ provides how debts can be settled with at most $(n-1)$ person-to-person payments, i.e. $u$ pays $v$ money with $w(u,v)$ amount if $\set{u,v}\in E^{(T)}$.
+        
+    \end{enumerate}
+    \end{itemize}
+    
+    \vspace{1.5em} \hspace{1.3em}
+    Now we prove the correctness of the algorithm above, i.e. to prove that for any person, his or her total payment according to $G^{(T)}$ is exactly the same as the total payment according to $G$.
+    
+    \hspace{1.3em}
+    Define $\mathtt{pay}_{t}(u)\triangleq\sum_{v:\set{u,v}\in E^{(t)}}w(u,v)-\sum_{v:\set{v,u}\in E^{(t)}}w(v,u)$. The first term is the money $u$ owes other people and the second term is the money $u$ should receive from other people.
+    
+    \hspace{1.3em}
+    Then we only need to prove that $\forall u\in V, \mathtt{pay}_0(u)=\mathtt{pay}_T(u).$
+    
+    \hspace{1.3em}
+    By the process of our algorithm, the change of $\mathtt{pay}_{\cdot}(\cdot)$ only happens in step 4.
+    
+    \hspace{1.3em}
+    Obvious for $u\notin C_t,$ $\mathtt{pay}_{t+1}(u)=\mathtt{pay}_{t+1}(u)$.
+    
+    \hspace{1.3em}
+    For $u\in C_t$, 
+    
+    \hspace{1.3em}
+    \textbf{CASE 01.} In $C_t$, the two edges adjacent to $u$ are both from $u$ to others, i.e. $\set{u,u_1}, \set{u,u_2}$. 
+    
+    \hspace{6.75em}
+    Obvious exactly one of these two edges is in the inverse direction of $C_t$. Thus,
+    
+    \vspace{-3em}
+    \begin{align*}
+        \qquad\qquad\qquad\quad \mathtt{pay}_{t+1}(u)&=\mathtt{pay}_{t}(u)-w^{(t)}(u,u_1)-w^{(t)}(u,u_2)+w^{(t+1)}(u,u_1)+w^{(t+1)}(u,u_2) \\
+        &=\mathtt{pay}_{t}(u) - w^* +w^* = \mathtt{pay}_{t}(u).
+    \end{align*} 
+    
+    \vspace{-1em} \hspace{1.3em}
+    \textbf{CASE 02.} In $C_t$, the two edges adjacent to $u$ are both from other vertices to $u$. 
+    
+    \hspace{6.75em}
+    Similar to \textbf{CASE 01}, $\mathtt{pay}_{t+1}(u)=\mathtt{pay}_t(u)-w^*+w^*=\mathtt{pay}_t(u).$
+    
+    \hspace{1.3em}
+    \textbf{CASE 03.} Exists $u_1,u_2\in V$ s.t. $\set{u,u_1},\set{u_2,u}\in C_t$. 
+    
+    \hspace{6.75em}
+    1) When $\set{u,u_1}$ and $\set{u_2,u}$ are in the same direction as $C_t$'s.
+    
+    \vspace{-3em}
+    \begin{align*}
+        \qquad\qquad\qquad\quad\quad\ \  \mathtt{pay}_{t+1}(u)&=\mathtt{pay}_{t}(u)-w^{(t)}(u,u_1)+w^{(t)}(u_2,u)+w^{(t+1)}(u,u_1)-w^{(t+1)}(u_2,u) \\
+        &=\mathtt{pay}_{t}(u) + \left(w^{(t+1)}(u,u_1)-w^{(t)}(u,u_1)\right) - \left(w^{(t+1)}(u_2,u)-w^{(t)}(u_2,u)\right) \\
+        &= \mathtt{pay}_{t}(u) - w^* +w^* = \mathtt{pay}_{t}(u).
+    \end{align*} 
+    
+    \hspace{6.75em}
+    2) When $\set{u,u_1}$ and $\set{u_2,u}$ are in the inverse direction of $C_t$'s.
+    
+    \vspace{-3em}
+    \begin{align*}
+        \qquad\qquad\qquad\quad\quad\ \  \mathtt{pay}_{t+1}(u)&=\mathtt{pay}_{t}(u)-w^{(t)}(u,u_1)+w^{(t)}(u_2,u)+w^{(t+1)}(u,u_1)-w^{(t+1)}(u_2,u) \\
+        &=\mathtt{pay}_{t}(u) + \left(w^{(t+1)}(u,u_1)-w^{(t)}(u,u_1)\right) - \left(w^{(t+1)}(u_2,u)-w^{(t)}(u_2,u)\right) \\
+        &= \mathtt{pay}_{t}(u) + w^* -w^* = \mathtt{pay}_{t}(u).
+    \end{align*} 
+    
+    \vspace{1em} \hspace{1.3em}
+    In conclusion, $\forall t\in\set{0,1,...,T-1},\forall u\in V,\ \mathtt{pay}_{t+1}(u)=\mathtt{pay}_t(u).$
+    
+    \hspace{1.3em}
+    Thus, $\forall u\in V,\ \mathtt{pay}_0(u)=\mathtt{pay}_1(u)=...=\mathtt{pay}_{T}(u)$.
+    
+    \hspace{1.3em}
+    Therefore, our algorithm is correct. \whiteqed
+    
+    \vspace{1em} \hspace{1.3em}
+    In other words, all debts can be settled with at most $(n-1)$ person-to-person payments.
+\end{proof}
+
+\vspace{3em}
+\section{Rating and Feedback}
+\vspace{1em} \hspace{1.2em}
+The completion of this homework takes me three days, about $18$ hours in total. Still, writing a formal solution is the most time-consuming part.
+
+The ratings of each problem is as follows.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{lr}
+        \hline
+        Problem & Rating \\
+        \hline 
+        1.1 & 4 \\
+        1.2 & 3 \\
+        1.3 & 2 \\
+        1.4 & 2 \\
+        \hline
+        2.1 & 2 \\
+        2.2 & 3 \\
+        \hline
+        3 & 4 \\
+        \hline
+\end{tabular}
+\caption{Ratings.}
+\end{table}
+
+This time I finish all problems on my own.
+
+\end{document}

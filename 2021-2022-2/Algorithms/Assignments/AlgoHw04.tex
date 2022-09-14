@@ -1,0 +1,568 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{bbm}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Algorithm Homework 04}}
+\author{Qiu Yihang}
+\date{May 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Maximum Revenues}
+\vspace{0.75em}
+\subsection{Maximum (1,1)-Revenue}
+\vspace{0.75em}
+\begin{solution}
+    We design algorithm as follows.
+    
+    \vspace{-0.5em}
+    \begin{algorithm}
+        \caption{Maximum (1,1)-Revenue Search}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwProg{procedure}{Procedure}{}{end}
+        \SetKwInOut{return}{Return}
+        \SetKwProg{repeat}{repeat}{}{end}
+        
+	    \function{Maximum (1,1)-Revenue $(a,n)$}
+	    {
+	        $maxrev\gets 0, sum\gets0$\;
+	        \For{$i=1\to n$}{
+	            $sum\gets sum+a_i$\;
+	            \lIf{$maxrev<sum$}{$maxrev\gets sum$}
+	            \lIf{$sum<0$}{$sum\gets0$}
+	        }
+	        \return{$maxrev$}
+	   }
+    \end{algorithm}
+    
+    \vspace{-1em} \hspace{0.5em}
+    The correctness of the algorithm is trivial since $sum$ always holds the sum of the (1,1)-step subsequence which has the potential to have the maximum revenue. When $sum$ is negative, obvious discarding the previous sequence is better since $0>sum$ in this case. Meanwhile, $max$ holds the maximum revenue of all (1,1)-step subsequence potential to have the maximum revenue.
+    
+    \hspace{0.5em}
+    Now we analyze the time complexity of our algorithm. Obvious it is \underline{$\boldsymbol{O(n)}$}.
+\end{solution}
+
+\vspace{0.75em}
+\subsection{$\boldsymbol{O(n^2)}$ Algorithm for Maximum $\boldsymbol{(L,R)}$-Revenue}
+\vspace{0.751em}
+\begin{solution}
+    Use $f[i]$ to store the maximum revenue of all $(L,R)-$step subsequences ending with $a_i$.
+    
+    \hspace{2.6em}
+    Then we have state transition equation
+    
+    \vspace{-1em}
+    $$f[i]=\max\left(0,\ \underset{\max(1,i-R)\le k \le i-L}{\max}f[k]\right)+a_i.\quad(i=L+1, L+2, ..., n)$$
+    
+    \hspace{2.6em}
+    Boundaries: $f[i]=a_i,\quad i=1,2,..,L$.
+    
+    \hspace{2.6em}
+    The final result is $\underset{1\le k\le n}{\max}f[k]$. Then we can solve the problem by \textbf{dynamic programming}. 
+    
+    \vspace{1em} \hspace{2.6em}
+    The correctness of the algorithm is trivial.
+    
+    \hspace{2.6em}
+    (Since for any $i$, we list all possible previous element in the $(L,R)-$step subsequence ending with $a_i$, i.e. all states with potential to have maximum revenue are covered.)
+    
+    \vspace{1em} \hspace{2.6em}
+    Now we analyze the time complexity of algorithm above.
+    
+    \hspace{2.6em}
+    The number of states is $O(n)$. To update $f[i]$, we need to scan $R-L$ states, i.e. $O(n)$ states.
+    
+    \hspace{2.6em}
+    Thus, the time complexity of the algorithm above is \underline{$\boldsymbol{O(n^2)}$}.
+\end{solution}
+
+\vspace{1em}
+\subsection{$\boldsymbol{O(n)}$ Algorithm for Maximum $\boldsymbol{(L,R)}$-Revenue}
+\vspace{1em}
+\begin{solution}
+    We still use the notations in \textbf{1.2}.
+    
+    \hspace{2.6em}
+    In the algorithm in \textbf{1.2}, the process of finding $\underset{\max(1,i-R)\le k\le i-L}{\max}(f[k])$ takes $O(n)$ time. 
+    
+    \vspace{0.3em} \hspace{2.6em}
+    In fact, this task is to find the maximum in $(R-L)$ consecutive numbers ($f[i-R],$ $f[i-R+1],...f[i-L]$). Thus, the process can be speed up to $O(1)$ time with the help of a monotonous priority queue which can pop out elements in the head and in the tail. This optimization has been fully covered in the class.
+    
+    \hspace{2.6em}
+    The algorithm is as follows.
+    
+    \vspace{-0.5em}
+    \begin{algorithm}
+        \caption{Maximum $(L,R)$-Revenue Search}
+        \setstretch{1.2}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwProg{procedure}{Procedure}{}{end}
+        \SetKwInOut{return}{Return}
+        \SetKwProg{repeat}{repeat}{}{end}
+        
+	    \function{Maximum $(L,R)$-Revenue $(a,n,L,R)$}
+	    {
+	        $maxrev\gets 0$\;
+	        $\forall i\in[1,n], f[i]\gets a_i$\;
+	        \BlankLine
+	        \BlankLine
+	        $Q\gets\varnothing$\;
+	        \tcp{$Q$ is the monotonous priority queue, in which the index is increasing and the value is decreasing.}
+	        \For{$i=L+1\to n$}{
+	            \lIf{$Q.\mathrm{head().index}<i-R$}{\qquad$Q$.dequeue(head)}
+	            \lWhile{$Q.\mathrm{tail().value}\le f[i-L]$}{\quad$Q$.dequeue(tail)}
+	            $Q$.enqueue$\Big(\{\mathrm{index}=i-L\text{, value}=f[i-L]\}\Big)$\;
+	            \BlankLine
+	            \BlankLine
+	            $f[i]\gets \mathtt{max}(f[i], Q.\mathrm{head().value)}+a_i)$\;
+	            $maxrev\gets \mathtt{max}(maxrev, f[i])$\;
+	       }
+	        \return{$maxrev$}
+	   }
+    \end{algorithm}
+    
+    \vspace{-1em} \hspace{2.6em}
+    All elements have been enqueueed and dequeued for at most once during the whole process, i.e. the while-loop takes $O(n)$ time in total. Meanwhile, for-loop takes $O(n)$ time.
+    
+    \hspace{2.6em}
+    Thus, the time complexity of our algorithm is \underline{$\boldsymbol{O(n)}$}.
+\end{solution}
+
+\vspace{1em}
+\section{Optimal Indexing for A Dictionary}
+\vspace{1em}
+\begin{solution}
+    We use the abbreviation BST to denote binary searching tree.
+    
+    \hspace{2.6em}
+    For only one word, there exists exactly one BST, which is trivially the best BST. 
+    
+    \hspace{2.6em}
+    For any dictionary, as long as we have the best BST of its subsets with alphabetic order, we can construct all BSTs with potentials to minimize the number of comparisons and therefore find the optimal BST. 
+    
+    \vspace{2em} \hspace{-2em}
+    \underline{Based on the idea above, we design the following algorithm.}
+    
+    \vspace{1em} \hspace{1em}
+    Use $f[i,j]$ to denote the minimum number of comparisons of the BST for words $a_i, a_{i+1}, ... a_j$. 
+    
+    \hspace{1em}
+    Use $T_{i,j}$ to denote the BST of $a_i, a_{i+1}, ... a_j$ with the minimum number of comparisons. (In fact, when coding the algorithm, we just need to record the root of $T_{i,j}$.)
+    
+    \hspace{1em}
+    We can list out all possible root of the BST for $a_i,a_{i+1},...,a_j$ and find the optimal one. 
+    
+    \hspace{1em}
+    Thus, the state transition equation is as follows.
+    
+    \vspace{-2em}
+    \begin{align*}
+        f[i,j]&=\underset{i\le k\le j}{\min}(f[i,k-1],f[k+1,j])+\sum_{l=i}^jw_l \\
+        k^\star &= \underset{i\le k\le j}{\mathrm{argmin}}(f[i,k-1],f[k+1,j]) \\
+        T_{i,j} &= \text{a tree with root $k^\star$,} \\
+        &\quad\ \text{whose left and right subtree is}\\
+        &\quad\ T_{i,k^*-1}\text{ and }T_{k^*+1,j}\text{ respectively.}
+    \end{align*}
+    
+    \hspace{1em}
+    Boundaries: 
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        f[i,j] = 0,\ T_{i,j}=\varnothing,\qquad &\text{when }i>j. \\
+        f[i,j] = w_i,\ T_{i,j}=\text{the tree with one node $i$ only},\qquad &\text{when }i=j.
+    \end{align*}
+    
+    \hspace{1em}
+    The final result (the best BST with minimum comparisons for the $n$ words) is \underline{$\boldsymbol{T_{1,n}}$}.
+    
+    \vspace{1em} \hspace{1em}
+    During the dynamic programming, we compute $f[i,j]$ and $T_{i,j}$ in the increasing order of $|j-i|$. 
+    
+    \vspace{5em} \hspace{1em}
+    The number of states is $O(n^2)$. For each state, we need to scan $O(n)$ states to compute the current optimal solution. Therefore, the time complexity of our algorithm is $O(n^3)$.
+\end{solution}
+
+
+\vspace{1em}
+\section{Palindrome Subsequence}
+\vspace{1em}
+\begin{solution}
+    Let the given string be $S=S_1S_2...S_n$.
+    
+    \hspace{2.6em}
+    Use $S(i:j)$ to denote the string $S_iS_{i+1}...S_j$.
+
+    \hspace{2.6em}
+    Use $f[i,j]$ to denote the maximum length of palindrome which is a subsequence of $S(i:j)$. 
+    
+    \hspace{2.6em}
+    Use $a[i,j]$ to denote the palindromic subsequence with maximum length of $S(i:j)$.
+    
+    \vspace{1em} \hspace{2.6em}
+    The state transition equation is as follows.
+    
+    \vspace{-2em}
+    \begin{align*}
+        f[i,j] &= \max\Big(f[i+1,j],f[i,j-1],f[i+1,j-1]+2\cdot\mathbbm{1}\left[S_i=S_j\right]\Big),\ 1\le i<j\le n \\
+        a[i,j]& =\left\{\begin{array}{ll}
+            S_i+a[i+1,j-1]+S_i, & f[i,j]=f[i+1,j-1]+2\text{ while }  S_i=S_j \\
+            a[i+1,j-1], & f[i,j]=f[i+1,j-1]\text{ while } S_i\neq S_j \\
+            a[i+1,j], & f[i,j]=f[i+1,j]\\
+            a[i,j-1], & f[i,j]=f[i,j-1]
+        \end{array}\right.\\
+        &\quad\ \text{for }1\le i<j\le n\\
+    \end{align*}
+    
+    \vspace{-3.6em} \hspace{9em}
+    (where $a+b$ for string or alphabet $a$ and $b$ means adding $b$ to the tail of $a$.)
+    
+    \vspace{1.3em} \hspace{2.6em}
+    Boundaries:
+    
+    \vspace{-3em}
+    \begin{align*}
+        f[i,i] &= 1, a[i,i]=S_i, \qquad 1\le i\le n\\
+        f[i,j] &= 0, a[i,j]=\varnothing, \qquad 1\le j<i\le n
+    \end{align*}
+    
+    \vspace{-1.5em} \hspace{9em}
+    (The second boundary is set to make sure palindromes with even length can
+    
+    \hspace{9.6em}
+    be correctly discovered by our algorithm.)
+    
+    \vspace{1em} \hspace{2.6em}
+    The final result is $a[1,n]$.
+    
+    \vspace{2em} \hspace{2.6em}
+    Now we analyze the time complexity of our algorithm. 
+    
+    \hspace{2.6em}
+    Let the length of the given string be $n$. The number of states is $O(n^2).$
+    
+    \hspace{2.6em}
+    For each state, it takes $O(1)$ to determine the optimal solution.
+    
+    \hspace{2.6em}
+    Thus, the running time of our algorithm is  \underline{$\boldsymbol{O(n^2)}.$}
+\end{solution}
+
+
+
+\vspace{1em}
+\section{Independent Sets on Tree}
+\vspace{1em}
+\textit{Notations}. We use the following notations in this section.
+
+    \hspace{3.2em}
+    Let $G=(V,E).$ Let the subtree of $G$ with root $u$ be $T_u$. Let the root of $G$ be $r.$
+    
+    \hspace{3.2em}
+    Let the set of children of a node $u$ be $\mathtt{children}(u)$.
+    
+    \hspace{3.2em}
+    Let the set of grandchildren of a node $u$ be $\mathtt{grandchildren}(u)$.
+    
+\subsection{The Number of Independent Sets}
+\vspace{1em}
+\begin{solution}
+    Use $f[u]$ to denote the number of independent sets containing $u$ on $T_u$.
+    
+    \hspace{2.6em}
+    Use $g[u]$ to denote the number of independent sets not involving $u$ on $T_u$.
+    
+    \hspace{2.6em}
+    Then the state transition equation is as follows.
+    
+    \vspace{-2em}
+    \begin{align*}
+        f[u] &= \prod_{v\in\mathtt{children}(v)}g[v], \\
+        g[u] &= \prod_{v\in\mathtt{children}(u)}(f[v]+g[v]), \\
+        \text{for }u\in V
+    \end{align*}
+    
+    \vspace{-1em} \hspace{2.6em}
+    Boundaries:
+    
+    \vspace{-1.5em}
+    $$f[u]=1,g[u]=0,\qquad\text{when }u\text{ is a leaf of $G$.}$$
+    
+    \hspace{2.6em}
+    Then the final result is $(f[r]+g[r]).$
+    
+    \vspace{3em} \hspace{2.6em}
+    \underline{Now we prove the correctness of the algorithm by induction.}
+    
+    \hspace{2.6em}
+    \textbf{BASE STEP.} When $u$ is a leaf, obvious there exists one independent set, i.e. $\set{u}$.
+    
+    
+    \hspace{9.7em}
+    In this case, obvious $f[u]=1, g[u]=0.$
+    
+    \vspace{1em} \hspace{2.6em}
+    \textbf{INDUCTION HYPOTHESIS}.
+    
+    \hspace{5em}
+    For any $v\in \mathtt{children}(u)$, $f[v]$ is the number of independent sets containing $v$ on $T_v$,
+    
+    \hspace{2.6em}
+    while $g[v]$ is the number of independent sets not involving $v$ on $T_v$.
+    
+    \vspace{1em} \hspace{2.6em}
+    \textbf{INDUCTIVE STEP.}
+    
+    \hspace{5em}
+    \textit{CASE 01}. We consider independent set $A$ on $T_u$ s.t. $u\in A$. 
+    
+    \hspace{9.8em}
+    Obvious $\forall v\in\mathtt{children}(u), v\notin A$. 
+    
+    \hspace{9.8em}
+    We can choose from the independent sets not involving $v$ of all $G_v$s , combine 
+    
+    \hspace{5em}
+    them and add $u$ to construct such $A$.
+    
+    \hspace{9.8em}
+    Thus, there are $\prod_{v\in\mathtt{children}(u)}g[v]$ such independent sets in total, i.e. 
+    
+    \vspace{-1em}
+    $$f[u]=\prod_{v\in\mathtt{children}(u)}g[v]$$.
+    
+    \vspace{-1.2em} \hspace{5em}
+    \textit{CASE 02}. We consider independent set $A$ on $T_u$ s.t. $u\notin A$. 
+    
+    \hspace{9.8em}
+    Then we can safely choose from all independent sets of $T_v$ for $v\in\mathtt{children}(u)$ 
+    
+    \hspace{5em}
+    and combine them to construct such $A$.
+    
+    \hspace{9.8em}
+    Thus, there exist $\prod_{v\in\mathtt{children}(u)}(f[v]+g[v])$ such independent sets in total,
+    
+    \hspace{5em}
+    i.e.
+    
+    \vspace{-2.3em}
+    $$g[u]=\prod_{v\in\mathtt{children}(u)}(f[v]+g[v])$$
+    
+    \vspace{1em} \hspace{5em}
+    Therefore, for $u$,  $f[u]$ is the number of independent sets containing $u$ on $T_u$ while $g[u]$ 
+    
+    \hspace{2.6em}
+    is the number of independent sets not involving $u$ on $T_u$.
+    
+    \vspace{1em} \hspace{2.6em}
+    For $G$, i.e. $T_r$, obvious the number of all independent sets is $f[r]+g[r]$. \whiteqed
+    
+    \vspace{3em} \hspace{2.6em}
+    \underline{Now we analyze the time complexity of our algorithm.}
+    
+    \hspace{2.6em}
+    The number of states is exactly $|V|.$ For each state, we visit several other states to reach the
+    
+    optimal solution of the subproblem. Since each vertex has at most one parent, we know this visit-
+    
+    ing process takes $O(|V|)$ time in total.
+    
+    \hspace{2.6em}
+    Moreover, since storage and multiplication only takes $O(1)$ time in this problem, we know 
+    
+    it takes $O(1)$ time for each state to reach the optimal solution after visiting all its subproblems. 
+    
+    \hspace{2.6em}
+    Thus, the time complexity of our algorithm is \underline{$\boldsymbol{O(|V|).}$}
+\end{solution}
+
+\vspace{1em}
+\subsection{The Number of Maximum Independent Sets}
+\vspace{1em}
+\begin{solution}
+    A natural idea is to record the size of the maximum independent set of the subtree.
+    
+    \hspace{2.6em}
+    Based on the idea above, we design the following algorithm.
+    
+    \vspace{1em} \hspace{2.6em}
+    Use $s[u]$ to denote the size of maximum independent sets on $T_u$.
+    
+    \hspace{2.6em}
+    Use $F[u]$ to denote the number of maximum independent sets on $T_u$.
+    
+    \hspace{2.6em}
+    Then the state transition equation is as follows.
+    
+    \vspace{-2em}
+    \begin{align*}
+        s[u] &= \max\left(\sum_{v\in\mathtt{children}(u)}s[v], 1+\sum_{w\in\mathtt{grandchildren}(u)}s[w],\right) \qquad \text{for }u\in V.\\
+        \quad\ \text{Define\quad\ }&\left\{
+        \begin{array}{l}
+            \mathtt{size}(\notin) \triangleq  \underset{v\in\mathtt{children}(u)}{\sum}s[v]  \\
+            \mathtt{size}(\in) \triangleq 1+\underset{w\in\mathtt{grandchildren}(u)}{\sum}s[w]
+        \end{array} \right.,\\
+        F[u] & = \left\{\begin{array}{ll}
+            \underset{v\in\mathtt{children}(u)}{\prod}F[v], &  \qquad\mathtt{size}(\notin)>\mathtt{size}(\in) \\
+            \underset{v\in\mathtt{children}(u)}{\prod}F[v]+\underset{w\in\mathtt{grandchildren}(u)}{\prod}F[w], & \qquad\mathtt{size}(\notin)=\mathtt{size}(\in) \\
+            \underset{w\in\mathtt{grandchildren}(u)}{\prod}F[w], &  \qquad\mathtt{size}(\notin)<\mathtt{size}(\in) \\
+        \end{array}\right. \\
+        \text{for }u\in V. &\qquad \text{(Note: if $w$ does not exist, $F[w]=0.$)}
+    \end{align*}
+    
+    \hspace{2.6em}
+    Boundaries:
+    
+    \vspace{-1.5em}
+    $$s[u]=1, F[u]=1,\qquad\text{when $u$ is a leaf of $G$.}$$
+    
+    \hspace{2.6em}
+    The final result is $F[r]$.
+    
+    \vspace{1em}\hspace{2.6em}
+    \underline{Now we prove the correctness of the algorithm.}
+    
+    \hspace{2.6em}
+    Use $s_{(\in)}[u]$ and $s_{(\notin)}[u]$ to denote the size of maximum independent set containing and not 
+    
+    involving $u$ on $T_u$ respectively. We have $s[u]=\max\Big(s_{(\in)}[u],s_{(\notin)}[u]\Big)$.
+    
+    \hspace{2.6em}
+    Use $F_{(\in)}[u]$ and $F_{(\notin)}[u]$ to denote the number of maximum independent set containing and 
+    
+    not involving $u$ on $T_u$ respectively. We have
+    
+    \vspace{-1em}
+    $$F[u]=\left\{\begin{array}{ll}
+        F_{(\in)}[u], & s_{(\in)}[u]>s_{(\notin)}[u] \\
+        F_{(\in)}[u]+F_{(\notin)}[u], & s_{(\in)}[u]=s_{(\notin)}[u] \\
+        F_{(\notin)}[u], & s_{(\in)}[u]<s_{(\notin)}[u] \\
+    \end{array}\right.$$
+    
+    \vspace{2em} \hspace{2.6em}
+    Similarly to \textbf{4.1}, we know if an independent set contains $u$, to maximize the size, we need
+    
+    to select all nodes in the maximum independent sets not involving $v$ on $T_v$ for all $v\in\mathtt{children}(u)$. 
+    
+    Thus, the size is the sum of maximum independent sets not involving $v$ on $T_v$ added by 1 (since $u$
+    
+    is in the set). 
+    
+    \hspace{2.6em}
+    As for independent set not involving $u$ on $T_u$, the maximum independent sets must contain
+    
+    all the nodes in the maximum independent set of $v$ on $T_v$ for all $v\in\mathtt{children}(u)$. 
+    
+    \hspace{2.6em}
+    The state transition of number of maximum independent sets is almost the same as the one 
+    
+    in \textbf{4.1}. We just need to replace $g[v]$ with $F_{(\notin)}[v]$ and $f[v]+g[v]$ (the total number) with $F[v]$.
+    
+    \vspace{2em} \hspace{2.6em}
+    Therefore, we have
+    
+    \vspace{-2em}
+    \begin{align*}
+    \left\{
+    \begin{array}{l}
+        s_{(\in)}[u] = 1+\underset{v\in\mathtt{children}(u)}{\sum}s_{(\notin)}[v] \\
+        s_{(\notin)}[u] = \underset{v\in\mathtt{children}(u)}{\sum}s[v] \\
+        F_{(\in)}[u] = \underset{v\in\mathtt{children}(u)}{\prod} F_{(\notin)}[v] \\
+        F_{(\notin)}[u] = \underset{v\in\mathtt{children}(u)}{\prod} F[v]
+        \end{array}
+    \right. \Longrightarrow
+    \left\{\begin{array}{l}
+        s_{(\in)}[u] = 1+\underset{w\in\mathtt{grandchildren}(u)}{\sum}s[w]  \\
+        F_{(\in)}[u] = \underset{w\in\mathtt{grandchildren}(u)}{\prod}F[w] \\
+    \end{array}\right.
+    \end{align*}
+    
+    \hspace{2.6em}
+    Thus,
+    
+    \vspace{-2em}
+    \begin{align*}
+        s[u]& =\max\Big(s_{(\in)}[u],s_{(\notin)}[u]\Big)=\max\left(\sum_{v\in\mathtt{children}(u)}s[v],1+\sum_{w\in\mathtt{grandchildren}(u)}s[w]\right) \\
+        F[u] &= \left\{\begin{array}{ll}
+            \underset{w\in\mathtt{grandchildren}(u)}{\prod}F[w], & \quad s_{(\in)}[u]>s_{(\notin)}[u] \\
+            \underset{w\in\mathtt{grandchildren}(u)}{\prod}F[w]+\underset{v\in\mathtt{children}(u)}{\prod}F[v], &\quad  s_{(\in)}[u]=s_{(\notin)}[u] \\
+            \underset{v\in\mathtt{children}(u)}{\prod}F[v], & \quad s_{(\in)}[u]<s_{(\notin)}[u]
+        \end{array}\right.
+    \end{align*}
+    
+    \hspace{2.6em}
+    which is exactly the state transition equation of our algorithm. \whiteqed
+    
+    \vspace{3em} \hspace{2.6em}
+    \underline{Now we analyze the time complexity of our algorithm.}
+    
+    \hspace{2.6em}
+    The number of all states is exactly $|V|$.
+    
+    \hspace{2.6em}
+    Similar to \textbf{4.1}, since each vertex has at most one parent and at most one grandparent, the
+    
+    visiting time of one's children and grandchildren is $O(|V|)$ in total. Meanwhile, since multiplication, 
+    
+    addition and storage takes $O(1)$ time, we know for each state, reaching optimal solution after
+    
+    visiting all subproblems takes $O(1)$ time.
+    
+    \hspace{2.6em}
+    Thus, the time complexity of our algorithm is \underline{$\boldsymbol{O(|V|)}.$}
+\end{solution}
+
+
+\vspace{3em}
+\section{Rating and Feedback}
+\vspace{1em} \hspace{1.2em}
+The completion of this homework takes me four days, about $24$ hours in total. Still, writing a formal solution is the most time-consuming part.
+
+The ratings of each problem is as follows.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{lr}
+        \hline
+        Problem & Rating \\
+        \hline 
+        1.1 & 1 \\
+        1.2 & 1 \\
+        1.3 & 2 \\
+        \hline
+        2 & 3 \\
+        \hline
+        3 & 2.5 \\
+        \hline
+        4.1 & 3 \\
+        4.2 & 4 \\
+        \hline
+\end{tabular}
+\caption{Ratings.}
+\end{table}
+
+This time I finish all problems on my own.
+
+\end{document}

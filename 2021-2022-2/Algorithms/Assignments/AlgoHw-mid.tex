@@ -1,0 +1,522 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{bbm}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\bd}[1]{\boldsymbol{#1}}
+
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Algorithm Mid-Exam Homework\\ (Edmond's Blossom Algorithm)}}
+\author{Qiu Yihang}
+\date{June 2022}
+
+\begin{document}
+
+\maketitle
+
+\vspace{1em}
+\section{$\bd{M}$-Augmenting Path}
+\vspace{1em}
+\begin{proof}
+    First we prove the necessity.
+    
+    \hspace{1.3em}
+    When $M$ is a maximum matching, assume there exists an $M$-augmenting path $P: u_0u_1u_2...u_k$. Obvious $k$ is odd since the number of vertices in any $M$-augmenting path must be even. 
+    
+    \hspace{1.3em}
+    By the definition of $M$-augmenting path, we know $\set{u_1,u_2},\set{u_3,u_4},...\set{u_{k-2},u_{k-1}}\in M$, $\set{u_0,u_1},\set{u_2,u_3},...\set{u_{k-1},u_{k}}\notin M$. Also, $\forall e\in M, u_0\notin e, u_k\notin e$.
+    
+    \hspace{1.3em}
+    Consider $M'=M\setminus\set{\set{u_1,u_2},\set{u_3,u_4},...\set{u_{k-2},u_{k-1}}}\cup\set{\set{u_0,u_1},\set{u_2,u_3},...\set{u_{k-1},u_{k}}}$. 
+    
+    \hspace{1.3em}
+    By the definition of matching, we know all vertices on the path $P$, i.e. $u_0,u_1,...u_k$ are not covered by $M\setminus\set{\set{u_1,u_2},\set{u_3,u_4},...\set{u_{k-2},u_{k-1}}}$. Thus, no two edges in $M'$ share a same vertex.
+    
+    \hspace{1.3em}
+    Moreover, $|M'|=|M|-\frac{k-1}{2}+\left(\frac{k-1}{2}+1\right)=|M|+1>|M|.$ \underline{\textbf{Contradiction}} to the assumption that $M$ is a maximum matching. 
+    
+    \hspace{1.3em}
+    Thus, when $M$ is a maximum matching, there exists no $M$-aumenting path on $G$. \whiteqed
+    
+    \vspace{1em} \hspace{1.3em}
+    Now we prove the sufficiency.
+    
+    \hspace{1.3em}
+    When exists no $M$-augmenting path on $G$, assume $M$ is not the maximum matching. 
+    
+    \hspace{1.3em}
+    We can always find a maximum matching $M'$ s.t. $|M\cap M'|$ is maximized. 
+
+    \hspace{1.3em}
+    We can prove that $\forall \set{u,v}\in M,$ at least one of $u,v$ is also covered by $M'$. Otherwise, $M'\cup\set{u,v}$ is a matching with $|M'\cup\set{u,v}|>|M'|$. \underline{\textbf{Contradiction}} to the assumption that $M'$ is a maximum matching.
+    
+    \hspace{1.3em}
+    Meanwhile, since $M$ and $M'$ are both matchings, we know exist $2(|M'|-|M|)$ vertices in $M'$ are not covered in $M$. Considering $|M|\le|M'|-1$, at least 2 vertices in $M'$ are not covered in $M$. Let these two vertices be $x,y$.
+    
+    \hspace{1.3em}
+    Then we construct an $M$-augmenting path on $G$ as follows.
+    
+    \vspace{-0.5em}
+    \begin{itemize}
+        \item[] \begin{enumerate}
+        \setstretch{1.3}
+        \item Initialize $P$. Now $P$ is a path with only one vertex $x$.
+        \item Suppose the last vertex in $P$ is $u$. 
+        
+        Find an edge $\set{u,v}\in M'$ and add the edge into $P$. 
+        
+        (We have shown such edge always exists above.)
+        
+        If no edges in $M$ is adjacent to $v$, terminate the process. 
+        
+        Otherwise, find an edge $\set{v,w}\in M$ and add the edge into path $P$. 
+        
+        \item Repeat \textbf{Step 2}.
+    \end{enumerate}
+    
+    \end{itemize}
+    
+    \vspace{-0.5em} \hspace{1.3em}
+    We have already shown that there exist at least two vertices covered by $M'$ and not covered by $M$. Thus, the process above will eventually come to an end.
+    
+    \hspace{1.3em}
+    Since when constructing $P$, we select edges alternatively in $M$ and $M'$, start from a vertex not covered by $M$ and end at a vertex not covered by $M$, we know $P$ is an $M$-augmenting path.
+    
+    \hspace{1.3em}
+    \underline{\textbf{Contradiction!}}
+    
+    \hspace{1.3em}
+    Thus, when there exists no $M$-augmenting path on $G$, $M$ is a maximum matching. \whiteqed
+    
+    \vspace{1.5em} \hspace{1.3em}
+    In conclusion, $M$ is a maximum matching of $G$ \textbf{iff.} no $M$-augmenting path exists.
+\end{proof}
+
+\vspace{1em}
+\section{Contract Odd-Size Cycles}
+\vspace{1em}
+\begin{proof}
+    First we prove the necessity, i.e. when $M$ is a maximum matching of $G$, $M\setminus C$ is a maximum matching of $G'$.
+    
+    \hspace{1.3em}
+    Obvious $M$ contains exactly $k$ edges in $C$. Otherwise, we can find an edge $e$ in $C$ s.t. $M\cup\set{e}$ is matching with larger size than $M$. \underline{\textbf{Contradiction}} to the assumption that $M$ is a maximum matching.
+    
+    \hspace{1.3em}
+    Thus, $M\setminus C$ covers at most 1 vertex in $C$. Therefore, $M\setminus C$ is a valid matching on $G'$.
+    
+    \hspace{1.3em}
+    Assume exists $M'$ is a matching on $G'$ with larger size than $M\setminus C$. By the definition of cycle contracting, we know $M'$ covers at most 1 vertex of $C$ in $G$. Then we can find $k$ edges s.t. no endpoints of these edges are covered by $M'$. Adding these $k$ edges to $M'$ will generated a matching $\mathcal{M}$ on $G$. Meanwhile, $|\mathcal{M}|=|M'|+k>|M\setminus C|+k = |M|.$
+    
+    \hspace{1.3em}
+    \underline{\textbf{Contradiction}} to the assumption that $M$ is a maximum matching.
+    
+    \hspace{1.3em}
+    Thus, when $M$ is a maximum matching of $G$, $M\setminus C$ is a maximum matching of $G'$. \whiteqed
+    
+    \vspace{1em} \hspace{1.3em}
+    Now we prove the sufficiency, i.e. when $M\setminus C$ is a maximum matching of $G'$, $M$ is a maximum matching of $G$.
+    
+    \hspace{1.3em}
+    \textit{* In fact, it is wired that $M\setminus C$ (on $G'$) is defined before $M$ is defined. Thus, I suppose the meaning of the sufficiency is that we first find a matching $M$ on $G$ and then we check whether $M\setminus C$ is a maximum matching on $G'$.}
+    
+    \hspace{1.3em}
+    When $M'\triangleq M\setminus C$ is a maximum matching on $G'$, we know $M'$ covers at most 1 vertex in $C$ on $G$. Thus, we can always find exactly $k$ edges not adjacent to each other in $C$ on $G$ s.t. no endpoints of these edges are covered in $M'$. Adding these $k$ edges into $M'$ generates a matching $M$ on $G$. 
+    
+    \hspace{1.3em}
+    Assume exists a matching $M_0$ of $G$ with greater size than $M$. 
+    
+    \hspace{1.3em}
+    Then $M_0\setminus C$ is also a matching on $G$. (A subset of a matching is also a matching, which is trivial.) Given how $G'$ is generated from $G$, we know $M_0\setminus C$ is a matching on $G'$.
+    
+    \hspace{1.3em}
+    Meanwhile, obvious $M_0$ at most contains $k$ edges in $C$. Thus, 
+    $|M_0\setminus C|\geq|M_0|-k>|M|-k=|M'|$. \underline{\textbf{Contradiction}} to the assumption that $M'=M\setminus C$ is a maximum matching on $G'$.
+    
+    \hspace{1.3em}
+    Thus, when $M\setminus C$ is a maximum matching on $G'$, $M$ is a maximum matching of $G$. \whiteqed
+    
+    \vspace{1.5em} \hspace{1.3em}
+    In conclusion, $M\setminus C$ is a maximum matching on $G'$ \textbf{iff.} $M$ is a maximum matching of $G$.
+\end{proof}
+
+\vspace{1em}
+\section{$\bd{M}$-Alternating Forest}
+\vspace{1em}
+\begin{proof}
+    For any given $M$, obvious $\mathcal{F}\triangleq(V(\mathcal{F}),E(\mathcal{F}))$ with $V(\mathcal{F})=\varnothing,\ E(\mathcal{F})=\varnothing$ is always a valid $M$-alternating forest. Thus, $M$-alternating forest exists. \whiteqed
+    
+    \vspace{1em} \hspace{1.3em}
+    We design an algorithm for finding a maximal $M$-alternating forest as follows.
+    
+    \vspace{-0.5em}
+    \begin{itemize}
+        \item[] \begin{enumerate}
+            \setstretch{1.3}
+            \item Start from $F=\mathcal{F}$. (Recall $\mathcal{F}=(V(\mathcal{F}),E(\mathcal{F}))$ with $V(\mathcal{F})=\varnothing,\ E(\mathcal{F})=\varnothing$)
+            
+            Let the set of all vertices uncovered by $M$ be $V_{un}$.
+            \item Pick a vertex $r\in V_{un}$ uncovered by $F$. Add $r$ to $V(F)$. Obvious $r$ is an outer vertex.
+            
+            We construct a tree with root $r$ by the following process. 
+            
+            The process is a modified traverse of graph $G$, which can be realized through DFS or BFS.
+            
+        \begin{itemize}
+            \setstretch{1.35}
+            \item[$\bullet$] Find all vertices adjacent to the current vertex $u$ of the tree and uncovered by $F$ so far.
+            
+            \item[$\bullet$] For each vertex $v$ satisfying the conditions above, check whether exists a $w$ uncovered by $F$ s.t. $\set{v,w}\in M$. 
+            
+            \begin{itemize}
+                \item If so, add $v,w$ into $V(F)$ and add $\set{v,w}$ into $E(F)$. 
+                
+                Obvious $v$ is an inner vertex while $w$ is an outer vertex.
+                
+                Since $\set{v,w}\in M$, both $v$ and $w$ are covered by $M$.
+                \item If not, check the next vertex.
+            \end{itemize}
+            
+            \item[$\bullet$] Traverse to the next outer vertex unvisited on the current tree.
+        \end{itemize}
+        
+        \item Check if all vertices in $V_{un}$ are covered by $F$ , i.e. whether $V_{un}\subset V(F)$. 
+        
+        If not, jump to \underline{step 2}.
+        
+        If so, terminate the process. $F$ is a maximal $M$-alternating forest. \whiteqed
+        \end{enumerate}
+    \end{itemize}
+    
+    \vspace{0.5em} \hspace{1.3em}
+    Now we prove the correctness of the algorithm.
+    
+    \hspace{1.3em}
+    \underline{Step 2} of the algorithm ensured that the each component contains exactly one vertex uncovered by $M$, i.e. the root we construct for the component (i.e. the tree). Meanwhile, for each inner vertex, it has two incident edges in $F$ (ensured by \underline{step 2}) and exactly one of the two edges is in $M$.
+    
+    \hspace{1.3em}
+    Now we prove that $F$ is maximal, i.e. adding any vertex or edge into $F$ is impossible. Let $F'$ be the forest of $F$ added with certain edges or vertices.
+    
+    \hspace{1.3em}
+    Since all vertices uncovered by $M$ is already covered by $F$, adding any vertices will generate a component with no vertices uncovered by $M$. Thus, $F'$ is not an $M$-alternating forest.
+    
+    \hspace{1.3em}
+    For any edge $\set{u,v}\in E\setminus F$,
+    
+    \hspace{1.3em}
+    \textbf{CASE 01}. Both endpoints are already covered in $F$. Adding $\set{u,v}$ will merge two components and give a component with two vertices uncovered by $M$ (roots of the two trees). Then $F'$ is not an $M$-alternating forest.
+    
+    \hspace{1.3em}
+    \textbf{CASE 02}. Both endpoints are not covered in $F$. Since $V_{un}\subset V(F)$, both $u$ and $v$ are covered by $M$. After adding $\set{u,v}$ to $F$, exactly one of $u$ and $v$ is inner vertex while the other one is outer vertex. Without loss of generality, suppose $u$ is the inner vertex. 
+    
+    \hspace{1.3em}
+    If $u$ and $v$ can be added into $F$, there must exist an outer vertex $w$ s.t. $\set{u,w}\notin M$. If such condition is satisfied, $u$ and $v$ should be added to $F$ in \underline{step 2}. \underline{\textbf{Contradiction.}}
+    
+    \hspace{1.3em}
+    \textbf{CASE 03}. Exactly one of the endpoints is in $F$. Suppose $u\in V(F), v\notin V(F)$. 
+    
+    \hspace{1.3em}
+    If $u$ is an inner vertex, after adding $\set{u,v}$, exists an inner vertex $u$ with more three incident edges. Thus, $F'$ is not an $M$-alternating forest.
+    
+    \hspace{1.3em}
+    If $u$ is an outer vertex and $\set{u,v}$ can be added into $F$, there must exist a $w$ uncovered by $F$ and $\set{v,w}\in M, \set{u,v}\notin M$. If these conditions are satisfied, $u$ and $v$ should be added to $F$ in \underline{step 2}. \underline{\textbf{Contradiction}}.
+    
+    \vspace{1em} \hspace{1.3em}
+    Thus, the algorithm finds a maximal $M$-alternating forest. \whiteqed
+    
+    \vspace{1.5em} \hspace{1.3em}
+    Now we analyze the complexity of the algorithm.
+    
+    \hspace{1.3em}
+    We visit every vertex constant times. Thus, the algorithm takes $O(|V|)$, i.e. polynomial-time.
+    
+    \hspace{1.3em}
+    Thus, we can find a maximal $M$-alternating forest in polynomial-time.
+\end{proof}
+
+\vspace{1em}
+\section{$\bd{M}$-Alternating Path Must Contain Two Consecutive Outer Vertices}
+\vspace{1em}
+\begin{proof}
+    We know an $M$-alternating path starts from a vertex not covered by $M$ and ends at another vertex not covered by $M$. 
+    
+    \hspace{1.3em}
+    By the definition of maximal $M$-alternating forest, we know all vertices not covered by $M$ are in $V(F)$ and every component of $F$ contains exactly one vertex not covered by $M$, i.e. the root of the component. 
+    
+    \hspace{1.3em}
+    Thus, an $M$-alternating path must start from the root of one component in $F$ and ends at the root of another component of $F$.
+    
+    \hspace{1.3em}
+    Then the $M$-augmenting path must contain an edge whose two endpoints are in two different components of $F$. We will use the word \underline{\textit{crosswalk}} to refer to such edge in the following proof.
+    
+    \hspace{1.3em}
+    Now we prove at least exists a crosswalk, whose two endpoints are both outer vertices.
+    
+    \hspace{1.3em}
+    Let the $M$-augmenting path be $P$. Use $T_{x}$ to denote the component of $F$ which $x$ belongs. 
+
+    \hspace{1.3em}
+    It is trivial that all crosswalks are not in $M$. Otherwise, the endpoints of a certain crosswalk are both not covered by $M$, i.e. the endpoints are both the root of their own respective components. Then exists an edge $e$ between vertices not covered by $M$, i.e. $M\cup\set{e}$ is a matching with larger size than $M$. \underline{\textbf{Contradiction.}}
+    
+    \hspace{1.3em}
+    Since the crosswalk $\set{u_i,v_i}\notin M$, then the two edges next to $\set{u_i,v_i}$ in $P$ must be in $M$.
+    
+        
+    \hspace{1.3em}
+    Assume for any crosswalk, at least one of its endpoint is an inner vertex. Let the $i$-th crosswalk in $P$ be $\set{u_i,v_i}$ with $u_i$ being an inner vertex. Then $u_i$ can't be the root of the $T_{u_i}$.
+    
+    \hspace{1.3em}
+    For any crosswalk $\set{u_i,v_i}$, there are two types. 
+    
+    \hspace{1.3em}
+    (By assumption, \textbf{TYPE 00} crosswalks, i.e. $u_i$ and $v_i$ are both outer vertices, do not exist.)
+    
+    \hspace{1.3em}
+    \textbf{TYPE 01.} $v_i$ is outer vertex. 
+    Then the edge in $T_{u_i}$ next to $\set{u_i,v_i}$ in $P$ is between the child of $u_i$ and $u_i$ and the edge $T_{v_i}$ next to $\set{u_i,v_i}$ in $P$ is between $v_i$ and its parent.
+    
+    \hspace{1.3em}
+    \textbf{TYPE 02}. $v_i$ is also an inner vertex. 
+    Then the edge in $T_{u_i}$ next to $\set{u_i,v_i}$ in $P$ is from the child of $u_i$ to $u_i$ and the edge $T_{v_i}$ next to $\set{u_i,v_i}$ in $P$ is from $v_i$ to its child.
+    
+    \begin{figure}[tbh]
+        \centering
+        \includegraphics[width=\textwidth]{edmonds-proof.png}
+        \caption{Type 01 and Type 02 Crosswalk; A Visualization of Proof by Contradiction}
+        \label{fig:my_label}
+    \end{figure}
+    
+    \vspace{1em} \hspace{1.3em}
+    We know $P$ must start from the root of one component of $F$ and end at the root of another component of $F$. Suppose the edge in $P$ before the first crosswalk is $\set{u_0,v_0}$. Then $u_0$ is the parent of $v_0$ in $T_{u_0}$.
+    
+    \hspace{1.3em}
+    By the assumption that all crosswalks are not between two outer vertices, the crosswalk next to $\set{u_0,v_0}$ must be between an inner vertex and an outer vertex. Then we know the edge after the first crosswalk is from a parent to child. Thus, the edge before the next crosswalk is also from a parent to its child in $F$'s components since each vertex has exactly one parent. 
+    
+    \hspace{1.3em}
+    Then we know the next crosswalk should be between an inner vertex and an outer vertex.
+    
+    \hspace{1.3em}
+    By induction, we know all crosswalks are between an inner vertex and an outer vertex. Then in the last component of $F$ passed in $P$, all edges in the path is from a parent to its child.
+    
+    \hspace{1.3em}
+    Nevertheless, $P$ should end at the root of a component in $F$, i.e. the last edge should go from a child to its parent. \underline{\textbf{Contradiction.}}
+    
+    \vspace{0.75em} \hspace{1.3em}
+    Thus, $M$-alternating path must contain 2 consecutive outer vertices.
+\end{proof}
+
+\vspace{0.5em}
+\section{Either $\bd{M}$-Alternating Path Or Blossom}
+\vspace{0.5em}
+\subsection{If $\bd{u}$ and $\bd{v}$ Belong to Distinct Components}
+\vspace{0.5em}
+\begin{proof}
+    We can construct an $M$-augmenting path as follows.
+    
+    \vspace{-0.5em}
+    \begin{figure}[tbh]
+        \centering
+        \includegraphics[width=0.45 \textwidth]{edmonds-proof-0.png}
+        \caption{Type 00 Crosswalk; Construction of $M$-Augmenting Path in Problem 5}
+        \label{12}
+    \end{figure}
+    
+    \vspace{-0.25em} \hspace{1.3em}
+    Let $T_x$ be the component where $x$ belongs in $M$-alternating forest. Since $u$ and $v$ belong to distinct components, we can always find a path $P_u$ from the root of $T_u$ to $u$ in $T_u$ and a path $P_v$ from $v$ to the root of $T_v$ in $T_v$. 
+    
+    \vspace{0.75em} \hspace{1.3em}
+    Construct path $P=P_u\cup\set{u,v}\cup P_v.$ Now we prove $P$ is an $M$-augmenting path.
+    
+    \hspace{1.3em}
+    The first and the last vertex in $P$ is not covered by $M$. (since the root of any component in $M$-alternating forest is not covered by $M$.)
+    
+    \hspace{1.3em}
+    By the definition of $M$-alternating forest, we know all edges in $P_u$ and $P_v$ are alternatively in $M$ and not in $M$. 
+    
+    \hspace{1.3em}
+    Meanwhile, since $u$ and $v$ are both outer vertices, we know the last edge in $P_u$ and the first edge in $P_v$ are in $M$. Given that $\set{u,v}\notin M$ (all crosswalks are not in $M$, already shown in \textbf{4}), we know all edges in $P$ are alternatively in $M$ and not in $M$.
+    
+    \vspace{0.75em} \hspace{1.3em}
+    Thus, if $u$ and $v$ belong to distinct components, an $M$-aumenting path exists.
+\end{proof}
+
+\vspace{1em}
+\subsection{If $\bd{u}$ and $\bd{v}$ Belong to the Same Components}
+\vspace{0.5em}
+\begin{proof}
+    We can construct a blossom as follows.
+    
+    \hspace{1.3em}
+    Since $u$ and $v$ belong to the same component $T$ of an $M$-alternating forest, we can always find a path $P_{v\to u}$ from $v$ to $u$. (Since $T$ is a tree, $u$ and $v$ are connected.)
+    
+    \hspace{1.3em}
+    Construct Cycle $C = P_{v\to u}\cup\set{u,v}$. Now we prove $C$ is a blossom.
+    
+    \hspace{1.3em}
+    Since all inner vertices in a component of $M$-alternating forest has exactly two incident edges, i.e. to its parent and to its child, we know the common ancestor of two vertices in the component must be an outer vertex.
+    
+    \hspace{1.3em}
+    Since both $u$ and $v$ are outer vertices, we know the distance from their common ancestor to $u$ is even and so is the distance to $v$. Thus, the length of the path from $v$ to $u$ is also even.
+    
+    \hspace{1.3em}
+    Therefore, $|C|=|P_{v\to u}|+1$ is odd, i.e. cycle $C$ is a blossom.
+\end{proof}
+
+\vspace{1em}
+\section{Edmond's Blossom Algorithm}
+\vspace{1em}
+\begin{proof}
+    Based on the observations above, we design the following algorithm.
+    
+    \begin{itemize}
+        \item[] \begin{enumerate}
+            \setstretch{1.35}
+            \item Start with $M=\varnothing.$ Repeat adding edges whose endpoints are not covered by $M$ to $M$. 
+            
+            Then we have a maximal matching $M$.
+            
+            \item Construct a maximal $M$-alternating forest $F$. The process is described in \textbf{3}.
+            
+            \item Find all $\set{u,v}\in E\setminus F$ s.t. both $u$ and $v$ are outer vertices. 
+            
+            Let the set of these edges be $E_{\mathtt{Out}}$.
+            
+            \item For each $\set{u,v}\in E_{\mathtt{Out}}$, check whether $u$ and $v$ belong to the same component in $F$.
+            
+            \begin{itemize}
+                \setstretch{1.5}
+                \item[$\bullet$] If so, contract the blossoms constructed by $u$ and $v$ in \textbf{5.2} in the original graph $G$. 
+            
+                Note that in this process, $F$ and $M$ should also be updated. (Blossoms should be contracted in $F$ and $M$ corresponding to the change of $G$).
+                
+                \item[$\bullet$] If not, then $u$ and $v$ belong to different components. 
+                
+                Construct the $M$-augmenting path $P$.
+                
+                Note if exists several $M$-augmenting paths, we just take one of them.
+            \end{itemize}
+            
+            \item If no $\set{u,v}\in E_{\mathtt{out}}$ satisfies that $u$ and $v$ belong to different components, go to \underline{step 7.}
+            
+            Otherwise, go to \underline{step 6.}
+            
+            \item Let the $M$-augmenting path we construct in step 4 be $P:u_0u_1...u_{2k+1}$. 
+            
+            Construct a new matching $M'=M\setminus\set{\set{u_1,u_2},...\set{u_{2k-1},u_{2k}}}\cup\set{\set{u_0,u_1},...\set{u_{2k},u_{2k+1}}}$. 
+            
+            Jump to \underline{step 2} with this new matching $M'$.
+            
+            \item Restore $M$ to the maximum matching on $G$ by opening all blossoms. 
+            
+            The opening process is given in \textbf{2}.
+            
+            \underline{Terminate the algorithm. $M$ is the maximum matching on $G$.}
+        \end{enumerate}
+    \end{itemize}
+    
+    \vspace{1em} \hspace{1.3em}
+    Now we prove the correctness of the algorithm.
+    
+    \vspace{1em} \hspace{1.3em}
+    \textbf{(1)} First we prove that the result of the algorithm is correct.
+    
+    \hspace{1.3em}
+    By \textbf{4}, we know any $M$-augmenting path must contain two consecutive outer vertices. By the definition of $M$-alternating forest $F$, we know an edge with two endpoints being consecutive outer vertices must be an edge in $E\setminus F$. 
+    
+    \hspace{1.3em}
+    Thus, if exists no edge in $E\setminus F$ whose endpoints belong to different components of $F$, there exists no edge in $E$ whose endpoints are in different components of $F$. Then $M$-augmenting path does not exist, i.e. $M$ is a maximum matching (By \textbf{1}).
+    
+    \hspace{1.3em}
+    Thus, the $M$ returned by our algorithm is a maximum matching on $G$.
+    
+    \vspace{1em} \hspace{1.3em}
+    \textbf{(2)} 
+    Then we prove each step can function as expect correctly.
+    
+    \hspace{1.3em}
+    \underline{Step 1.} The process ensures the definition of matching and maximal matching. Thus the initial $M$ is a maximal matching.
+    
+    \hspace{1.3em}
+    \underline{Step 2}. The correctness is proved in \textbf{3}.
+    
+    \hspace{1.3em}
+    \underline{Step 3-4.} The construction of blossoms and $M$-augmenting paths is justified in \textbf{5}. The correctness of contracting blossoms is justified in \textbf{2}.
+    
+    \hspace{1.3em}
+    \underline{Step 5-6}. By \textbf{1}, we know $\set{\set{u_1,u_2},...\set{u_{2k-1},u_{2k}}}\in M$ and $u_0,u_{2k+1}$ are not covered by $M$. Thus, $M'$ is a valid matching.
+    
+    \hspace{1.3em}
+    Assume $M'$ is not a maximal one. Then exists $\mathcal{M}$ s.t. $M'\subset\mathcal{M}', |\mathcal{M}|>|M'|$. Then adding $\mathcal{M}\setminus M'$ into $M$ will generate a matching with size $|M|+1$. \underline{\textbf{Contradiction}}.
+    
+    \hspace{1.3em}
+    Thus, $M'$ is also a maximal matching.
+    
+    \hspace{1.3em}
+    \underline{Step 7}. The correctness is given in \textbf{2}.
+    
+    \vspace{1em} \hspace{1.3em}
+    \textbf{(3)} Now we prove that our algorithm will terminate and return a result in finite time. 
+    
+    \hspace{1.3em}
+    In \underline{step 6}, we generate a new maximal matching $M'$ from $M$. $|M'|=|M|-k+(k+1)=|M|+1.$ Thus, after an iteration, the size of the matching increases.
+    
+    \hspace{1.3em}
+    Obvious $|M|\le|V|=n$. Thus, the algorithm will iterate for at most $|V|=n$ times.
+    
+    \hspace{1.3em}
+    Therefore, the algorithm will terminate in finite time. 
+    
+    \vspace{1em} \hspace{1.3em}
+    In conclusion, the algorithm we designed is correct. \whiteqed
+    
+    \vspace{2em} \hspace{1.3em}
+    Now we analyze the time complexity of the algorithm.
+    
+    \hspace{1.3em}
+    Step 1 takes at most $O(|E|)$ time since at most $|E|$ edges exist in $M$.
+    
+    \hspace{1.3em}
+    Step 2 takes takes $O(|V|)$ time to construct an $M$-alternating forest. (By \textbf{3})
+    
+    \hspace{1.3em}
+    Step 3 takes at most $O(|E|)$ time to scan all edges in $E\setminus F$.
+    
+    \hspace{1.3em}
+    Obvious there are $O(|V|)$ blossoms. For each blossom, the contraction takes at most $|E|$ time. Also, there are at most $|E|$ edges in an $M$-augmenting path. Thus, Step 4 takes at most $O(|V||E|)$ time in total.
+    
+    \hspace{1.3em}
+    Step 5-6 takes $O(|E|)$ to generate a new maximal matching since $P$ contains $O(|E|)$ edges.
+    
+    \hspace{1.3em}
+    Step 7 takes at most $O(|E|)$ time since there are $O(|E|)$ edges in all blossoms.
+    
+    \hspace{1.3em}
+    For each iteration, we run step 2 to step 6. Thus, an iteration takes $O(|V||E|)$ time.
+    
+    \hspace{1.3em}
+    Since each iteration will increase the size of maximal matching $M$ by 1, the algorithm will terminate after at most $|V|$ time. 
+    
+    \hspace{1.3em}
+    Thus, the time complexity of the algorithm is $O(|V|\cdot|V||E|)=O(n^2m)$.
+\end{proof}
+
+
+\end{document}

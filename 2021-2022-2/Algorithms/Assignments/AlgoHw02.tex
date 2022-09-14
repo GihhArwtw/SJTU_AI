@@ -1,0 +1,617 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Algorithm Homework 02}}
+\author{Qiu Yihang}
+\date{March 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Problem 01}
+
+\vspace{1em}
+\subsection{Assessment of $\boldsymbol{r}$}
+\vspace{1em}
+\begin{proof}
+    Considering
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        r^{\star}<r\ &\Longleftrightarrow\ r^{\star} = \underset{C}{\max}\ {r(C)} = \underset{C}{\max}\ \frac{\sum_{(u,v)\in C}p_v}{\sum_{(u,v)\in C}c_{uv}}<r \\
+        &\Longleftrightarrow\ \forall C,\ \frac{\sum_{(u,v)\in C}p_v}{\sum_{(u,v)\in C}c_{uv}}<r \\
+        &\Longleftrightarrow\ \forall C,\ \sum_{(u,v)\in C}p_v < r\sum_{(u,v)\in C}c_{uv} = \sum_{(u,v)\in C}rc_{uv} \\ 
+        &\Longleftrightarrow\ \forall C,\ \sum_{(u,v)\in C}rc_{uv}-p_{v} > 0,
+        \\
+        r^{\star}>r\ &\Longleftrightarrow\ \exists\ C,\ \frac{\sum_{(u,v)\in C}p_v}{\sum_{(u,v)\in C}c_{uv}}>r  \\
+        &\Longleftrightarrow \exists\ C,\ \sum_{(u,v)\in C}p_v>r\sum_{(u,v)\in C}c_{uv}= \sum_{(u,v)\in C}rc_{uv} \\
+        &\Longleftrightarrow \exists\ C,\ \sum_{(u,v)\in C}rc_{uv}-p_v<0,
+    \end{align*}
+    
+    \vspace{-0.5em} \hspace{1.3em}
+    we can derive a new graph $G'_{r}=(V',E',\mathtt{weight})$ from the original graph $G=(V,E)$, where $V'=V,E'=E$, and the weight of edges is assigned as follows.
+    
+    \vspace{-1.2em}
+    $$\forall (u,v)\in E,\ \mathtt{weight}\left(\left(u,v\right)\right) = rc_{uv}-p_{v}.$$
+    
+    \vspace{-0.5em} \hspace{1.3em}
+    By the analyses above, when $r^{\star}<r,$ we know all cycles on $G'_{r}$ is of positive weight. When $r^{\star}>r,$ exists a negative cycle $C$ in graph $G'_{r}$.
+    
+    \vspace{2.5em}\hspace{1.3em}
+    Thus, we just need to apply \textbf{Bellman-Ford} Algorithm on $G'_{r}$ to see whether there exists a negative cycle or not. If exists a negative cycle, $r^{\star}>r.$ If not, then $r^{\star}<r.$
+\end{proof}
+
+\newpage
+
+\subsection{Algorithm Design}
+\vspace{1em}
+\begin{solution}
+    By \textbf{1.1}, when $r<r^{\star}$, exists a negative cycle $C$ on $G'_{r}$, which is also a cycle on $G$, s.t.
+    
+    \vspace{-1.3em}
+    $$\sum_{(u,v)\in C}rc_{uv}-p_v<0,\ \mathrm{i.e.}\ \frac{\sum_{(u,v)\in C}p_v}{\sum_{(u,v)\in C}c_{uv}}>r,\ \mathrm{i.e.}\ r(C)>r,$$
+    
+    \hspace{2.6em}
+    Thus, for any given $\epsilon$, if we can find a $\hat{r}$ which satisfies the following requirements,
+    
+    \vspace{-0.75em}
+    \begin{itemize}
+        \item[] \begin{itemize}
+            \item[] \begin{itemize}
+                \item[$\bullet$] on $G_{\hat{r}+\epsilon}^{\prime}$ (the graph derived with $r=\hat{r}+\epsilon$), we cannot find any negative cycle.
+                \item[$\bullet$] on $G'_{\hat{r}}$ (the graph derived with $r=\hat{r}$), we can find a negative cycle $C$.
+            \end{itemize}
+        \end{itemize} 
+    \end{itemize}
+    
+    \vspace{-0.75em} \hspace{2.6em}
+    we have $\hat{r}<r^{\star}<\hat{r}+\epsilon,\ r(C)>\hat{r} \Longrightarrow r(C)>\hat{r}>r^{\star}-\epsilon$, i.e. we find a good-enough cycle $C$.
+    
+    \vspace{1em} \hspace{2.6em}
+    Based on the idea above, we design the following algorithm.
+    
+    \begin{algorithm}
+        \caption{Good-Enough Cycle Search}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwProg{procedure}{Procedure}{}{end}
+        \SetKwInOut{return}{Return}
+        \SetKwProg{repeat}{repeat}{}{end}
+        
+	    \function{Bellman-Ford\ $(G)$}
+	    {
+	        Pick $s\in V$ as the source node; \quad \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\tcp{$G=(V,E).$}
+	        $\mathrm{dist}(s)\gets 0$; \quad\qquad\qquad\qquad\tcp{$\mathrm{dist}(v)$ denotes the shortest distance from $s$ to $v$.}
+	        \lFor{$v\in V\setminus\left\{s\right\}$}{\quad $\mathrm{dist}(v)\gets\infty$}
+	        \BlankLine
+	        \repeat{for $|V|-1$ times}
+	        {
+	        \For{$(u,v)\in E$}
+	            {
+	                \lIf{update$(u,v)$}
+	                {\quad $\mathrm{prev}(v) \gets u$}
+	                \tcp{if taking edge $(u,v)$ will generate a shorter path from $s$ to $v$, $update(u,v)$ updates $\mathrm{dist}(v)$ and returns $\boldsymbol{\mathrm{True}}$. \\ Otherwise, $update(u,v)$ returns $\boldsymbol{\mathrm{False}}$}
+	            }
+	        }
+	        \BlankLine
+	        \For{$(u,v)\in E$}
+	        {
+	            \If{update$(u,v)$}
+	            {
+	                Go back with the help of $\mathrm{prev}(\cdot)$ and finds a cycle $C$\;
+	                \return{$C$;}
+	            }
+	        }
+	        \return{$\varnothing$}
+	    }
+	   \BlankLine
+	   \BlankLine
+	   \BlankLine
+	   \function{Good-Enough Cycle Search\ $(G,\epsilon,r_{min},r_{max})$}{
+	        $\hat{r} \gets \lfloor(r_{min}+r_{max})/{2}\rfloor$\;
+	        $C \gets$ \textit{Bellman-Ford}$($\textit{Generate}$(G,\hat{r}))$\;
+	        \qquad\qquad\qquad\qquad\qquad\qquad\tcp{The process of $Generate(G,r)$ is explained in 1.1.}
+	        \eIf{$C=\varnothing$}
+	        {\quad\textbf{Return: }\textit{Good-Enough Cycle Search}$(G,\epsilon,r_{min},\hat{r})$;\\}
+	        {
+	        \leIf{\textit{Bellman-Ford$($Generate$(G,\hat{r}+\epsilon))=\varnothing$}}
+	        {\textbf{Return:} $C$; \\}
+	        {\textbf{Return: }\textit{Good-Enough Cycle Search}$(G,\epsilon,\hat{r},r_{max})$}
+	        }
+	   }
+    \end{algorithm}
+    
+    \hspace{2.6em}
+    The correctness of the algorithm is thoroughly explained on the previous page. As long as 
+    
+    the range $[r_{min},r_{max}]$ contains $r^{\star}$, we can always find a good-enough cycle.
+    
+    \hspace{2.6em}
+    Now we prove $r^{\star}\in[0,R].$ Obvious $r^{\star}\geq0.$ (Since $\forall u\in V,\ p_u>0;\forall (u,v)\in E,\ c_{uv}>0$.)
+    
+    \hspace{2.6em}
+    By the definition of $r^{\star}$, exists cycle $C^{\star}$ s.t. $r^{\star} = \frac{\sum_{(u,v)\in C^{\star}}p_v}{\sum_{(u,v)\in C^{\star}}c_{uv}}$. Since $C^{\star}$ is a cycle, 
+    
+    $\sum_{(u,v)\in C^{\star}}p_v=\sum_{(u,v)\in C^{\star}}p_u$. 
+    
+    \hspace{2.6em}
+    Meanwhile, since $R=\underset{(u,v)}{\max}\left\{p_u/c_{uv}\right\}$, we know
+    
+    \vspace{-2em}
+    \begin{align*}
+        r^{\star} = \frac{\sum_{(u,v)\in C^{\star}}p_v}{\sum_{(u,v)\in C^{\star}}c_{uv}} = \frac{\sum_{(u,v)\in C^{\star}}p_u}{\sum_{(u,v)\in C^{\star}}c_{uv}} \le \frac{\sum_{(u,v)\in C^{\star}} Rc_{uv}}{\sum_{(u,v)\in C^{\star}}c_{uv}} = R.
+    \end{align*}
+    
+    \vspace{-0.5em} \hspace{2.6em}
+    Thus, \textit{Good-Enough Cycle Search}$(G,\epsilon,0,R)$ can return a good-enough cycle.
+    
+    \vspace{2em} \hspace{2.6em}
+    Now we analyze the time complexity of the algorithm given above. Let the time complexity
+    
+    be $T(|V|,\epsilon,range)$, where $range=r_{max}-r_{min}$.
+    
+    \hspace{2.6em}
+    We know the time complexity of \textit{Bellman-Ford} is $T(Bellman\text{-}Ford) = O(|V||E|)=O(|V|^3).$ 
+    
+    (When $|E|$ is unknown, we have $|E|\le 2\times\frac{|V|\left(\left|V\right|-1\right)}{2}=|V|(|V|-1),\mathrm{i.e.}\ |E|=O\left(|V|^2\right).$) 
+    
+    \hspace{2.6em}
+    Moreover, when $range<\epsilon,$ it is trivial that $T\left(|V|,\epsilon,range\right)=2\times T(Bellman\text{-}Ford).$
+    
+    \hspace{2.6em}
+    Therefore,
+    
+    \vspace{-2em}
+    \begin{align*}
+        T(|V|,\epsilon,range) &\le 2\times T(Bellman\text{-}Ford) + T\left(|V|,\epsilon,\frac{range}{2}\right) \\
+        &= 2T(Bellman\text{-}Ford) + T\left(|V|,\epsilon,\frac{range}{2}\right) \\
+        &= 2T(Bellman\text{-}Ford) + 2T(Bellman\text{-}Ford) +  T\left(|V|,\epsilon,\frac{range}{2^2}\right) \\
+        &= \dots \\
+        &= \left(\log(range)-\log(\epsilon)\right)\times 2T(Bellman\text{-}Ford) + T\left(|V|,\epsilon,\epsilon\right)\\
+        &= \left(\log(range)-\log(\epsilon)\right)O(|V|^3).
+    \end{align*}
+    
+    \hspace{2.6em}
+    We run \textit{Good-Enough Cycle Search}$(G,\epsilon,0,R)$ to get the result, i.e. $range=R.$
+    
+    \vspace{1em} \hspace{2.6em}
+    Thus, the time complexity of our algorithm is $O\left(|V|^3\left(\log(R)-\log(\epsilon)\right)\right).$
+\end{solution}
+
+\vspace{1em}
+\section{Problem 02}
+\vspace{1em}
+
+\subsection{Eulerian Circuit and Eulerian Path}
+\begin{solution}
+    We use $\mathtt{deg_{in}}(v)$ and $\mathtt{deg_{out}}(v)$ to denote the in-degree and out-degree of vertex $v$ respectively.
+    
+    \hspace{2.6em}
+    First we prove that a strongly connected directed graph $G=(V,E)$ contains Eulerian circuits \textbf{iff.} the in-degree and out-degree of each vertex $v\in V$ are the same.
+    
+    
+    \hspace{-2em}
+    \textbf{\textit{Proof of Neccesity.}}
+    
+    \vspace{0.3em} \hspace{0.5em}
+    We prove the necessity by contradiction. 
+    
+    \hspace{0.5em}
+    Assume exists $u\in V$ s.t. $\mathtt{deg_{in}}(u)\neq \mathtt{deg_{out}}(u),$ while $G$ contains Eulerian circuits. 
+    
+    \hspace{0.5em}
+    Without loss of generality, suppose $\mathtt{deg_{in}}(u)>\mathtt{deg_{out}}(u).$ 
+    
+    \hspace{0.5em}
+    Since $\sum_{v\in V}\mathtt{deg_{in}}(v)=\sum_{v\in V}\mathtt{deg_{out}}(v)$, we know exists $u'\neq u$ s.t. $\mathtt{deg_{in}}(u')<\mathtt{deg_{out}}(u').$
+    
+    \hspace{0.5em}
+    By the definition of Eulerian circuit, each edge will be visited once and only once. Then all edges adjacent to $u$ will be visited once and only once. Thus, the Eulerian circuit will visit $u$ through an edge and leave from $u$ through another unvisited edge.
+    
+    \hspace{0.5em}
+    After visiting $u$ $\mathtt{deg_{out}}(u)$ times, we find that there are still $\left(\mathtt{deg_{in}}(u)-\mathtt{deg_{out}}(u)\right)$ edges adjacent to $u$ remaining unvisited. However, if we take any of these edges to visit $u$, we cannot find any unvisited edge out of it, i.e. the last vertex in the Eulerian circuit is $u$.
+    
+    \hspace{0.5em}
+    Similarly, after visiting $u'$ $\mathtt{deg_{in}}(u')$ times, we cannot find any unvisited edge into $u'$, i.e. the first vertex in the Eulerian circuit is $u'$.
+    
+    \hspace{0.5em}
+    Meanwhile, the Eulerian circuit is a circuit, i.e. the first vertex and the last vertex must be the same. Thus, $u=u'$. \textbf{Contradiction!}
+    
+    \hspace{0.5em}
+    Therefore, a strongly connected graph $G=(V,E)$ contains an Eulerian circuit 
+    
+    \hspace{5.5em}
+    $\Longrightarrow\ \forall v\in V, \mathtt{deg_{in}}(v)=\mathtt{deg_{out}}(v).$
+    
+    \vspace{2em}
+    \hspace{-2em} \textbf{\textit{Proof of Sufficiency.}}
+    
+    \vspace{0.3em} \hspace{0.5em}
+    We define a cycle-search action on strongly connected graph $\hat{G}$ as follows.
+    
+    \vspace{-0.5em}
+    \begin{itemize}
+        \item[]\begin{itemize}
+            \item[] \begin{itemize}
+            \item[$\bullet$] Select any vertex $u\in V$ s.t. on graph $\hat{G}$, $\mathtt{deg_{in}}(u)=\mathtt{deg_{out}}(u)>0$.
+            \item[$\bullet$] Since $\hat{G}$ is strongly connected, we can always find a cycle $C$ on $G$ starting from $u$ and ending at $u$. 
+            \item[$\bullet$] Find the place of $u$ in $C_{Euler}.$ Replace it with $C$, i.e. to insert cycle $C$ into $C_{Euler}.$
+        \end{itemize}
+        \end{itemize} 
+    \end{itemize}
+    
+    \hspace{0.5em}
+    Then we can construct an Eulerian circuit by following steps.
+    
+    \vspace{-0.75em}
+    \begin{itemize}
+        \item[]\begin{itemize}
+            \item[] \begin{enumerate}
+            \item $G_0=G.$
+            \item Apply cycle-search action on $G_t$. In this process, we update $C_{Euler}.$
+            \item We can derive a new graph $G_{t+1}$ from $G_t$ by removing $C$ from $G_t$. 
+            \item For each strongly connected component of $G_{t+1}$ which contains more than one vertex, we repeat step \textbf{2} to step \textbf{4} until $G_{t+1}=(V,E_{t+1}), E_{t+1}=\varnothing$.
+            \item $C_{Euler}$ is an Eulerian circuit.
+        \end{enumerate}
+        \end{itemize} 
+    \end{itemize}
+    
+    \vspace{-0.5em} \hspace{0.5em}
+    We can prove $C_{Euler}$ is an Eulerian circuit. It is trivial that $C_{Euler}$ is a circuit.
+    
+    \hspace{0.7em}
+    It is also trivial that in step \textbf{4}, there are no edges between each strongly connected component. Otherwise, since we always remove even edges in step \textbf{3} (this is guaranteed by the property of circuit), exists a component \textbf{c} s.t. $\mathtt{deg}_{in}$(\textbf{c})$\neq\mathtt{deg}_{out}$(\textbf{c}), which contradicts to $\forall v\in V, \mathtt{deg}_{in}(v)=\mathtt{deg}_{out}(v)$.
+    
+    \hspace{0.5em}
+    During the process, all edges are removed (for only once), i.e. all edges appears in $C_{Euler}$ once.
+    
+    \hspace{0.5em}
+    Therefore, $C_{Euler}$ is an Eulerian circuit, i.e.
+     
+    \hspace{5.5em}
+    a strongly connected graph $G=(V,E)$ contains an Eulerian circuit 
+    
+    \hspace{5.5em}
+    $\Longrightarrow\ \forall v\in V, \mathtt{deg_{in}}(v)=\mathtt{deg_{out}}(v).$
+    
+    \vspace{2em}\hspace{-2em}
+    \textbf{\textit{In conclusion,}}
+    
+    \hspace{0.6em}
+    a strongly connected directed graph $G=(V,E)$ contains Eulerian circuits \textbf{iff.} the in-degree and out-degree of each vertex $v\in V$ are the same.\qedsymbol
+    
+    \vspace{3em} \hspace{0.5em}
+    The sufficient and necessary condition for the existence of an Eulerian path on a strongly connected graph $G=(V,E)$ is that exactly one of the following two conditions is satisfied.
+
+    \vspace{-0.5em}
+    \begin{itemize}
+        \item[] \begin{itemize}
+            \item[$\bullet$] For any vertex $v\in V$, $\mathtt{{deg}_{in}}(v)=\mathtt{deg_{out}}(v).$
+            \item[$\bullet$] Exists exactly one $u\in V$ s.t. $\mathtt{deg_{in}}(u)=\mathtt{deg_{out}}(u)+1$ and exactly one $w$ s.t. $\mathtt{deg_{in}}(w)=\mathtt{deg_{out}}(w)-1$. For any vertex $v\in V\setminus\left\{u,w\right\},\ \mathtt{deg_{in}}(v)=\mathtt{deg_{out}}(v).$
+        \end{itemize}
+    \end{itemize}
+    
+    \hspace{33.9em}
+    \textit{End of Solution.}
+\end{solution}
+
+
+\subsection{Algorithm Design}
+\vspace{1em}
+\begin{solution}
+    In fact, the process of our algorithm to find an Eulerian circuit is fully explained in \textbf{2.1} \textit{Proof of Sufficiency}. The pseudo-code is given below.
+    
+    \begin{algorithm}
+        \caption{Eulerian Circuit Search}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwProg{procedure}{Procedure}{}{end}
+        \SetKwInOut{return}{Return}
+        \SetKwProg{repeat}{repeat}{}{end}
+	    
+	    \function{Eulerian Circuit Search\ $(G)$}{
+	        \tcp{Note that $G=(V,E).$}
+	        Select $u\in V$ randomly\;
+	        $C_{Euler}\gets\varnothing$; \qquad\qquad\qquad\qquad\tcp{We use single linked list to record the cycle.}
+	        $\forall v\in V,\ place(v)\gets\varnothing$\; \tcp{$place(v)$ denotes one of the appearances of $v$ in $C_{Euler}$, i.e. a pointer directing to a unit of $C_{Euler}$.}
+	        \BlankLine
+	        \BlankLine
+	        \BlankLine
+	        \While{$E\neq\varnothing$}{
+	            Select $(u,v)\in E$\;
+	            \tcp{This guarantees that $u$ and $v$ are in a strongly connected component of $G$ which contains more than one vertex.}
+	            $C\gets$\textit{Travel}($G,u$), which also remove $C$ from $E$\;
+	            \ \ \qquad\qquad\qquad\qquad\qquad\qquad\tcp{Detailed process of $Travel(\cdot)$ is defined below.}
+	            $C_{Euler}\gets C_{Euler}\cup C$;\quad\ \tcp{Detailed process of this step is discussed below.}
+	        }
+	        \return{$C_{Euler}$}
+	    }
+	    
+    \end{algorithm}
+
+    \begin{algorithm}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwProg{procedure}{Procedure}{}{end}
+        \SetKwInOut{return}{Return}
+        \SetKwProg{repeat}{repeat}{}{end}
+        
+        (cont'd)
+        \BlankLine
+        \BlankLine
+        \BlankLine
+        
+	    \function{Travel\ $(G,u_0)$}{
+	        \tcp{Note that $G=(V,E).$}
+	        $C\gets\varnothing$;\qquad\qquad\qquad\qquad\qquad\qquad\qquad\tcp{We use single linked list to record $C$.}
+	        $u \gets u_0, v \gets$ anything but $u_0$\;
+	        \While{$v\neq u_0$}
+	        {
+	            Select an edge $(u,v)$\;
+	            remove $(u,v)$ from $E$\; \tcp{With help of adjacency list, we just need to remove a unit in the adjacency list of $u$. This can be completed with $O(1)$ time.}
+	            $C\gets C\cup (u,v)$\;
+	            $u\gets v$\;
+	        }
+	    }
+    \end{algorithm}
+
+
+\vspace{-1em} \hspace{1.3em}
+We use an adjacency list to store $E$, use single linked list to store cycle $C$ and $C_{Euler}$. 
+
+\hspace{1.3em}
+How we realize $C_{Euler}\gets C_{Euler}\cup C$ is explained as follows. Considering $C$ is generated by Travel$(G,u)$, we know the first and the last vertex $C$ visits are both $u$. Therefore, by inserting $C$ between $place(u)$ and the next unit of $place(u)$, we successfully insert $C$ into $C_{Euler}$.
+
+\vspace{2em} \hspace{1.3em}
+Now we analyze the time complexity of our algorithm.
+
+\hspace{1.3em}
+By the analyses above, both removing an edge and inserting $C$ into $C_{Euler}$ takes $O(1)$ time. Both node selection in \textit{Eulerian Circuit Search$(G)$} and edge selection in $Travel(G,u)$ takes $O(1)$ time. During the process, each edge is visited once and only once, i.e. taking $O(|E|)$ time.
+
+\hspace{1.3em}
+Thus, the total time complexity of our algorithm is $O(|E|).$
+\end{solution}
+
+\vspace{2em}
+\section{Problem 03}
+\vspace{1em}
+\subsection{$\boldsymbol{G'}$ is Not Necessarily Strongly Connected}
+
+\vspace{1em}
+\begin{solution}
+    A counter-example is as follows.
+    \vspace{-0.5em}
+    \begin{figure}[htbp]
+    	\centering
+    	{\includegraphics[width=8cm]{AlgoHw02-fig01.pdf}}
+    \end{figure}
+\end{solution}
+
+\vspace{1em}
+\subsection{No Cut Edge Exists in $\boldsymbol{G}$ If $\boldsymbol{G}'$ is Strongly Connected}
+\vspace{1em}
+\begin{proof}
+    Here we use $p_{u\rightarrow v}$ to denote the set of all edges on a particular path from $u$ to $v$.
+
+    \hspace{1.3em}
+    Since $G'$ is strongly connected, we know for any vertices $u,v\in V$, exists a path $p_{u\rightarrow v}$ from $u$ to $v$ and a path $p_{v\rightarrow u}$ from $v$ to $u$. Obvious $p_{u\rightarrow v}\cap p_{v\rightarrow u}=\varnothing$. Thus, in undirected $G$, exist two totally different paths between $u$ and $v$, i.e. $p_{u\rightarrow v}$ and $p_{v\rightarrow u}$. Removing any single edge from $G$ will destroy at most 1 path between $u$ and $v$, but the other path between $u$ and $v$ remains.
+    
+    \hspace{1.3em}
+    Therefore, for any vertices $u,v\in V$, after removing any single edge, $u$ and $v$ are still connected, i.e. 
+    removing any single edge from $G$ will still give a connected graph.
+    
+    \hspace{38.75em}
+    \textit{Qed.}
+\end{proof}
+
+\vspace{5em}
+\subsection{$\boldsymbol{G}'$ is Strongly Connected If No Cut Edge Exists in $\boldsymbol{G}$}
+\vspace{1em}
+
+\begin{proof}
+    Use $\mathtt{des}(u)$ and $\mathtt{anc}(u)$ to denote the set containing all descendants and ancestors of vertex $u$ in the DFS tree respectively.
+    
+    \hspace{1.3em}
+    We prove the proposition by contradiction. 
+    
+    \hspace{1.3em}
+    Assume when removing any edge from $G$ still gives a connected graph, exists $u,v\in V$ s.t. there is no path from $u$ to $v$ on $G'$.
+    
+    \hspace{1.3em}
+    Since $G'$ is still connected after removing a single edge, $G$ itself is connected. Then there exists a path $p_{v\rightarrow u}$ from $v$ to $u$ on $G'$, otherwise $u$ and $v$ are not connected in $G$. Meanwhile since DFS will definitely visit all vertices in $G$, we know $v$ is an ancestor of $u$.
+    
+    \hspace{1.3em}
+    It is trivial that $\forall w\in \left\{u\right\}\cup\mathtt{des}(u),\ \forall x\in\left\{v\right\}\cup\mathtt{anc}(v)$, there are no paths from $w$ to $x$. Otherwise, $u\rightarrow w\rightarrow x\rightarrow v$ is a path from $u$ to $v$. This yields that in graph $G$, all paths between $x$ to $w$ must contain edges in $p_{v\rightarrow u}$. 
+    
+    \hspace{1.3em}
+    Thus, if we remove any edge in $p_{v\rightarrow u}$ from $G$, there is no path between $w$ and $x$. \textbf{Contradiction} to $G$'s property, i.e. removing any single edge from $G$ will still give a connected graph.
+    
+    \vspace{2em} \hspace{1.3em}
+    Therefore, if removing any single edge from $G$ can still give a connected graph, $G'$ are strongly connected.
+    
+    \hspace{38.75em}
+    \textit{Qed.}
+\end{proof}
+
+\newpage
+\subsection{Algorithm Design}
+\vspace{1em}
+\begin{solution}
+    We know an edge removing which would make a undirected graph no longer connected is called a \textit{cut edge}.
+    
+    \hspace{2.6em}
+    Inspired by \textbf{3.2} and \textbf{3.3}, we  generate a $G'$ from $G$ by orienting edges as follows.
+    
+    \hspace{2.6em}
+    For each edge in the DFS tree, the direction is from the parent to the child; for other edges, the direction is from the descendant to the ancestor.
+    
+    \hspace{2.6em}
+    By the analyses in \textbf{3.2} and \textbf{3.3}, within a strongly connected component $C=(V_c,E_c)$ of $G'$, there are no cut edge among $V_c$ on $G$ and cut edges appear and only appear between different strongly connected component. 
+    
+    \hspace{2.6em}
+    Therefore, edges between two vertices in different strongly connected components of $G'$ are cut edges. Based on the idea, we can design an algorithm as follows.
+    
+    \begin{algorithm}
+        \caption{Cut Edge Search}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwProg{procedure}{Procedure}{}{end}
+        \SetKwInOut{return}{Return}
+        \SetKwProg{repeat}{repeat}{}{end}
+	    
+	    \procedure{Generate\ $(G)$}
+	    {
+	        $T\gets DFS(G)$; \qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\quad\tcp{T is the DFS tree. }
+	        \qquad\qquad\quad\tcp{Meanwhile, orient edges on $G$ from the parent to the children.}
+	        \For {$e\in E$}{
+	            \lIf{$e\notin T$}{\quad Orient $e$ from the descendant to the ancestor in $T$}
+	        }
+	    }
+	    \BlankLine
+	    \BlankLine
+	    \BlankLine
+	    \function{Cut Edge Search\ $(G)$}{
+	        $G'\gets G, G'\gets Generate(G'$)\;
+	        \textit{Strongly Connected Component Search}$(G')$\;
+	        \tcp{Implement the algorithm we discussed in Lecture 4.}
+	        \tcp{Use $comm(v)$ to record the strongly connected component involving $v$.}
+	        \BlankLine
+	        \BlankLine
+	        \BlankLine
+	        \textit{Cut Edges}$\gets\varnothing$\;
+	        \For{$(u,v)\in E$}{
+	            \lIf{$comm(u)\neq comm(v)$}{\textit{Cut Edges}$\gets$\textit{Cut Edges}\ $\cup\left\{u,v\right\}$}
+	        }
+	        \return{\textit{Cut Edges}}
+	    }
+    \end{algorithm}
+    
+    \vspace{-1em}
+    \hspace{2.6em}
+    Now we analyze the time complexity of the algorithm above.
+    
+    \hspace{2.6em}
+    We know \textit{Strongly Connected Component Search}$(G)$ runs DFS twice on the graph $G$, taking $O(|V|+|E|)$ time. Meanwhile, \textit{Generation}$(G)$ runs a DFS on $G$ and then scans all edges in $E$. Thus, \textit{Generation}$(G)$ take $O(|V|+|E|)$ time.
+    
+    \hspace{2.6em}
+    Therefore, our algorithm takes $O(|V|+|E|)$ time.
+\end{solution}
+
+\newpage
+
+\section{Problem 04}
+\vspace{1em}
+\subsection{Dijkstra-Variant's Faliure on DAG}
+\vspace{1em}
+\begin{disproof}
+    A counter-example is as follows, where $G$ is a directed graph.
+    
+    \vspace{-3em}
+    \begin{align*}
+        G\ = \ (&V,E,\mathtt{weight}), \\
+        &V = \left\{1,2,3\right\}, \\
+        &E = \left\{(1,2),(1,3),(2,3)\right\}, \\
+        & \mathtt{weight}\left(1,2\right)=-100, \mathtt{weight}\left(1,3\right)=1, \mathtt{weight}\left(2,3\right)=100.
+    \end{align*}
+    
+    \vspace{-1.2em} \hspace{2.6em}
+    If we apply the Dijkstra-Variant Algorithm on $G$, we get $G'=(V,E,w')$, where $w'(1,2)=0,$
+    
+    $w'(1,3)=101, w'(2,3)=200.$ The shortest path from $1$ to $3$ on $G'$ is $1\rightarrow 3$. However, the shortest
+    
+    path from $1$ to $3$ on $G$ is $1\rightarrow 2\rightarrow 3$, whose total weight is $0$, smaller than $1$, the weight of $1\rightarrow 3.$
+    
+    \vspace{1em} \hspace{2.6em}
+    Therefore, the algorithm does not work on directed acyclic graphs.
+\end{disproof}
+
+\vspace{1em}
+\subsection{Dijkstra-Variant's Success on Directed Grids}
+\vspace{1em}
+\begin{proof}
+    We define $\mathtt{rank}(v_{ij})\triangleq i+j$. 
+    
+    \hspace{1.36em}
+    We use $\mathtt{weight}_G(\cdot)$ to denote the weight of a path on graph $G$. Let $\mathcal{P}_{u\rightarrow w}$ be the set containing all paths from $u$ to $w$ on $G'$.
+    
+    \vspace{1em} \hspace{1.3em}
+    In a directed grid, for any edge $e\in E$, it is either from $v_{ij}$ to $v_{(i+1)j}$ or from $v_{ij}$ to $v_{i(j+1)}$. Obvious for any edge $(u,w)\in E$, $\mathtt{rank}(w)=\mathtt{rank}(u)+1.$
+    
+    \hspace{1.3em}
+    Thus, along any path on $G$, the $\mathtt{rank}$ of the vertices is monotonously increasing. Moreover, the difference of $\mathtt{rank}$ of two adjacent vertices on any path is exactly 1.
+    
+    \hspace{1.3em}
+    Therefore, for any $u,w\in V$, if exists a path from $u$ to $w$ on $G'$, 
+    
+    \begin{itemize}
+        \item[] \begin{itemize}
+            \setstretch{1.2}
+            \item[$\bullet$] For any $p\in\mathcal{P}_{u\rightarrow w}$, $p$ is also a path from $u$ to $w$ on $G$.
+            \item[$\bullet$] $\mathtt{rank}(w)>\mathtt{rank}(u)$;
+            \item[$\bullet$] All paths from $u$ to $w$ consists of  $\left(\mathtt{rank}(w)-\mathtt{rank}(u)\right)$ edges.
+            \item[$\bullet$] For any $p\in\mathcal{P}_{u\rightarrow w}$, $\mathtt{weight}_G(p) = \mathtt{weight}_{G'}(p) + \left(\mathtt{rank}(w)-\mathtt{rank}(u)\right)W$.
+            \item[$\bullet$] Obvious $\underset{p\in\mathcal{P}_{u\rightarrow w}}{\min}\mathtt{weight}_G(p)=\underset{p\in\mathcal{P}_{u\rightarrow w}}{\min}\mathtt{weight}_{G'}(p).$ 
+            \setstretch{1.5}
+            \item[] (Since for fixed $u$ and $w$, $\left(\mathtt{rank}(w)-\mathtt{rank}(u)\right)W$ is a constant.)
+        \end{itemize}
+    \end{itemize}
+    
+    \vspace{0.5em} \hspace{1.3em}
+    Thus, the shortest path $p$ from $u$ to $w$ on $G'$ found by Dijkstra-Variant Algorithm is also a shortest path from $u$ to $w$ on $G,$ i.e.
+    
+    \hspace{7.3em}
+    the variant of Dijkstra algorithm works on directed grids.
+\end{proof}
+
+
+\vspace{3em}
+\section{Rating and Feedback}
+\vspace{1em} \hspace{1.2em}
+The completion of this homework takes me five days, about $27$ hours in total. Still, writing a formal solution is the most time-consuming part. But I suppose I am getting familiar with \textit{latex}.
+
+The ratings of each problem is as follows.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{lr}
+        \hline
+        Problem & Rating \\
+        \hline 
+        1.1 & 3 \\
+        1.2 & 2 \\
+        \hline
+        2.1 & 2 \\
+        2.2 & 2 \\
+        \hline
+        3.1 & 1 \\
+        3.2 & 2 \\
+        3.3 & 3 \\
+        3.4 & 2 \\
+        \hline
+        4.1 & 1 \\
+        4.2 & 2 \\
+        \hline
+\end{tabular}
+\caption{Ratings.}
+\end{table}
+
+This time I finish all problems on my own. (It is possible that some ideas come from some gossips with Sun Yilin.)
+
+\end{document}

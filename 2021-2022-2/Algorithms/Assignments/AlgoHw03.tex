@@ -1,0 +1,633 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Algorithm Homework 03}}
+\author{Qiu Yihang}
+\date{April 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Problem 01}
+
+\vspace{1em}
+\begin{solution}
+    We design algorithm as follows.
+    
+    \vspace{-0.5em}
+    \begin{algorithm}
+        \caption{Optimal Order to Process Customers}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwProg{procedure}{Procedure}{}{end}
+        \SetKwInOut{return}{Return}
+        \SetKwProg{repeat}{repeat}{}{end}
+        
+	    \function{Optimal Order $(t[1,2,...,n])$}
+	    {
+	        $index\gets [1,2,...,n]$\;
+	        sort($t,index$)\; \tcp{Sort $t$ and $index$ by $t$ from the smallest to the largest. After the sort, $index[\cdot]$ stores the index of the customer whose service time is $t[\cdot]$.}
+	        \return{$index$}
+	   }
+    \end{algorithm}
+    
+    \vspace{-1em} \hspace{3em}
+    In short, we serve customers in order of increasing service time $t_i$.
+    
+    \vspace{1em}\hspace{0.5em}
+    Now we prove the correctness of the algorithm. 
+    
+    \hspace{3em}
+    Let our order be $k_1, k_2, ..., k_n$. Define $\tau_i\triangleq t_{k_i}, A_i\triangleq\sum_{j=1}^{i}\tau_j.$ Then $\tau_1\le\tau_2\le...\tau_n.$ 
+    
+    \hspace{3em}
+    The total waiting time is
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \hat{T} = \sum_{i=1}^{n}\sum_{j=1}^{i} t_{k_j} = \sum_{i=1}^{n} A_i
+    \end{align*}
+    
+    \vspace{-1em} \hspace{3em}
+    For any order $m_1, m_2, ... , m_n$, define $B_i\triangleq\sum_{j=1}^{i}t_{n_j}.$ The total waiting time is 
+    
+    \vspace{-1em}
+    $$T = \sum_{i=1}^{n}\sum_{j=1}^{i} t_{m_j} = \sum_{i=1}^{n} B_i$$
+    
+    \vspace{-0.5em}\hspace{0.5em}
+    Now we prove $\forall i, A_i\le B_i$ by contradiction. Assume $\exists q$ s.t. $A_q>B_q$. Then $\tau_{q}>t_{m_q}.$ 
+    
+    \hspace{3em}
+    Since $\tau_1\le\tau_2\le...\le\tau_n$, we know $\tau_1\le\tau_2\le...\le\tau_{q-1}\le t_{m_q}<\tau_q\le\tau_{q+1}\le...\tau_{n}$, 
+    
+    \hspace{12em}
+    i.e. $t_{m_q}\notin\set{\tau_1,\tau_2,...\tau_n}=\set{t_{m_1},t_{m_2},...t_{m_n}}$. \underline{\textbf{Contradiction.}}
+    
+    \hspace{3em}
+    Therefore, we have
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        T &= \sum_{i=1}^{n} B_i \geq \sum_{i=1}^{n} A_i = \hat{T}
+    \end{align*}
+    
+    
+    \hspace{0.5em}
+    Thus, the order given by our algorithm is the optimal order with minimum total waiting time.
+\end{solution}
+
+\vspace{1em}
+\section{Problem 02}
+\vspace{1em}
+
+\subsection{In a Matroid, Maximal Independent Sets are of the Same Size}
+\vspace{1em}
+\begin{proof}
+We prove maximal independent sets in $M$ are of the same size by contradiction.
+
+\hspace{1.3em}
+Suppose exist two maximal independent sets $A,B$ in $M=(U,\mathcal{I})$. Then $A,B\in\mathcal{I}$. Without loss of generality, assume $|A|>|B|.$
+
+\hspace{1.3em}
+Since $B$ is a maximal independent set, there is no $C\in\mathcal{I}$ s.t. $B\subsetneq C$. Meanwhile, by \textbf{Exchange Property}, we know $\exists\ x\in A\setminus B$ s.t. $B\cup\set{x}\in\mathcal{I}$, i.e. exists an independent set $\widetilde{B}=B\cup\set{x}\in\mathcal{I}$ s.t. $B\subsetneq \widetilde{B}$. \underline{\textbf{Contradiction}}.
+
+\hspace{1.3em}
+Thus, maximal independent sets are of the same size.
+\end{proof}
+
+\vspace{1em}
+\subsection{Matroids on a Simple Undirected Graph}
+\vspace{1em}
+\begin{solution}
+    First we show that $M=(E,\mathcal{S})$ is a matroid, 
+    
+    \hspace{2.6em}
+    i.e. to prove $M$ has possess hereditary property and exchange property.
+    
+    \vspace{1em} \hspace{-2em}
+    \underline{\textbf{Proof of Hereditary Property.}}
+    
+    \hspace{2.6em}
+    Obvious $\varnothing\in\mathcal{S}$, i.e. $\mathcal{S}$ is non-empty.
+    
+    \hspace{2.6em}
+    For any $A\in\mathcal{S}$, by the definition of $\mathcal{S}$, we know $A\subset E$ and $A$ is acyclic. Since removing edges from an acyclic graph still gives an acyclic graph, we know $\forall B\subset A$, $B$ is acyclic, i.e. $B\in\mathcal{S}$.
+    
+    \hspace{2.6em}
+    Thus, for every $A\in\mathcal{S}$ and $B\subset A$, it holds that $B\in\mathcal{S}$. \whiteqed
+    
+    \vspace{1em} \hspace{-2em}
+    \underline{\textbf{Proof of Exchange Property.}}
+    
+    \hspace{2.6em}
+    For every $A,B\in\mathcal{S}$ with $|A|<|B|$, we know exists $x=(u,v)\in B$ s.t. $u$ and $v$ are not connected in $A$. (Otherwise, $\forall u,v$ s.t. $u$ and $v$ are connected in $B$, $u$ and $v$ are also connected in $A$. Then $B$ must contain a cycle since at most $|A|+1$ vertices are connected in $B$, while the number of edges $|B|\geq|A|+1$.)
+    
+    \hspace{2.6em}
+    Therefore, $A\cup\set{(u,v)}$ does not contain a cycle, i.e. $A\cup\set{x}=A\cup\set{(u,v)}\in\mathcal{S}$. Moreover, since $u$ and $v$ are not connected in $A$, $(u,v)\notin A$, i.e. $x=(u,v)\in B\setminus A$.
+    
+    \hspace{2.6em}
+    Thus, for any $A,B\in\mathcal{S}$, exists some $x\in B\setminus A$ s.t. $A\cup\set{x}\in\mathcal{S}$. \whiteqed
+    
+    \vspace{2em} \hspace{2.6em}
+    \underline{In conclusion, $M$ is a matroid.} \qedsymbol
+    
+    \vspace{2em} \hspace{2.6em}
+    By the definition of $\mathcal{S}$, we know all independent sets in $M$ can induce to forests in $G$. Thus, $\forall A\in\mathcal{S}, |A|\le |V|-1.$ Obvious any spanning tree $T\in\mathcal{S}$ while $|T|=|V|-1$. Thus, the maximal sets of this matroid are \underline{\textbf{all spanning trees}} of $G$.
+\end{solution}
+
+\vspace{3em}
+\subsection{Correctness of the Given Algorithm}
+\vspace{1em}
+\begin{proof}
+    From the algorithm, we know $\set{x}\in\mathcal{I}$ and $\forall S'\in\mathcal{I}, \forall y\in S', w(x)\geq w(y).$
+    
+    \hspace{1.3em}
+    Now we prove that there exists a maxmimal independent set $S'\in\mathcal{I}$ with maximum weight containing $x$ by contradiction.
+    
+    \vspace{2em} \hspace{1.3em}
+    \underline{\textbf{Assumption.}} Assume all maximum independent sets with maximum weight do not include $x$. 
+    
+    \hspace{1.3em}
+    We choose an arbitrary maximum independent set $S$ with maximum weight. By hereditary property, we know $\forall A\subset S, A\in\mathcal{I}$.
+    
+    \vspace{1em} \hspace{1.3em}
+    Define $X_1\triangleq\set{x}.$ We already know $X_1\in\mathcal{I}$.
+    
+    \hspace{1.3em}
+    Pick $A_2\subset S$ s.t. $|A_2|=2$, we know $A_2\in\mathcal{I}$. 
+    
+    \hspace{3.9em}
+    By exchange property, exists some $y_2\in A_2\setminus X_1$ s.t. $X_2\triangleq X_1\cup\set{y_2}\in\mathcal{I}$. 
+    
+    \hspace{3.9em}
+    We have $|X_2|=2.$
+    
+    \hspace{1.3em}
+    Pick $A_3\subset S$ s.t. $|A_3|=3$, we know $A_3\in\mathcal{I}$. 
+    
+    \hspace{3.9em}
+    By exchange property, exists some $y_3\in A_3\setminus X_2$ s.t. $X_3\triangleq X_2\cup\set{y_3}\in\mathcal{I}$.
+    
+    \hspace{3.9em}
+    We have $|X_3|=3.$
+    
+    \hspace{1.3em}
+    ...
+    
+    \hspace{1.3em}
+    Pick $A_{|S|}=S\subset S$ s.t. $|A_{|S|}|=|S|$, we know $A_{|S|}\in\mathcal{I}$. 
+    
+    \hspace{3.9em}
+    By exchange property, exists some $y_{|S|}\in A_{|S|}\setminus X_{|S|-1}$ s.t. $X_{|S|}\triangleq X_{|S|-1}\cup\set{y_3}\in\mathcal{I}$. 
+    
+    \hspace{1.3em}
+    We have $\left|X_{|S|}\right|=|S|,$ i.e. $X_{|S|}$ is a maximal independent set.
+    
+    \vspace{2em} \hspace{1.3em}
+    Now we consider $X_{|S|}$ and $S$. Obvious exists exactly one $y_0$ s.t. $y_0\in S, y_0 \notin X_{|S|}.$
+    
+    \hspace{1.3em}
+    Therefore, we have 
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        w(X_{|S|}) &= w(x) + \sum_{y\in X_{|S|},\ x\neq y} w(y)\\
+        &= w(x) + \sum_{y\in S\ \land\ y\in X_{|S|}} w(y) \\
+        & \geq w(y_0) + \sum_{y\in S\ \land\ y\in X_{|S|}} w(y) \\
+        &= \sum_{y\in S} w(y) = w(S).
+    \end{align*}
+    
+    \hspace{1.3em}
+    Meanwhile, by the assumption, we know $w(S)>w(X_{|S|}).$ \underline{\textbf{Contradiction.}}
+    
+    \vspace{2em} \hspace{1.3em}
+    Thus, there must be a maximal independent set $S'\in\mathcal{I}$ with maximum weight containing $x$.
+\end{proof}
+
+\newpage
+\subsection{MST Case}
+\vspace{1em}
+\begin{solution}
+    We can solve MST using algorithm in \textbf{2.3} as follows.
+    
+    \hspace{2.6em}
+    Let the graph be $G=(V,E,\mathtt{weight})$. we define matroid $M=(E,\mathcal{S}),$ where $\mathcal{S}=\set{F\subset E\mid F\text{ is acyclic}}$.
+    
+    \hspace{2.6em}
+    $w:E\mapsto\mathbb{R}^*$ is defined as follows. 
+    
+    \hspace{2.6em}
+    Let $w_{max} = \underset{(u,v)\in E}{\max}\mathtt{weight}\left((u,v)\right)$. We define $w\left((u,v)\right)=w_{max} - \mathtt{weight}\left((u,v)\right)\geq 0$.
+    
+    \vspace{0.5em} \hspace{2.6em}
+    Then we apply the algorithm in \textbf{2.3} on $M$ and $w$. The output of the algorithm is a Minimum
+    
+    \hspace{0.6em}
+    Spanning Tree of $G$. \qedsymbol
+    
+    \vspace{2em} \hspace{0.6em}
+    The reason that it is equivalent to Kruskal's Algorithm is as follows.
+    
+    \hspace{0.6em}
+    In \textbf{Kurskal's Algorithm}, we select edges in order of increasing weight of edge. Also, we only pick the edge when the addition of the edge won't cause a cycle. Since selecting edges in order of increasing $\mathtt{weight}$ is exactly picking edges in order of decreasing $w$, and [the addition of the edge won't cause a cycle] $\Longleftrightarrow$ $S\cup\set{x}\in\mathcal{S}$, we know our application of the algorithm in \textbf{2.3} is equivalent to \textbf{Kurskal's Algorithm}.
+\end{solution}
+
+\vspace{1em}
+\subsection{Algorithm Design}
+\vspace{1em}
+\begin{solution}
+    First, we construct a matroid as follows. 
+    
+    \hspace{2.6em}
+    We define $\mathcal{I}=\set{F\subset U\mid\text{all vectors in }F\text{ are linearly independent to each other}}$, $M=(U,\mathcal{I}).$
+    
+    \vspace{1em} \hspace{2.6em}
+    Now we prove $M$ is a matroid.
+    
+    \hspace{-2em}
+    \underline{\textbf{Proof of Hereditary Property.}} 
+    
+    \hspace{2.6em}
+    Obvious $\forall \mathbf{x}\in U,$ $\set{\mathbf{x}}\in\mathcal{I},$ i.e. $\mathcal{I}$ is non-empty. 
+    
+    \hspace{2.6em}
+    For any $A\in\mathcal{I}$ and $B\subset A$, obvious all vectors in $A$ are linearly independent, which gives that all vectors in $B$ are linearly independent, i.e. $B\in\mathcal{I}.$ \whiteqed
+    
+    \vspace{1em}\hspace{-2em}
+    \underline{\textbf{Proof of Exchange Property.}}
+    
+    \hspace{2.6em}
+    By contradiction. Assume exist $A,B\in\mathcal{I}$ with $|A|<|B|$ s.t. $\forall \mathbf{x}\in B\setminus A,\ A\cup\set{\mathbf{x}}\notin\mathcal{I}$. 
+    
+    \hspace{2.6em}
+    Thus, any vector in $B$ is linearly dependent to some vectors in $A$,
+    i.e. $\mathtt{dim}\left(\mathtt{span}(B)\right)\le\mathtt{dim}\left(\mathtt{span}(A)\right)\le|A|<|B|.$ This gives that $B$ contains at most $|A|$ linearly independent vectors, i.e. exists at least one vector in $B$ that is linearly dependent to another vector in $B$. \underline{\textbf{Contradiction}} to the assumption that $B\in\mathcal{I}.$ \whiteqed
+    
+    \vspace{1em} \hspace{1em}
+    Therefore, $M$ is a matroid.
+    
+    \hspace{1em}
+    Thus, we can \underline{\textbf{apply the algorithm in \textbf{2.3} on $M$ and $w$}}. The result is exactly the set $S\subset U$ with maximum weight and all vectors in $S$ are linearly independent.
+\end{solution}
+
+\newpage
+\vspace{1em}
+\section{Problem 03}
+\vspace{1em}
+\subsection{Reachablity}
+\vspace{1em}
+\begin{solution}
+    Let $d_{n+1}=D.$ We call $B$ the $(n+1)$-th gas station.
+    
+    \hspace{2.6em} Without loss of generality, we assume $d_1=0\le d_2 \le ...\le d_n \le d_{n+1}=D.$ 
+    
+    \hspace{2.6em}
+    Obvious, if $B$ is reachable from $A$ with tank capacity $C$, any $(i+1)$-th gas station is reachable from the $i$-th station with at most $C$ units of gas $(i=1,2,...,n)$, i.e. the distance between any $i$-th station and $(i+1)$-th station is no larger than $C$.
+    
+    \hspace{2.6em}
+    Therefore, $\forall i\in\set{1,2,...,n}, d_{i+1}-d_i\le C \Longleftrightarrow B\text{ is reachable from }A$.
+    
+    \hspace{2.6em}
+    Thus, to check the reachability from $A$ to $B$, we just need to check whether all $i\in\set{1,2,...,n}$ satisfy $d_{i+1}-d_i\le C$. (Note that by our definition, $d_{n+1}=D$.) \qedsymbol
+    
+    \vspace{3em} \hspace{2.6em}
+    Based on the idea above, we design the following algorithm.
+    
+    \begin{algorithm}
+        \caption{Reachability Check}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwProg{procedure}{Procedure}{}{end}
+        \SetKwInOut{return}{Return}
+        \SetKwProg{repeat}{repeat}{}{end}
+        
+	    \function{Reachability Check $(d[1,2,...,n],D,C)$}
+	    {
+	        $sort(d)$\;
+	        \tcp{Sort in order of increasing $d_i$. If $d_i$ is already sorted, this step should be ommited.}
+	        \BlankLine
+	        \BlankLine
+	        \lIf{$D-d[n]>C$}{\textbf{Return:} $\mathtt{False}$}
+	        \For{$i=1\to n-1$}
+	        {
+	            \lIf{$d[i+1]-d[i]>C$}{\textbf{Return:} $\mathtt{False}$}
+	        }
+	        \return{$\mathtt{True}$}
+	   }
+    \end{algorithm}
+    
+    \hspace{2.6em}
+    The proof of the correctness of the algorithm is given above. \qedsymbol
+    
+    \vspace{3em} \hspace{2.6em}
+    Now we analyze the time complexity of our algorithm.
+    
+    \hspace{2.6em}
+    Note that the problem does not guarantee that $d$ is sorted. Thus, since $sort(\cdot)$ takes at least $O(n\log n)$ time, the time complexity is $O(n\log n).$ If the given $d$ is sorted, the time complexity is $O(n).$
+    
+    \hspace{2.6em}
+    Thus, the time complexity of our algorithm is 
+    
+    $$T(n)=\left\{\begin{array}{ll}
+        O(n\log n), &  \text{the given }d\text{ is not sorted.}\\
+        O(n), & \text{the given }d\text{ is sorted.}
+    \end{array}\right.$$
+    
+    \vspace{-3em}
+\end{solution}
+\vspace{2em}
+\subsection{Minimum Gas Cost}
+\vspace{1em}
+\begin{solution}
+    Our strategy is as follows. 
+    
+    \hspace{2.6em}
+    When we arrived at gas station $i$, we first ensure that we can make it to the next station. 
+    
+    \hspace{2.6em}
+    If the gas in the tank is not enough, refuel it so that we can get to the next station.
+    
+    \hspace{2.6em}
+    Then we see if refueling more gas here is better.
+    
+    \hspace{2.6em}
+    We keep refueling gas until the tank is full, or the gas in the tank can support us arrive at a station where gas is cheaper than it is here.  
+    
+    \vspace{2em} \hspace{2.6em}
+    Based on the idea above, we design the algorithm as follows.
+    
+    \begin{algorithm}
+        \caption{Minimum Gas Cost}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwProg{procedure}{Procedure}{}{end}
+        \SetKwInOut{return}{Return}
+        \SetKwProg{repeat}{repeat}{}{end}
+        
+	    \function{Minimum Gas Cost $(d[1,2,...,n],D,p[1,2,...,n],C)$}
+	    {
+	        $sort(d,p)$;\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\tcp{Sort $d,p$ in order of increasing $d_i$}
+	        $cost\gets 0, dist\gets 0$\;
+	        $d\gets d\cup\set{D}$, i.e. $d[n+1]\gets D$\;
+	        \tcp{$cost$ is the minimum cost on gas to reach $dist$ distance away from $A$.}
+	        $j \gets 0$\;
+	        \For{$i=1\to n$}
+	        {
+	            \tcp{We arrived at the i-th gas station.}
+	            \tcp{First, we need to make sure that we can make it to the next station.}
+	            $tank\gets dist-d[i]$\;
+	            \lIf{$dist<d[i+1]$}{$tank \gets d[i+1]-d[i]$}
+	            \tcp{Then we see if refueling more gas here is cheaper than refueling gas later at other stations.}
+	            \lIf{$tank>C$}{\textbf{Return:} $-1$}
+	            \While{$(tank<C)\land(j\le n+1)$}
+	            {
+	                \lIf{$p[i]>p[j]$}{\textbf{Break}}
+	                \If{$d[j]-d[i]>C$}
+	                {
+	                    $tank\gets C$\;
+	                    \textbf{Break};
+	                }
+	                $tank\gets d[j]-d[i]$\;
+	                $j\gets j+1$\;
+	            }
+	            $cost\gets cost+p[i]\cdot(d[i]+tank-dist)$\;
+	            $dist\gets d[i]+tank$\;
+	            \lIf{$dist=D$}{\textbf{Break}}
+	        }
+	        \return{$cost$}
+	   }
+    \end{algorithm}
+    
+    \vspace{2em} \hspace{2.6em}
+    Now we prove the correctness of the algorithm.
+    
+    \hspace{2.6em}
+    We use $\mathcal{S}$ to represent different refueling strategies. Suppose moving $x$ from $x+1$ is supported by a unit of gas refueled at $\mathcal{S}[x]$, and we won't use gas refueled at station $i$ until gas refueled at station $1\sim(i-1)$ is all consumed, i.e. $\forall x,y\in\set{0,1,...,D}, x<y\Rightarrow \mathcal{S}[x]\le \mathcal{S}[y].$
+    
+    \hspace{2.6em}
+    We use $\mathtt{cost}(\mathcal{S})$ to denote the gas cost of strategy $\mathcal{S}$, i.e. $\mathtt{cost}(\mathcal{S})=\sum_{i=0}^D p[\mathcal{S}[i]].$
+    
+    \hspace{2.6em}
+    Let the strategy computed by our algorithm be $S^{\star}$. Now we prove $S^*$ is the best strategy, i.e. the strategy with minimum gas cost, by contradiction. 
+    
+    \hspace{2.6em}
+    Assume $\underset{\mathcal{S}}{\min}\ \mathtt{cost}(\mathcal{S}) < \mathtt{cost}(S^*)$. Let $S = \underset{\mathcal{S}}{\mathrm{argmin}}\  \mathtt{cost}(\mathcal{S})$.
+    
+    \vspace{0.3em} \hspace{2.6em}
+    We can always find the smallest $x$ s.t. $S[x]\neq S^*[x]$. By the process of our algorithm, we know $S^*[x]<S[x],\ p[S^*[x]]\le p[S[x]]$. Otherwise, $S[x]$ will cause the tank to overflow.
+    
+    \vspace{2em}\hspace{-2em}
+    \textbf{CASE 1.} $p[S^*[x]]<p[S[x]]$.
+    
+    \hspace{2.6em}
+    Then we can construct a strategy $S'$ as follows. 
+    
+    \vspace{-1em}
+    $$ S' = \left\{\begin{array}{ll}
+        S^*[i] & i\le x\\
+        S[i] & i>x
+    \end{array}\right.$$
+    
+    \hspace{2.6em}
+    Since for $\forall i<x, S[i]=S^*[i]\le S^*[x]$ and for $\forall i>x, S[i]>S[x]>S^*[x],$ at any time, the tank in strategy $S'$ has no more gas than in strategy $S$ or $S^*$. Therefore, $S'$ is a valid strategy.
+    
+    \hspace{2.6em}
+    Obvious $\mathtt{cost}(S')=\mathtt{cost}(S)-p[S[x]]+p[S^*[x]]<\mathtt{cost}(S)$. Contradiction to the assumption $S$ is the strategy with the minimum gas cost.
+    
+    \hspace{2.6em}
+    Thus, $p[S[x]]\le p[S^*[x]].$ \underline{\textbf{Contradiction}} to the assumption that $S = \underset{\mathcal{S}}{\mathrm{argmin}}\  \mathtt{cost}(\mathcal{S})$.
+    
+    \vspace{2em}\hspace{-2em}
+    \textbf{CASE 2.} $p[S^*[x]]=p[S[x]].$
+    
+    \hspace{2.6em}
+    We know $\mathtt{cost}(S[1:x])=\mathtt{cost}(S^*[1:x])$. Then we repeat the process above on strategy $S[(x+1):D]$ and $S^*[(x+1):D]$.
+    
+    \hspace{2.6em}
+    If $p[S^*[x]]=p[S[x]]$ holds for any $x\in\set{0,1,...,D}$ s.t. $S^*[x]\neq S[x]$,
+    
+    \hspace{2.6em} 
+    we have $\forall x\in\set{0,1,...,D}, p[S^*[x]]=p[S[x]],$ i.e.
+    
+    \vspace{-1.5em}
+    $$\mathtt{cost}(S^*)=\mathtt{cost}(S)=\underset{\mathcal{S}}{\min}\ \mathtt{cost}(\mathcal{S}) < \mathtt{cost}(S^*).$$
+    
+    \vspace{-0.5em} \hspace{2.6em}
+    \underline{\textbf{Contradiction}}.
+    
+    \vspace{3em} \hspace{-2em}
+    Therefore, our algorithm can give the minimum gas cost.
+\end{solution}
+
+\vspace{3em}
+\section{Problem 04}
+\vspace{1em}
+\subsection{$\boldsymbol{k=1}.$}
+\vspace{1em}
+\begin{solution}
+    It is trivial that for any leaf vertex of a tree, selecting its parent is better than selecting itself, since its parent can cover at least two vertices while itself can only cover exactly two vertices.
+    
+    \hspace{2.6em}
+    Thus, we design the following algorithm to repetitively find the leaves of the uncovered part of the tree and adding its parent into the covering subset.
+    
+    
+    \begin{algorithm}
+        \caption{1-Influential Minimal-Size Cover}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwProg{procedure}{Procedure}{}{end}
+        \SetKwInOut{return}{Return}
+        \SetKwProg{repeat}{repeat}{}{end}
+        
+	    \function{Minimal Cover $(G)$}
+	    {
+	        \tcp{$G=(V,E)$. Also, $G$ must be a tree.}
+	        $G'\gets G,\ S\gets \varnothing$\;
+	        Choose a reasonable vertex as the root of $G$\;
+	        \While{$G$ is not fully covered, $\mathrm{i.e.}$ $G'$ is not empty}
+	        {
+	            Find a deepest leaf vertex $u$\;
+	            Find the parent of $u$, i.e the only vertex $v$ s.t. $\set{u,v}\in E$\;
+	            \If{cannot find such $v$}
+	            {$S\gets S\cup \set{u}$\; \textbf{Break}\;}
+	            $S\gets S\cup \set{v}$\;
+	            Delete vertices covered by $v$ from $G'$, i.e. delete $v$ and all vertices adjacent to $v$\;
+	        }
+	        \return{$S$}
+	   }
+    \end{algorithm}
+    
+    \hspace{2.6em}
+    Now we prove the correctness of the algorithm by induction. Let $S$ be the minimum-size subset of vertices that covers all the vertices in a tree $G$.
+    
+    \vspace{1em}
+    \hspace{2.6em}
+    We prove that each step is necessary to reach a global optimal solution.
+    
+    \hspace{2.6em}
+    If $|V|=1$, obvious $S=V$. This is exactly the solution given by our algorithm. Now we consider the case when $|V|\geq 2$.
+    
+    \hspace{2.6em}
+    For any leaf $u$ of $T$, it is obvious that we should choose the only vertex $v$ adjacent to $u$, i.e. the parent of $u$, to be in $S$. This is because $u\in S$ can only cover exactly two vertices while $v\in S$ can cover at least two vertices.
+    
+    \hspace{2.6em}
+    For any vertex $u$ with all its children covered and not in $S$, choosing its parent $v$ is necessary as long as such $v$ exists. (If $v$ does not exist, then selecting $u$ itself is the only choice.) If choose $u$ itself, other vertices adjacent to $v$ will not be covered and thus need at least one extra vertex in $S$. If choose $u$'s children, $v$ is not covered and need at least one extra vertex in $S$. Thus, $v\in S$ is necessary for global optimal $S$.
+    
+    \hspace{2.6em}
+    Therefore, our algorithm will return a correct answer. \qedsymbol
+    
+    \newpage \hspace{2.6em}
+    Now we analyze the time complexity of the algorithm.
+    
+    \hspace{2.6em}
+    Given that $G$ is a tree, we know $|E|=|V|-1$. The degree of all vertices in $G$ only need to be calculated at the beginning since in the later process, finding vertices with 1 degree can be done in the process of deletion. Therefore, all vertices will be visited only constant times.
+    
+    \hspace{2.6em}
+    Thus, the time complexity is \underline{$\boldsymbol{O(|V|)}$}.
+\end{solution}
+
+\vspace{1em}
+\subsection{General Case}
+\vspace{1em}
+\begin{solution}
+    The basic idea is similar to the case when $k=1$. 
+    
+    \hspace{2.6em}
+    The only adjustment from the algorithm when $k=1$ is that each time we find a deepest leaf of the uncovered part of the tree, we select its ancestor with exactly $k$ edges away from it. If such ancestor does not exist, we select its farthest ancestor.
+    
+    \begin{algorithm}
+        \caption{$k$-Influential Minimal-Size Cover}
+        \setstretch{1.1}
+        \SetKwProg{function}{Function}{}{end}
+        \SetKwProg{procedure}{Procedure}{}{end}
+        \SetKwInOut{return}{Return}
+        \SetKwProg{repeat}{repeat}{}{end}
+        
+	    \function{Minimal Cover $(G,k)$}
+	    {
+	        \tcp{$G=(V,E)$. Also, $G$ must be a tree.}
+	        $G'\gets G,\ S\gets \varnothing$\;
+	        Choose a reasonable vertex as the root of $G$\;
+	        \While{$G$ is not fully covered, $\mathrm{i.e.}$ $G'$ is not empty}
+	        {
+	            Find a deepest leaf vertex $u$\;
+	            Find the ancestor of $u$, s.t. the distance from $u$ to $v$ is exactly $k$\;
+	            \If{cannot find such $v$}
+	            {
+	            Find the farthest ancestor $w$ of $u$\;
+	            $S\gets S\cup \set{w}$\;
+	            \textbf{Break}\;
+	            }
+	            $S\gets S\cup \set{v}$\;
+	            Delete vertices covered by $v$ from $G'$, i.e. delete $v$ and all vertices within $k$ edges from $v$\;
+	        }
+	        \return{$S$}
+	   }
+    \end{algorithm}
+    
+    \hspace{2.6em}
+    Now we prove the correctness of the algorithm. Let the minimum-size subset covering all vertices in $G$ be $S$.
+    
+    \hspace{2.6em}
+    By the process of our algorithm, each time we pick a vertex $u$, then $u$ is covered while all children of $u$ are covered and are not in $S$. In this case, selecting the ancestor $k$ edges away from $u$ (if exists) is necessary for $S$ to be the minimum-size set covering all vertices. Let the ancestor be $w$. Selecting $w$ can always cover all the vertices covered when selecting any children of $w$ to be in $S$. Meanwhile, under most circumstances, $w$ can cover more vertices, such as the ancestor of $w$ which is $k$ edges away. If such $w$ does not exists, we select the farthest ancestor $w$, which still holds the same property. Therefore, each step of our algorithm is necessary for $S$ to be the optimal solution.
+    
+    \vspace{1em} \hspace{2.6em}
+    Now we analyze the time complexity of the algorithm.
+    
+    \hspace{2.6em}
+    Finding the deepest leaf vertex is to find the vertex with 1 degree in $G'$ and the maximum height. By calculating the height of all vertices in $G'$ at the beginning of the algorithm while updating the degree of all vertices in the process of deletion, we can find such vertex during the process of deletion, by adding vertices of 0 degree into a queue. Thus, for each iteration, the deletion and degree update takes $O(|V|)$. Therefore, the time complexity of the algorithm is \underline{$\boldsymbol{O(|V|^2)}$}.
+\end{solution}
+
+\vspace{3em}
+\section{Rating and Feedback}
+\vspace{1em} \hspace{1.2em}
+The completion of this homework takes me six days, about $33$ hours in total. Still, writing a formal solution is the most time-consuming part.
+
+The ratings of each problem is as follows.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{lr}
+        \hline
+        Problem & Rating \\
+        \hline 
+        1 & 2 \\
+        \hline
+        2.1 & 1 \\
+        2.2 & 2 \\
+        2.3 & 2 \\
+        2.4 & 2 \\
+        2.5 & 2 \\
+        \hline
+        3.1 & 1 \\
+        3.2 & 3 \\
+        \hline
+        4.1 & 3 \\
+        4.2 & 4 \\
+        \hline
+\end{tabular}
+\caption{Ratings.}
+\end{table}
+
+This time I finish all problems on my own.
+
+\end{document}

@@ -1,0 +1,221 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{bbm}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Algorithm Homework 06}}
+\author{Qiu Yihang}
+\date{June 2022}
+
+\begin{document}
+
+\maketitle
+
+\section{Problem 01 - Clique with Half Size}
+\vspace{1em}
+\begin{proof}
+    First we prove that the problem is \textit{NP}.
+    
+    \hspace{1.3em}
+    We prove that the problem is polynomial-time verifiable.
+    
+    \hspace{1.3em}
+    Consider the algorithm $V:\set{0,1}^*\times\set{0,1}^*\rightarrow \set{0,1},\ (x,y)\mapsto V(x,y)$. $x$ is a $0,1$-sequence representing a graph $G=(V,E)$ while $y$ is a $0,1$-sequence representing a clique $V'$. Obvious $|y|=|x|^{O(1)}$. $V(x,y)$ checks whether $|V'|=\frac{n}{2}=\frac{|V|}{2}$ and whether $V'$ is a clique on the graph represented by $x$. Obvious the checking process takes $O(|E|)$ time, i.e. $V$ terminates in $|x|^{O(1)}$ time.
+    
+    \hspace{1.3em}
+    Thus, $V$ is a verifier. Therefore, the problem is polynomial-time verifiable, i.e. NP. \whiteqed
+    
+    \vspace{1.5em} \hspace{1.3em}
+    Let the \textit{exact k-clique} problem on $G$ be whether $G$ contain a clique with size exactly $k$. Now we prove \textit{exact k-clique} $\le_{K}$ \textit{clique with half size}. 
+    
+    \hspace{1.3em}
+    We convert the \textit{exact k-clique} problem on $G$ into a \textit{clique with half size} problem on $G'$ as follows.
+    
+    \hspace{1.3em}
+    Let the clique on $G$ be $\mathcal{V}_G$. Let the clique on $G'$ be $\mathcal{V}$.
+    
+    \hspace{1.3em}
+    \textbf{CASE 01.} $k=\frac{|V|}{2}$. Construct $G'_k=(V'_k,E'_k)=G=(V,E)$. 
+    
+    \hspace{6.6em}
+    Obvious the solutions of the two problems are exactly the same.
+    
+    \vspace{1em} \hspace{1.3em}
+    \textbf{CASE 02.} $k<\frac{|V|}{2}$. 
+    
+    \hspace{6.6em}
+    First we construct a complete graph $G_{c}=(V_c,E_c)$ with $|V_c|=|V|-2k$,
+    
+    \hspace{10em}
+    (i.e. $E_c=\set{(u,v)\mid \forall u,v\in V_c,\ u\neq v}$.)
+    
+    \hspace{6.6em}
+    Then we construct $G'_k=(V'_k,E'_k)$, where $V'_k=V\cup V_c$ and $E'_k=E\cup E_c\cup (V\times V'_k)$.
+    
+    \vspace{1em} \hspace{6.6em}
+    Obvious $\mathcal{V}$ must contain $V_c$ and $\mathcal{V}_G=\mathcal{V}\setminus V_c$, i.e. $|\mathcal{V}_G|=|\mathcal{V}|-|V_c|$.
+    
+    \hspace{6.6em}
+    Thus, $|\mathcal{V}_G|=k\Longleftrightarrow|\mathcal{V}|=|\mathcal{V}_G|+|V_c|=k+(|V|-2k)=|V|-k=\frac{|V'_k|}{2}$.
+    
+    \vspace{1em} \hspace{6.6em}
+    Therefore, \textit{exact k-clique} on $G'$ and \textit{clique with half size} $G$ has the same solution.
+    
+    \vspace{1em} \hspace{1.3em}
+    \textbf{CASE 03.} $k>\frac{|V|}{2}$.
+    
+    \hspace{6.6em}
+    First we construct a graph $G_n = (V_n,E_n)$, where $|V_n|=2k-|V|,E_n=\varnothing$. 
+    
+    \hspace{6.6em}
+    Then we construct $G'_k=(V'_k,E'_k)$, where $V'_k=V\cup V_n$ and $E'_k=E\cup E_n=E$.
+    
+    \hspace{6.6em}
+    Obvious $\mathcal{V}$ cannot contain $V_c$ and $\mathcal{V}_G=\mathcal{V}$, i.e. $|\mathcal{V}_G|=|\mathcal{V}|$.
+    
+    \hspace{6.6em}
+    Thus, $|\mathcal{V}_G|=k\Longleftrightarrow |\mathcal{V}|=k=\frac{2k}{2}=\frac{|V|+2k-|V|}{2}=\frac{|V'_k|}{2}$.
+    
+    \vspace{0.5em} \hspace{6.6em}
+    Therefore, \textit{exact k-clique} on $G'$ and \textit{clique with half size} $G$ has the same solution.
+    
+    \vspace{0.5em} \hspace{1.3em}
+    Through the process above, we can convert a $k$-\textit{clique} problem on $G$ into a \textit{clique with half size} problem on $G'$. Thus,
+    
+    \vspace{-2em}
+    $$\text{\textit{exact k-clique}}\ \le_K\ \text{\textit{clique with half size}}.$$
+    
+    \vspace{-0.75em} \hspace{1.3em}
+    Moreover, \textit{k-clique} $\le_K$ \textit{exact k-clique}.
+    
+    \hspace{1.3em}
+    For any \textit{k-clique} problem, we can solve a series of \textit{exact k-clique} problems, i.e. \textit{exact $k$-clique},  \textit{exact $(k+1)$-clique}, ... \textit{exact $|V|$-clique}. Solving these $|V|-k+1$ problems, we can decide the solution of \textit{k-clique}. 
+    
+    \hspace{1.3em}
+    Since the number of the series of \textit{exact k-clique} problem is polynomial, we have
+    
+    \vspace{-1.75em}
+    $$\text{\textit{k-clique}}\ \le_K\ \text{\textit{exact k-clique}}\ \Longrightarrow\ \text{\textit{k-clique}}\ \le_K\ \text{\textit{clique with half size}}.$$
+    
+    \hspace{1.3em}
+    Meanwhile, we know $k-$\textit{clique} problem is NP-complete.
+    
+    \hspace{1.3em}
+    Therefore, the problem is NP-complete.
+\end{proof}
+
+\vspace{1em}
+\section{Problem 02 - $\boldsymbol{(C,V)}$-Knapsack}
+\vspace{1em}
+\begin{proof}
+    First we prove the $(C,V)$\textit{-Knapsack} problem is NP.
+    
+    \hspace{1.3em}
+    Consider the algorithm $V:\set{0,1}^*\times\set{0,1}^*\rightarrow\set{0,1},(x,y)\mapsto V(x,y)$. $x$ is a $0,1$-sequence representing $n,w_1,w_2,...w_n,v_1,v_2,...v_n,C,V$, $y$ is a 0,1-sequence representing a subset of the $n$ items, i.e. $\mathcal{I}\subset\set{1,2,...n}$. $V(x,y)$ checks whether $y$ is a valid arrangement with total value of items at least $V$, i.e. to check whether $\sum_{i\in\mathcal{I}}w_i\le C$ and $\sum_{i\in\mathcal{I}}v_i\geq V$. Obvious this takes at most $O(n)$ time, i.e. $V(x,y)$ terminates in $|x|^{O(1)}$ time.
+    
+    \hspace{1.3em}
+    Thus, $V$ is a verifier. Then the problem is polynomial-time verifiable, i.e. NP. \whiteqed
+    
+    \vspace{1em} \hspace{1.3em}
+    Now we prove \textit{Subset Sum} $\le_K$ \textit{$(C,V)$-Knapsack}.
+    
+    \hspace{1.3em}
+    For any \textit{Subset Sum} problem, i.e. given $n, a_1, a_2,...a_n$ and W, decide whether exists $\mathcal{I}\in[n]$ s.t. $\sum_{i\in\mathcal{I}} a_i=W$, we can convert it into the $(C,V)$-\textit{Knapsack} problems as follows.
+    
+    \hspace{1.3em}
+    Given $n$. Given $w_i=a_i, v_i=a_i$ for any $i\in[n]$. Determine whether exists a subset of items with total weight at most $C=W$ and total value at least $V=W$. The $(W,W)$\textit{-Knapscak} problem returning 1 means $\exists\ \mathcal{I}\subset[n]\text{\ s.t.\ }\sum_{i\in\mathcal{I}}a_i\le W, \sum_{i\in\mathcal{I}}a_i\geq W\ \Longrightarrow\ \sum_{i\in\mathcal{I}}a_i=W$.
+    
+    \hspace{1.3em}
+    Thus, the solutions for the two problems above are exactly the same. Therefore,
+    
+    \vspace{-1.5em}
+    $$\text{\textit{Subset Sum}}\ \le_K\ \text{\textit{$(C,V)$-Knapsack}}.$$
+    
+    \vspace{-0.5em} \hspace{1.3em}
+    Meanwhile, \textit{Subset Sum} is NP-complete.
+    
+    \hspace{1.3em}
+    Thus, $(C,V)$-\textit{Knapsack} is also NP-complete.
+\end{proof}
+
+\vspace{1em}
+\section{Problem 3 - Subgraph Problem}
+\vspace{1em}
+\begin{proof}
+    First we prove that the \textit{subgraph problem} is NP.
+    
+    \hspace{1.3em}
+    Consider the algorithm $V:\set{0,1}^*\times\set{0,1}^*\rightarrow\set{0,1},(x,y)\mapsto V(x,y)$. $x$ is a $0,1$-sequence representing $G=(V_G,E_G),H=(V_H,E_H)$, $y$ is a 0,1-sequence representing a mapping from $V_H$ to $V_G$, noting which vertex in $H$ is corresponding to which vertex in $G$. $V(x,y)$ checks that under $y$, whether $H$ is a subgraph of $G$, i.e. to check whether $\set{y(u),y(v)}\in E\text{\ \textbf{iff.}\ }\set{u,v}\in E$. Obvious this process takes at most $O(|E|^2)$, i.e. $V(x,y)$ terminates in $|x|^{O(1)}$ time.
+    
+    \hspace{1.3em}
+    Thus, $V$ is a verifier. Therefore, the problem is polynomial-time verifiable, i.e. NP. \whiteqed
+    
+    \vspace{1em} \hspace{1.3em}
+    Now we prove that \textit{exact k-clique} $\le_K$ \textit{subgraph problem}.
+    
+    \hspace{1.3em}
+    We can convert the \textit{exact k-clique} problem on $G$ into a \textit{subgraph problem} on $G$ as follows.
+    
+    \hspace{1.3em}
+    For any two vertices in a clique, exists an edge between them on the original graph. Then we know the complete graph of vertices in the clique is a subgraph of the original graph.
+    
+    \hspace{1.3em}
+    Thus, we can construct a complete graph $\mathcal{G}$ with $k$ vertices. Determine whether $\mathcal{G}$ is a subgraph of $G$. When $\mathcal{G}$ is a subgraph of $G$, we know exists at least $k$ vertices on $G$ which can induce a clique on $G$, i.e. exists a clique on $G$ with size $\geq k$. Otherwise, there does not exist any clique on $G$ with size $\geq k$. 
+    
+    \hspace{1.3em}
+    Thus, the solutions of the two problems are exactly the same, i.e.
+    
+    \vspace{-1.5em}
+    $$\text{\textit{k-clique}}\ \le_K\ \text{\textit{subgraph problem}}.$$
+    
+    \hspace{1.3em}
+    Meanwhile, \textit{k-clique} is NP-Complete.
+    
+    \hspace{1.3em}
+    Therefore, \textit{subgraph problem} is NP-complete.
+\end{proof}
+
+\vspace{1em}
+\section{Rating and Feedback}
+\vspace{1em} \hspace{1.2em}
+The completion of the homework takes me one day, about $15$ hours in total (including thinkings on problem 4-9 without writing a formal proof). Still, writing a formal solution is the most time-consuming part.
+
+The ratings of each problem is as follows.
+
+\begin{table}[htbp]
+    \centering
+    \begin{tabular}{lr}
+        \hline
+        Problem & Rating \\
+        \hline 
+        1 & 3 \\
+        2 & 2 \\
+        3 & 2 \\
+        \hline
+\end{tabular}
+\caption{Ratings.}
+\end{table}
+
+This time I finish all problems on my own.
+
+\end{document}
