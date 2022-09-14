@@ -12,12 +12,12 @@
 
 ----
 
-[Still in updating process.]
+[Still in collecting process.]
 
 Notes of courses I took during my time in SJTU as a student of AI class. For some courses, assignments and my version of answers are also given.
 
 Notes during freshman and sophomore are mostly on paper and thus, some notes are pdf files of hand-written notes scanned. I have briefly checked most notes before updating, especailly those in English. Still, there might exist typos, syntax errors or some words misused. *Note that most notes are in Chinese.*
 
-Assignment during the second semister when I was sophomore are accomplished by LaTex. The original '.tex' files are also updated.
+Assignment during the second semister when I was sophomore are accomplished by LaTex. The original '.tex' files are also uploaded.
 
-Enjoy. Comments and suggestions are welcome.
+Please enjoy. Comments and suggestions are welcome.
