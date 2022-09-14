@@ -2,9 +2,11 @@
 
 Notes and assignments during my time in SJTU as a student of AI class.
 
+[Still working on it.] 
+
 在交大人工智能班学习时的一些笔记和作业。
 
-[Still working on it.] 【还在龟速扫描和上传中】
+【还在龟速扫描和上传中】
 
 
 ## A Brief Introduction
