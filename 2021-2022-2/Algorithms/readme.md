@@ -13,7 +13,7 @@ The pattern of the filenames is as follows.
 *e.g.*
 Code `04-1433,0416.cpp` is the solution to Problem 1433 on SJTU ACM OJ, which is a part of Homework 04. I accomplished AC on the problem at Apr. 16th.
 
-不要直接抄代码哦，这门课有查重的，嗯。
+不要直接抄代码哦，这门课有代码查重的，嗯。
 
 ## Notes
 
