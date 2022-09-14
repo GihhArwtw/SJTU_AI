@@ -2,6 +2,16 @@
 
 I took the course given by Dr. Chihao Zhang（张驰豪）.
 
+
+## Notes
+
+to be uploaded.
+
+## Assignments
+
+All rights of file `assign#.pdf` (#=1~6) and `edmonds.pdf` belong to Dr. Chihao Zhang, Dr. Yuhao Zhang and Dr. Biaoshuai Tao.
+
+
 ## Codes
 
 Note that all codes are solutions to some problems on SJTU ACM OJ.
@@ -29,7 +39,3 @@ Please do not directly copy codes in this repository. There would be a copyer hu
 *例*. 代码`04-1433,0416.cpp`是ACM OJ编号1433的问题（Bo）的代码，该问题是作业4的一部分。我在四月十六日AC了此题。
 
 请不要直接拷贝此目录下的代码。这门课在期末附近的时候会进行代码查重，直接替换变量名也是不行的（嗯）。
-
-## Notes
-
-to be uploaded.
