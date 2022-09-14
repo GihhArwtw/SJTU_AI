@@ -11,6 +11,8 @@ to be uploaded.
 
 All rights of file `assign#.pdf` (#=1~6) and `edmonds.pdf` belong to Dr. Chihao Zhang, Dr. Yuhao Zhang and Dr. Biaoshuai Tao.
 
+七次作业文件本身的版权归张驰豪老师、张宇昊老师和陶表帅老师所有。
+
 
 ## Codes
 
