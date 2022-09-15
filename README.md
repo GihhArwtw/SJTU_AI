@@ -64,24 +64,22 @@ Note that this repository only includes notes and assignments of **some** course
 - Linear Algebra（线性代数）[tbd]
 - Introduction to Psychology（大学生心理健康）[tbd]
 - AI003 (Introduction to AI)（人工智能导论）[tbd]
-
-思修这种课没有记笔记所以就不传了
+- 思修这种课没有记笔记所以就不传了
 
 ### 2020-2021-2（大一第二学期）
 
 - Mathematical Analysis II（数学分析II）[tbd]
 
-**Note that the notes are given in 2020-2021-1/Mathematical_Analysis. **
+    **Note that the notes are given in 2020-2021-1/Mathematical_Analysis.**
 
-**我把两个学期的笔记合并到了同一个文件，在2020-2021-1/Mathematical_Analysis目录下。**
+    **我把两个学期的笔记合并到了同一个文件，在2020-2021-1/Mathematical_Analysis目录下。**
 
 - Data Structure [AI]（数据结构[AI]）[tbd]
 - Circuit [HONOR]（电路理论[荣誉]）[tbd]
 - Digital Fundamentals（数字电子技术）[tbd]
 - College Physics I（大学物理1）[tbd]
 - AI004 (AI Problem Solving)（人工智能问题与求解）[tbd]
-
-近史纲这种课的笔记是不是不适合扔github
+- 近史纲这种课的笔记是不是不适合扔github
 
 ### 2020-2021-3
 
@@ -95,8 +93,7 @@ Note that this repository only includes notes and assignments of **some** course
 - Signals and Systems（信号与系统）[tbd]
 - Fundamental Analog Electronic Devices（模拟电子技术）[tbd]
 - College Physics II（大学物理2）[tbd]
-
-马原的笔记是不是也不适合扔github
+- 马原的笔记是不是也不适合扔github
 
 ### 2021-2022-2
 
@@ -107,5 +104,4 @@ Note that this repository only includes notes and assignments of **some** course
 - Intelligent Speech Distinguish（智能语音识别）[tbd]
 - Digital Logic Design [Verilog]（数字逻辑设计，本质是Verilog教学）[tbd]
 - College Physics III (Quantum Mechanics)（大学物理3/量子力学）[tbd]
-
-线上学期，所以莫得毛概的笔记（开卷考了）
+- 线上学期，所以莫得毛概的笔记（开卷考了）
