@@ -91,13 +91,13 @@ Note that this repository only includes notes and assignments of **some** course
 
 <br/>
 
-### 2020-2021-3
+### 2020-2021-3（大一小学期）
 
 - AI Programming [Python] （人工智能编程实践，本质是python教学）
 
 <br/>
 
-### 2021-2022-1
+### 2021-2022-1（大二第一学期）
 
 - Computer Architecture [AI]（计算机体系结构[AI]）[tbd]
 - Linear and Convex Optimization（线性优化与凸优化）[tbd]
@@ -109,7 +109,7 @@ Note that this repository only includes notes and assignments of **some** course
 
 <br/>
 
-### 2021-2022-2
+### 2021-2022-2（大二第二学期）
 
 - Algorithms（算法分析与设计）[not completed yet]
 - Stochastic Process（随机过程）[tbd]
