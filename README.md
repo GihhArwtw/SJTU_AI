@@ -54,7 +54,7 @@ Please enjoy. Comments and suggestions are welcome.
 
 <br/>
 
-## Content / 目录
+## Contents / 目录
 
 Note that this repository only includes notes and assignments of **some** courses. Not all courses are uploaded.
 
