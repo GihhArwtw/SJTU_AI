@@ -20,7 +20,7 @@ Notes during my time as freshman and sophomore are mostly on paper and thus, som
 I have briefly checked most notes before updating, especailly those in English. 
 Still, there might exist typos, syntax errors or some words misused. **Note that most notes are in Chinese.**
 
-For some courses, assignments and my version of answers are also given. 
+For some courses, assignments and my version of solutions are also given. 
 Assignment during the second semister when I was sophomore are accomplished by LaTex. 
 For these assignments, original `tex` files are also uploaded.
 
