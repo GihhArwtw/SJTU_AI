@@ -4,9 +4,13 @@ Notes and assignments during my time in SJTU as a student of AI class.
 
 [Still working on it.] 
 
+<br/>
+
 在交大人工智能班学习时的一些笔记和作业。
 
 【还在龟速扫描和上传中】
+
+<br/>
 
 
 ## A Brief Introduction
@@ -26,7 +30,7 @@ For these assignments, original `tex` files are also uploaded.
 
 Please enjoy. Comments and suggestions are welcome.
 
-
+<br/>
 
 ## 简介
 
@@ -41,13 +45,14 @@ Please enjoy. Comments and suggestions are welcome.
 
 总之欢迎留言啦（或者找我扩列（？））
 
-
+<br/>
 
 ## 一些说明
 对同专业的学弟学妹：部分课程的授课学期有所改动，如算法分析与设计（Algorithm）在20届是大二下的课程，而从21届起在大二上授课。
 
 部分课程可能已经不再开设，如随机过程（Stochastic Process），我们（20届）貌似是有这节课的最后一届。
 
+<br/>
 
 ## Content / 目录
 
@@ -55,6 +60,7 @@ Note that this repository only includes notes and assignments of **some** course
 
 请注意本仓库只包含了**部分**课程的笔记和作业。如有需要可以私下联系我，邮箱：qiuyihang_123456@126.com。
 
+<br/>
 
 ### 2020-2021-1（大一第一学期）
 
@@ -65,6 +71,8 @@ Note that this repository only includes notes and assignments of **some** course
 - Introduction to Psychology（大学生心理健康）[tbd]
 - AI003 (Introduction to AI)（人工智能导论）[tbd]
 - 思修这种课没有记笔记所以就不传了
+
+<br/>
 
 ### 2020-2021-2（大一第二学期）
 
@@ -81,9 +89,13 @@ Note that this repository only includes notes and assignments of **some** course
 - AI004 (AI Problem Solving)（人工智能问题与求解）[tbd]
 - 近史纲这种课的笔记是不是不适合扔github
 
+<br/>
+
 ### 2020-2021-3
 
 - AI Programming [Python] （人工智能编程实践，本质是python教学）
+
+<br/>
 
 ### 2021-2022-1
 
@@ -95,6 +107,8 @@ Note that this repository only includes notes and assignments of **some** course
 - College Physics II（大学物理2）[tbd]
 - 马原的笔记是不是也不适合扔github
 
+<br/>
+
 ### 2021-2022-2
 
 - Algorithms（算法分析与设计）[not completed yet]
@@ -105,3 +119,5 @@ Note that this repository only includes notes and assignments of **some** course
 - Digital Logic Design [Verilog]（数字逻辑设计，本质是Verilog教学）[tbd]
 - College Physics III (Quantum Mechanics)（大学物理3/量子力学）[tbd]
 - 线上学期，所以莫得毛概的笔记（开卷考了）
+
+<br/>
