@@ -1,4 +1,4 @@
-# AI1603 AI Programming Practice（人工智能编程实践）
+# AI1603: AI Programming Practice（人工智能编程实践）
 
 I took the course given by Dr. Nanyang Ye.
 
