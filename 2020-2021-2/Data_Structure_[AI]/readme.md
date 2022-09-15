@@ -12,7 +12,7 @@ Otherwise, the compiler raises exception `Id return 1 exit`.
 
 Still, I use comments to divide the code into contents that should be in `.h` file and contents that should be in `.cpp` file.
 
-<br\>
+<br/>
 
 我选了张同珍老师开设的数据结构(AI)课程。（这节课没记笔记）
 
