@@ -47,3 +47,19 @@ Please enjoy. Comments and suggestions are welcome.
 对同专业的学弟学妹：部分课程的授课学期有所改动，如算法分析与设计（Algorithm）在20届是大二下的课程，而从21届起在大二上授课。
 
 部分课程可能已经不再开设，如随机过程（Stochastic Process），我们（20届）貌似是有这节课的最后一届。
+
+
+## Content / 目录
+
+### 2020-2021-1（大一第一学期）
+
+- Discrete Mathematics（离散数学）
+- Programming [HONOR]（程序设计[荣誉]）
+- Mathematical Analysis I（数学分析I） [tbd]
+- Linear Algebra（线性代数）[tbd]
+- Introduction to Psychology（大学生心理健康）[tbd]
+- AI003 (Introduction to AI)（人工智能导论）[tbd]
+
+### 2020-2021-2（大一第二学期）
+
+- Mathematical Analysis II（数学分析II）**Note that the notes are given in 2020-2021-1/Mathematical_Analysis. 我把两个学期的笔记合并到了同一个文件，在2020-2021-1/Mathematical_Analysis目录下。**
