@@ -104,8 +104,8 @@ Note that this repository only includes notes and assignments of **some** course
 ### 2021-2022-1（大二第一学期）
 
 - Computer Architecture [AI]（计算机体系结构[AI]）[tbd]
-- Linear and Convex Optimization（线性优化与凸优化）[tbd]
-- Probability Theory and Mathematical Statistics（概率论与数理统计）[tbd]
+- Linear and Convex Optimization（线性优化与凸优化）[Notes are yet to uploaded.]
+- Probability Theory and Mathematical Statistics（概率论与数理统计）[Notes are yet to uploaded.]
 - Signals and Systems（信号与系统）[tbd]
 - Fundamental Analog Electronic Devices（模拟电子技术）[tbd]
 - College Physics II（大学物理2）[tbd]
