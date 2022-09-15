@@ -2,10 +2,13 @@
 
 I took the course given by Dr. Chihao Zhang（张驰豪）.
 
+<br/>
 
 ## Notes
 
 to be uploaded.
+
+<br/>
 
 ## Assignments
 
@@ -13,6 +16,7 @@ All rights of file `assign#.pdf` (#=1~6) and `edmonds.pdf` belong to Dr. Chihao 
 
 七次作业文件本身的版权归张驰豪老师、张宇昊老师和陶表帅老师所有。
 
+<br/>
 
 ## Codes
 
@@ -27,12 +31,9 @@ Code `04-1433,0416.cpp` is the solution to Problem 1433 on SJTU ACM OJ (*Bo* Pro
 
 Please do not directly copy codes in this repository. There would be a copyer hunt of the course near the end of the semester.
 
+<br/>
 
-
----
-
-
-
+<br/>
 
 `Codes`目录下均为交大ACM OJ上题目的代码（已AC）。
 
