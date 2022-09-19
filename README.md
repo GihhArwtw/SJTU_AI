@@ -68,8 +68,8 @@ Note that this repository only includes notes and assignments of **some** course
 - Programming [HONOR]（程序设计[荣誉]）
 - Mathematical Analysis I（数学分析I） [tbd]
 - Linear Algebra（线性代数）[tbd]
-- Introduction to Psychology（大学生心理健康）[tbd]
 - AI003 (Introduction to AI)（人工智能导论）[tbd]
+- Introduction to Psychology（大学生心理健康）[tbd]
 
 
 - 思修这种课没有记笔记所以就不传了
@@ -84,7 +84,7 @@ Note that this repository only includes notes and assignments of **some** course
 
     **我把两个学期的笔记合并到了同一个文件，在2020-2021-1/Mathematical_Analysis目录下。**
 
-- Data Structure [AI]（数据结构[AI]）[tbd]
+- Data Structure [AI]（数据结构[AI]）
 - Circuit [HONOR]（电路理论[荣誉]）[tbd]
 - Digital Fundamentals（数字电子技术）[tbd]
 - College Physics I（大学物理1）[tbd]
@@ -105,7 +105,7 @@ Note that this repository only includes notes and assignments of **some** course
 
 - Computer Architecture [AI]（计算机体系结构[AI]）
 - Linear and Convex Optimization（线性优化与凸优化）[Notes are yet to be uploaded.]
-- Probability Theory and Mathematical Statistics（概率论与数理统计）[Notes are yet to be uploaded.]
+- Probability Theory and Mathematical Statistics（概率论与数理统计）
 - Signals and Systems（信号与系统）[tbd]
 - Fundamental Analog Electronic Devices（模拟电子技术）[tbd]
 - College Physics II（大学物理2）[tbd]
@@ -117,7 +117,7 @@ Note that this repository only includes notes and assignments of **some** course
 
 ### 2021-2022-2（大二第二学期）
 
-- Algorithms（算法分析与设计）[not completed yet]
+- Algorithms（算法分析与设计）
 - Stochastic Process（随机过程）[tbd]
 - Digital Signal and Image Processing（数字信号与图像处理）[tbd]
 - Machine Learning（机器学习）[tbd]
