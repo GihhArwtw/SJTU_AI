@@ -66,7 +66,7 @@ Note that this repository only includes notes and assignments of **some** course
 
 - Discrete Mathematics（离散数学）
 - Programming [HONOR]（程序设计[荣誉]）
-- Mathematical Analysis I（数学分析I） [tbd]
+- Mathematical Analysis I（数学分析I） 
 - Linear Algebra（线性代数）[tbd]
 - AI003 (Introduction to AI)（人工智能导论）[tbd]
 - Introduction to Psychology（大学生心理健康）[tbd]
@@ -78,7 +78,7 @@ Note that this repository only includes notes and assignments of **some** course
 
 ### 2020-2021-2（大一第二学期）
 
-- Mathematical Analysis II（数学分析II）[tbd]
+- Mathematical Analysis II（数学分析II）
 
     **Note that the notes are given in 2020-2021-1/Mathematical_Analysis.**
 
