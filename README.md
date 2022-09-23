@@ -67,7 +67,7 @@ Note that this repository only includes notes and assignments of **some** course
 - Discrete Mathematics（离散数学）
 - Programming [HONOR]（程序设计[荣誉]）
 - Mathematical Analysis I（数学分析I） 
-- Linear Algebra（线性代数）[tbd]
+- Linear Algebra（线性代数）
 - AI003 (Introduction to AI)（人工智能导论）[tbd]
 - Introduction to Psychology（大学生心理健康）[tbd]
 
