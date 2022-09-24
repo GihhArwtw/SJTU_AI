@@ -1,0 +1,157 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+
+%\usepackage{ReportTemplate}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\labelitemii}{\textbullet}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\renewcommand{\Pr}[1]{\mathbf{Pr}\left(#1\right)}
+\newcommand{\bd}[1]{\boldsymbol{#1}}
+\renewcommand{\bf}[1]{\mathbf{#1}}
+\renewcommand{\tt}[1]{\mathtt{#1}}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.5}
+\title{\textbf{Intelligent Speech Distinguish Homework 02}}
+\author{Qiu Yihang}
+\date{June.13-17, 2022}
+
+\begin{document}
+
+\maketitle
+
+\hspace{-1.8em}
+\textbf{Backward Propagation in RNN}.
+
+\hspace{-1.8em}
+Input Sequence: $\bf{x}$. Output Sequence: $\hat{\bf{r}}$. Label Sequence: $\bf{r}$ (with length $T_r$).
+
+\hspace{-1.8em}
+Number of categories: $C$.
+Activation function: $\sigma(z)=\frac{1}{1+e^{-z}}$.
+
+\vspace{1em} \hspace{-1.8em}
+Network Structure:
+
+\begin{itemize}
+    \setstretch{1.0}
+    \item Input Layer: $\bf{a}_t^{\tt{(in)}}=\sigma\left(\bf{W}^{\tt{(in)}}\bf{x}_t+\bf{b}^{\tt{(in)}}\right).$
+    \item Hidden Layer (RNN):
+    $\bf{h}_t=\sigma\left(\bf{U}\bf{a}_t^{(in)}+\bf{V}\bf{h}_{t-1}+\bf{b}_h\right),\ \bf{o}_t=\sigma\left(\bf{W}\bf{h}_t+\bf{b}_o\right).$
+    
+    \item Output Layer:
+    $\bf{h}_t^{\tt{(out)}}=\bf{W}^{\tt{(out)}}\bf{o}_t+\bf{b}^{\tt{(out)}},\ \hat{\bf{r}}_t=\mathtt{softmax}\left(\bf{h}_t^{\tt{(out)}}\right).$
+    
+    \item Loss Function: (Cross Entropy Loss)
+    
+    $\mathcal{L}=\sum_{t=1}^{T_r}\mathcal{L}\bf{oss}(r_t,\hat{\bf{r}}_t)=-\sum_{t=1}^{T_r}\sum_{i=1}^Cr_{t,i}\log\hat{\bf{r}}_{t,i}=-\sum_{t=1}^{T_r}r_t^T\log\hat{\bf{r}}_t$
+    
+\end{itemize}
+
+\hspace{-1.8em}
+Give the Backward Propagation of RNN.
+
+\vspace{2.7em}
+\begin{proof}
+    Use $\delta\alpha$ to denote $\frac{\partial \mathcal{L}}{\partial \alpha}$. We know $\sigma'(z)=\sigma(z)\left(1-\sigma(z)\right)$.
+    
+    \hspace{1.3em}
+    Then we have
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \delta\hat{\bf{r}}_{t,i} &= \frac{\partial\mathcal{L}}{\partial\hat{\bf{r}}_{t,i}} = \frac{r_{t,i}}{\hat{\bf{r}}_{t,i}}\quad(1\le i\le C)\quad\Longleftrightarrow\quad \delta\hat{\bf{r}}_t = r_{t}\oslash\hat{\bf{r}}_t\quad\text{(where $\oslash$ is element-wise division)}\qquad\\
+        \delta\bf{h}_{t,i}^{\tt{(out)}} &= \sum_{j=1}^C \delta\hat{\bf{r}}_{t,j}\cdot\tt{softmax'_{i,j}}\left(\bf{h}_{t,i}^{\tt{(out)}}\right) = -\sum_{j\neq i}\frac{r_{t,j}}{\hat{\bf{r}}_{t,j}}(-\hat{\bf{r}}_{t,i}\hat{\bf{r}}_{t,j})\ - \frac{r_{t,i}}{\hat{\bf{r}}_{t,i}}\hat{\bf{r}}_{t,i}\left(1-\hat{\bf{r}}_{t,i}\right) \\
+        &= -r_{t,i}+\hat{\bf{r}}_{t,i}\sum_{j=1}^Cr_{t,j} = \hat{\bf{r}}_{t,i}-r_{t,i} \quad\Longleftrightarrow\quad \delta\bf{h}_t^{\tt{(out)}} = \hat{\bf{r}}_t - r_t  \\
+        \delta\bf{o}_t &= \frac{\partial \bf{h}_{t}^{\tt{(out)}}}{\partial \bf{o}_t}\delta\bf{h}_{t}^{\tt{(out)}} = \bf{W}^{\tt{(out)}}\delta\bf{h}_{t}^{\tt{(out)}} \\
+        \delta\bf{b}^{\tt{(out)}} &= \delta\bf{h}_{t}^{\tt{(out)}}\\
+        \delta\bf{W}_{i,j}^{\tt{(out)}} &= \bf{o}_{t,j}\cdot\delta\bf{h}_{t,i}^{\tt{(out)}} \\
+        \delta\bf{y}_o &\triangleq \frac{\partial\mathcal{L}}{\partial\left(\bf{W}\bf{h}_t+\bf{b}_o\right)} \\
+        &=\sigma(\bf{W}\bf{h}_t+\bf{b}_o)\odot\left(\bf{1}-\sigma\left(\bf{W}\bf{h}_t+\bf{b}_o\right)\right)\odot\delta\bf{o}_t\quad \text{(where $\odot$ is element-wise product)}\\
+        \delta\bf{h}_t &= \delta\bf{y}_o\frac{\partial\left(\bf{W}\bf{h}_{t}+\bf{b}_o\right)}{\partial \bf{h}_t} = \bf{W}\delta\bf{y}_o \\
+        \delta\bf{b}_o &= \delta\bf{y}_o\frac{\partial\left(\bf{W}\bf{h}_{t}+\bf{b}_o\right)}{\partial \bf{b}_o} = \delta\bf{y}_o \\
+        \delta\bf{W}_{i,j} &= \delta\bf{y}_{o,i}\frac{\partial\left(\bf{W}\bf{h}_{t}+\bf{b}_o\right)_i}{\partial \bf{W}_{i,j}} = \bf{h}_{t,j}\cdot\delta\bf{y}_{o,i} \\
+        \delta\bf{y}_h &\triangleq \frac{\partial\mathcal{L}}{\partial\left(\bf{U}\bf{a}_t^{\tt{(in)}}+\bf{V}\bf{h}_{t-1}+\bf{b}_h\right)} \\
+        &= \sigma\left(\bf{U}\bf{a}_t^{\tt{(in)}}+\bf{V}\bf{h}_{t-1}+\bf{b}_h\right)\odot\left(\bf{1}-\sigma\left(\bf{U}\bf{a}_t^{\tt{(in)}}+\bf{V}\bf{h}_{t-1}+\bf{b}_h\right)\right)\odot\delta\bf{h}_t \\
+        \delta\bf{a}_t^{\tt{(in)}} &= \bf{U}\delta\bf{y}_h \\
+        \delta\bf{b}_h &= \delta\bf{y}_h \\
+        \delta\bf{U}_{i,j} &= \bf{a}_{t,j}^{\tt{(in)}}\cdot\delta\bf{y}_{h,i} \\
+        \delta\bf{V}_{i,j} &= \bf{h}_{t-1,j}\cdot\delta\bf{y}_{h,i} \\
+        \delta\bf{y}_a & \triangleq\frac{\partial\mathcal{L}}{\partial\left(\bf{W}^{\tt{(in)}}\bf{x}_t+\bf{b}^{\tt{(in)}}\right)} = \sigma\left(\bf{W}^{\tt{(in)}}\bf{x}_t+\bf{b}^{\tt{(in)}}\right) \odot \left(\bf{1}-\sigma\left(\bf{W}^{\tt{(in)}}\bf{x}_t+\bf{b}^{\tt{(in)}}\right)\right) \odot \delta\bf{a}^{\tt{(in)}} \\
+        \delta\bf{b}^{\tt{(in)}} &= \delta \bf{y}_a \\
+        \delta\bf{W}^{\tt{(in)}}_{i,j} &= \bf{x}_{t,j}\cdot\delta\bf{y}_{a,i}
+    \end{align*}
+    
+    \vspace{3em}\hspace{-2em}
+    \textbf{In conclusion,}
+    
+    \hspace{1.3em}
+    Define $\delta\bf{h}_{t}^{\tt{(out)}}=\hat{\bf{r}}_t-r_t$.
+    
+    \hspace{1.3em}
+    Use $\bf{v}_i$ to denote the $i$-th element of vector $\bf{v}$. 
+    
+    \hspace{1.3em}
+    Use $\bf{A}_{i,j}$ to denote the element in the $i$-th row and $j$-th column of matrix $\bf{A}$.
+    
+    \hspace{1.3em}
+    Then the gradient of all parameters trainable during the training process are as follows.
+    
+    \vspace{-2.2em}
+    \begin{align*}
+        \ \left\{
+        \begin{array}{ll}
+            \delta\bf{b}^{\tt{(out)}} = \delta\bf{h}_t^{\tt{(out)}} & \text{(a vector)} \\
+            \delta\bf{W}_{i,j}^{\tt{(out)}} = \bf{o}_{t,j}\cdot\left(\delta\bf{h}^{\tt{(out)}}_t\right)_i & \text{(a number) for any element $\bf{W}^{\tt{(out)}}_{i,j}$ in $\bf{W}^{\tt{(out)}}$} \\
+            \delta\bf{b}_o = \sigma'(\bf{W}\bf{h}_t+\bf{b}_o)\odot\delta\bf{o}_t & \text{(a vector)} \\
+            \delta\bf{W}_{i,j} = \left(\bf{h}_t\right)_j\cdot\left(\delta\bf{b}_o\right)_i & \text{(a number) for any element $\bf{W}_{i,j}$ in $\bf{W}$} \\
+            \delta\bf{b}_h = \sigma'\left(\bf{U}\bf{a}_t^{\tt{(in)}}+\bf{V}\bf{h}_{t-1}+\bf{b}_h\right)\odot\bf{W}\delta\bf{b}_o & \text{(a vector)} \\
+            \delta\bf{U}_{i,j}=\left(\bf{a}_t^{\tt{(in)}}\right)_j\cdot\left(\delta\bf{b}_h\right)_i & \text{(a number) for any element $\bf{U}_{i,j}$ in $\bf{U}$} \\
+            \delta\bf{V}_{i,j} = \left(\bf{h}_{t-1}\right)_j\cdot\left(\delta\bf{b}_h\right)_i & \text{(a number) for any element $\bf{V}_{i,j}$ in $\bf{V}$} \\
+            \delta\bf{b}^{\tt{(in)}} = \sigma'\left(\bf{W}^{\tt{(in)}}\bf{x}_t+\bf{b}^{\tt{(in)}}\right) \odot \bf{U}\delta\bf{b}_h & \text{(a vector)} \\
+            \delta \bf{W}_{i,j}^{\tt{(in)}} = \left(\bf{x}_t\right)_j\cdot\left(\delta\bf{b}^{\tt{(in)}}\right)_i & \text{(a number) for any element $\bf{W}_{i,j}^{\tt{(in)}}$ in $\bf{W}^{\tt{(in)}}$}
+        \end{array}
+        \right.
+    \end{align*}
+    
+    \vspace{-0.5em} \hspace{1.3em}
+    (where $\sigma'(\bf{z})\triangleq\sigma(\bf{z})\odot\left(\bf{1}-\sigma(\bf{z})\right)$)
+    
+    \vspace{1em} \hspace{1.3em}
+    The backward propagation is as follows. 
+    
+    \hspace{1.3em}
+    (where $\eta$ is the learning rate)
+    
+    \vspace{-2.2em}
+    \begin{align*}
+        \ \left\{
+        \begin{array}{rl}
+            \bf{b}^{\tt{(out)}} &\gets\ \bf{b}^{\tt{(out)}}-\eta\cdot\delta\bf{b}^{\tt{(out)}} \\
+            \bf{W}_{i,j}^{\tt{(out)}} &\gets\ \bf{W}_{i,j}^{\tt{(out)}} - \eta\cdot\delta\bf{W}_{i,j}^{\tt{(out)}} \\
+            \bf{b}_o &\gets\ \bf{b}_o - \eta\cdot\delta\bf{b}_o \\
+            \bf{W}_{i,j} &\gets\ \bf{W}_{i,j} - \eta\cdot\delta\bf{W}_{i,j} \\
+            \bf{b}_h &\gets\ \bf{b}_h - \eta\cdot\delta\bf{b}_h \\
+            \bf{U}_{i,j} &\gets\ \bf{U}_{i,j} - \eta\cdot\delta\bf{U}_{i,j} \\
+            \bf{V}_{i,j} &\gets\ \bf{V}_{i,j} - \eta\cdot\delta\bf{V}_{i,j} \\ 
+            \bf{b}^{\tt{(in)}} &\gets\ \bf{b}^{\tt{(in)}} - \eta\cdot\delta\bf{b}^{\tt{(in)}} \\
+            \bf{W}_{i,j}^{\tt{(in)}} &\gets\ \bf{W}_{i,j}^{\tt{(in)}} - \eta\cdot\delta \bf{W}_{i,j}^{\tt{(in)}} 
+        \end{array}
+        \right.
+    \end{align*}
+\end{proof}
+
+\end{document}

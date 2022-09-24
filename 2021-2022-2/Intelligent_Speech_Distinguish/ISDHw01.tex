@@ -1,0 +1,385 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+
+%\usepackage{ReportTemplate}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\labelitemii}{\textbullet}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\renewcommand{\Pr}[1]{\mathbf{Pr}\left(#1\right)}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.5}
+\title{\textbf{Intelligent Speech Distinguish Homework 01}}
+\author{Qiu Yihang}
+\date{May.7-May.15, 2022}
+
+\begin{document}
+
+\maketitle
+
+Parameters of \textbf{GMM-HMM}:
+
+\vspace{-0.3em}
+\begin{itemize}
+    \item[] \begin{itemize}
+        \setstretch{1.35}
+        \item Probabilities of state transition $\boldsymbol{A}$: $a_{ij}=\Pr{q_t=j|q_{t-1}=i}, 1\le i,j\le N$
+        \item The distribution of state output $\boldsymbol{B}$: $b_j(\mathbf{o})=\sum_{m=1}^{M_j}c_{jm}\cdot\mathcal{N}(\mathbf{o}|\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm})$
+        
+        For GMM, parameters are $c_{jm},\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\ (1\le j\le N, 1\le m \le M_j)$.
+    \end{itemize}
+\end{itemize}
+
+\vspace{-0.3em}
+In conclusion, parameter set of GMM-HMM is $\left\{a_{ij}\right\}_{1\le i\le N,1 \le j\le N}$ and $\left\{c_{jm}, \boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\right\}_{1\le j\le N, 1\le m\le M_j}$.
+
+
+The likelihood is given as follows. We maximize the likelihood to get best parameters.
+
+\vspace{-0.5em}
+$$\mathcal{L}(\theta)=\sum_{r=1}^R\log{p\left(\mathbf{O}^{(r)}|\theta\right)}=\sum_{r=1}^R\log\left(\sum_{\mathbf{q}}p(\mathbf{O}^{(r)},\mathbf{q}|\theta)\right)$$
+
+\vspace{-0.5em}\hspace{2em}
+where $\theta$ is the set of parameters. $\mathbf{q}$ is the sequence of hidden states. 
+
+\hspace{2em}
+$\mathbf{O}^{(r)}$ are the data given $(1\le r\le R)$.
+
+\vspace{1em} 
+How we use Expectation Maximization to update parameters in GMM-HMM is as follows.
+
+The proof is also given below.
+
+\vspace{2em} 
+Use $\hat{\theta}$ to denote the initial value of $\theta$. Use $\theta^*$ to denote what $\theta$ should be after an iteration of EM.
+
+\hspace{-4.5em}
+Task 0.\quad Some preparations.
+
+    In class, we already proved that 
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \mathcal{L}(\theta) &\geq \mathtt{H}\left(\Pr{\mathbf{q}|\mathbf{O}^{(r)},\hat{\theta}}\right) + \sum_{r=1}^R\sum_{\mathbf{q}}\Pr{\mathbf{q}|\mathbf{O}^{(r)},\hat{\theta}}\log p\left(\mathbf{O}^{(r)},\mathbf{q}|\theta\right)
+    \end{align*}
+    
+    \vspace{-1em} \hspace{5.6em}
+    (where $\mathtt{H}(\cdot)$ is the information entropy.)
+    
+    In class, we define occupancy as follows. 
+    
+    \vspace{-.9em}
+    $$\left\{\begin{array}{l}
+        \gamma_{(i,j)}^{(r)}(t)=\Pr{q_{t-1}=i,q_t=j|\mathbf{O}^{(r)},\hat{\theta}}\\
+        \gamma_j^{(r)}(t)=\Pr{q_t=j|\mathbf{O}^{(r)},\hat{\theta}}
+    \end{array}\right.$$
+    
+    \vspace{-.5em}
+    Also, we define
+    
+    \vspace{-2.2em}
+    \begin{align*}
+        \mathcal{Q}_A = \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{i=1}^N\sum_{j=1}^N\gamma^{(r)}_{(i,j)}(t)\log\Pr{q_t|q_{t-1},\theta}, \qquad\mathcal{Q}_B = \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{j=1}^N\gamma^{(r)}_{j}(t)\log p\left(\mathbf{o}^{(r)}_t|q_t=j,\theta\right)
+    \end{align*}
+    
+    \vspace{-0.3em}
+    which satisfies that $\mathcal{L}(\theta)=const+\mathcal{Q}_A+\mathcal{Q}_B$.
+    
+    In class, we have proved that (here $\mathbf{O}=\mathbf{O}^{(r)}, \mathbf{o}=\mathbf{o}^{(r)}$)
+    
+    \vspace{-2em}
+    \begin{align*}
+        \gamma_{(i,j)}^{(r)}(t)&=\Pr{q_{t-1}=i,q_t=j|\mathbf{O}_1^T,\hat{\theta}} = \frac{p(q_{t-1}=i,q_t=j,\mathbf{O}_1^T|\hat{\theta})}{p(\mathbf{O}_1^T|\hat{\theta})} \\
+        &=\frac{p(q_{t+1}=i,\mathbf{O}_1^{t-1})\Pr{q_t=j|q_{t-1}=i}p(\mathbf{o}_t|q_t=j)p(\mathbf{O}_{t+1}^T|q_t=j)}{p(\mathbf{O}_1^T|\hat{\theta})} \\
+        &=\frac{\alpha_i(t-1)\hat{a}_{ij}\hat{b}_j(\mathbf{o}_t)\beta_j(t)}{\alpha_N(T+1)} \\
+        &=\frac{\alpha_i(t-1)\hat{a}_{ij}\sum_{m=1}^{M_j}\hat{c}_{jm}\ \mathcal{N}(\mathbf{o}_t|\boldsymbol{\hat{\mu}}_{jm},\boldsymbol{\hat{\Sigma}}_{jm})\beta_j(t)}{\alpha_N(T+1)}
+    \end{align*}
+    
+    where 
+    
+    \vspace{-3em}
+    \begin{align*}
+        \alpha_j(t)&=b_j(\mathbf{o}_t)\sum_{i=1}^{N-1}\hat{a}_{ij}\alpha_i(t-1) =\sum_{m=1}^{M_j}\hat{c}_{jm}\ \mathcal{N}(\mathbf{o}_t|\boldsymbol{\hat{\mu}}_{jm},\boldsymbol{\hat{\Sigma}}_{jm})\sum_{i=1}^{N-1}\hat{a}_{ij}\alpha_i(t-1),\\
+        &\quad\text{(for }1\le t\le T,1\le j\le N) \\
+        \text{with }\alpha_j(0)&=\left\{\begin{array}{ll}
+            1, & j=1 \\
+            0, & otherwise
+        \end{array}\right. \\ \\
+        \beta_j(t) &= \sum_{i=1}^{N-1}b_i(\mathbf{o}_{t+1})\hat{a}_{ji}\beta_i(t+1)=\sum_{i=1}^{N-1}\left(\sum_{m=1}^{M_i}\hat{c}_{im}\ \mathcal{N}(\mathbf{o}_{t+1}|\boldsymbol{\hat{\mu}}_{im},\boldsymbol{\hat{\Sigma}}_{im})\right)\hat{a}_{ji}\beta_i(t+1),\\
+        &\quad\text{(for }1\le t\le T,1\le j\le N)\\
+        \text{with }\beta_j(T)&=a_{jN},\ \beta_N(T+1)=1.
+    \end{align*}
+    
+    \vspace{2em}
+    \hspace{-4.5em} Task 1.\quad\underline{Now we consider how $a_{ij}$ should be updated in the Maximization Step.} \whiteqed
+    
+    We want to maximize $\mathcal{Q}_A$. Thus,
+    
+    \vspace{-1.5em}
+    $$ a^*_{ij} = \underset{a_{ij}}{\mathrm{argmax}}\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{i=1}^N\sum_{j=1}^N\gamma^{(r)}_{(i,j)}(t)\log a_{ij}\quad\text{ s.t. } \left\{\begin{array}{l}
+         \sum_{j=1}^Na_{ij}=1, \\
+         0\le a_{ij}\le 1,\ (1\le i\le N,1\le j\le N)
+    \end{array}\right. $$
+    
+    It is a constrained optimization problem. The Lagrangian
+    
+    \vspace{-1em}
+    $$\mathcal{L}_{\mathcal{Q}_A}(\boldsymbol{A},\lambda)=\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{i=1}^N\sum_{j=1}^N\gamma^{(r)}_{(i,j)}(t)\log a_{ij}+ \sum_{i=1}^N\lambda_i\left(\sum_{j=1}^Na_{ij}-1\right)$$
+    
+    Then we have
+    
+    \vspace{-3em}
+    \begin{align*}
+        \frac{\partial}{\partial a_{ij}}\mathcal{L}_{\mathcal{Q}_A}&=\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\frac{\gamma_{(i,j)}^{(r)}(t)}{a_{ij}}+\lambda_i \\
+        \frac{\partial}{\partial\lambda_i}\mathcal{L}_{\mathcal{Q}_A}&= \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{j=1}^N{a_{ij}}-1
+    \end{align*}
+    
+    Set the gradient to 0. We have
+    
+    \vspace{-2em}
+    \begin{align*}
+        \lambda_i&=-\sum_{j=1}^N\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{(i,j)}^{(r)}(t)   \\
+        a^*_{ij}&=-\frac{1}{\lambda_i}\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{(i,j)}^{(r)}(t)
+    \end{align*}
+    
+    Thus, the update of parameter $a_{ij}$ should be
+    
+    $$a_{ij}^* = \frac{\sum_{r=1}^R\sum_{t=1}^{t^{(r)}}\gamma_{(i,j)}^{(r)}(t)}{\sum_{r=1}^R\sum_{t=1}^{t^{(r)}}\sum_{j=1}^{N}\gamma_{(i,j)}^{(r)}(t)}$$ 
+    
+    \vspace{-3.6em} \qedsymbol
+    
+    \vspace{4.5em}
+    \hspace{-4.5em} Task 2.\quad\underline{Now we consider how $c_{jm},\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}$ should be updated in the Maximization Step.} \whiteqed
+    
+    \vspace{-0.5em}
+    $$\mathcal{Q}_B(\theta,\hat{\theta}) = \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{j=1}^N\gamma_j^{(r)}(t)\log p\left(\mathbf{o}^{(r)}_t|q_t=j,\theta\right)$$
+    
+    \vspace{-1.5em}
+    We know
+    
+    \vspace{-2.7em}
+    \begin{align*}
+        \mathcal{Q}_B(\theta,\hat{\theta}) &= \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{j=1}^N\gamma_j^{(r)}(t)\log p\left(\mathbf{o}^{(r)}_t|q_t=j,\theta\right) = \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{j=1}^N\gamma_j^{(r)}(t)\log b_j\left(\mathbf{o}^{(r)}_t\right) \\
+        &= \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{j=1}^N\gamma_{j}^{(r)}(t)\log\left(\sum_{m=1}^{M_j}\Pr{g_t=m|q_t=j,\mathbf{O}_1^T,\hat{\theta}} c_{jm}\mathcal{N}\left(\mathbf{o}^{(r)}_t|\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\right)\right) \\
+        &\geq \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{j=1}^N\sum_{m=1}^{M_j}\gamma_{jm}^{(r)}(t)\log\left( c_{jm}\mathcal{N}\left(\mathbf{o}^{(r)}_t|\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\right)\right)\\
+        &\quad\text{(By the convexity of log function, i.e. Jensen's Inequality)}
+    \end{align*}
+    
+    where $\gamma_{j}^{(r)}(t)$ and $\gamma_{jm}^{(r)}(t)$ is given as follows. (Here $\mathbf{O}=\mathbf{O}^{(r)}$)
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \gamma_{j}^{(r)}(t)&=\Pr{q_t=j|\mathbf{O}_1^{T},\hat{\theta}} = \frac{\Pr{q_t=j,\mathbf{O}_1^T|\hat{\theta}}}{p(\mathbf{O}_1^T|\hat{\theta})} = \frac{p(\mathbf{O}_1^t,q_t=j)p(\mathbf{O}_{t+1}^T|q_t=j)}{\alpha_N(T+1)} = \frac{\alpha_j(t)\beta_j(t)}{\alpha_N(T+1)} \\
+        \gamma_{jm}^{(r)}(t)&=\Pr{q_t=j,g_t=m|\mathbf{O}_1^T,\hat{\theta}}=\Pr{q_t=j|\mathbf{O}_1^T,\hat{\theta}}\Pr{g_t=m|q_t=j,\mathbf{O}_1^T,\hat{\theta}} \\
+        &= \Pr{q_t=j|\mathbf{O}_1^T,\hat{\theta}}\Pr{g_t=m|\mathbf{O}_1^T,\hat{\theta}}\quad\text{($q_t$ and $g_m$ are independent)} \\
+        &= \gamma_j^{(r)}(t)\cdot\gamma_m^{(r)}(t)
+    \end{align*}
+    
+    \vspace{1em}
+    Define $\mathcal{Q}'_B=\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{j=1}^N\sum_{m=1}^{M_j}\gamma_{jm}^{(r)}(t)\log\left(c_{jm}\mathcal{N}\left(\mathbf{o}^{(r)}_t|\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\right)\right)$. 
+    
+    We want to maximize $\mathcal{Q}'_B.$
+    
+\hspace{-2.2em}
+1)\quad
+    For the update of $\boldsymbol{\mu}_{jm}$, we know
+    
+    \vspace{-2.7em}
+    \begin{align*}
+        \frac{\partial}{\partial\boldsymbol{\mu}_{jm}}\mathcal{Q}'_B &= \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\frac{c_{jm}}{c_{jm}\mathcal{N}\left(\mathbf{o}^{(r)}_t|\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\right)}\frac{\partial}{\partial\boldsymbol{\mu}_{jm}}\mathcal{N}\left(\mathbf{o}^{(r)}_t|\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\right) \\
+        &= \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\frac{c_{jm}\mathcal{N}\left(\mathbf{o}^{(r)}_t|\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\right)}{c_{jm}\mathcal{N}\left(\mathbf{o}^{(r)}_t|\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\right)}\boldsymbol{\Sigma}_{jm}^{-1}\left(\mathbf{o}_t^{(r)}-\boldsymbol{\mu}_{jm}\right) \\
+        &= \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\boldsymbol{\Sigma}_{jm}^{-1}\left(\mathbf{o}_t^{(r)}-\boldsymbol{\mu}_{jm}\right)
+    \end{align*}
+    
+    Set the gradient to 0. We get
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\boldsymbol{\Sigma}_{jm}^{-1}\left(\mathbf{o}_t^{(r)}-\boldsymbol{\mu}_{jm}^*\right) = 0 &\Longrightarrow \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\left(\mathbf{o}_t^{(r)}-\boldsymbol{\mu}_{jm}^*\right)=0 \\
+        &\Longrightarrow \boldsymbol{\mu}_{jm}^* = \frac{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\cdot\mathbf{o}_t^{(r)}}{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}}
+    \end{align*}
+    
+    \vspace{-3.6em} \qedsymbol
+    
+\vspace{3.6em}
+\hspace{-2.3em}
+2)\quad
+    For the update of $\boldsymbol{\Sigma}_{jm}$, we know
+   
+    \vspace{-2.5em}
+    \begin{align*}
+        \frac{\partial\mathcal{Q}'_B}{\partial\boldsymbol{\Sigma}_{jm}} = \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\frac{c_{jm}}{c_{jm}\mathcal{N}\left(\mathbf{o}^{(r)}_t|\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\right)}\frac{\partial}{\partial\boldsymbol{\Sigma}_{jm}}\mathcal{N}\left(\mathbf{o}^{(r)}_t|\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\right) 
+    \end{align*}
+    
+    \vspace{-1em}
+    Considering that
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \frac{\partial}{\partial\boldsymbol{\Sigma}}\mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma}) &= \frac{\partial}{\partial\boldsymbol{\Sigma}}\left(\frac{1}{\sqrt{(2\pi)^d|\boldsymbol{\Sigma}|}}\exp\left(-\frac{1}{2}(\mathbf{x}-\boldsymbol{\mu})^T\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})\right)\right) \\
+        &= \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})\left(\sqrt{|\boldsymbol{\Sigma}|}\frac{\partial|\boldsymbol{\Sigma}|^{-\frac{1}{2}}}{\partial\boldsymbol{\Sigma}}-\frac{1}{2}\frac{\partial(\mathbf{x}-\boldsymbol{\mu})^T\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})}{\partial\boldsymbol{\Sigma}}\right)\\
+        &= \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})\left(-\frac{1}{2}|\boldsymbol{\Sigma}|^{\frac{1}{2}}|\boldsymbol{\Sigma}|^{-\frac{3}{2}}\frac{\partial|\boldsymbol{\Sigma}|}{\partial\boldsymbol{\Sigma}}
+        +\frac{1}{2}\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})\left(\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})\right)^T\right)\quad\ \ \\
+        &= \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})\left(-\frac{1}{2}|\boldsymbol{\Sigma}|^{-1}|\boldsymbol{\Sigma}|\boldsymbol{\Sigma}^{-1}
+        +\frac{1}{2}\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})(\mathbf{x}-\boldsymbol{\mu})^T\left(\boldsymbol{\Sigma}^{-1}\right)^T\right) \\
+        &= -\frac{1}{2}\mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})\left(\boldsymbol{\Sigma}^{-1}
+        -\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})(\mathbf{x}-\boldsymbol{\mu})^T\boldsymbol{\Sigma}^{-1}\right) \\
+        &\qquad\text{(By the symmetry of $\boldsymbol{\Sigma}$ and $\boldsymbol{\Sigma}^{-1}$)}
+    \end{align*}
+    
+    \vspace{-1.5em}
+    we know
+    
+    \vspace{-2.7em}
+    \begin{align*}
+         \frac{\partial\mathcal{Q}'_B}{\partial\boldsymbol{\Sigma}_{jm}} &=
+         -\frac{1}{2}\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\left(\boldsymbol{\Sigma}_{jm}^{-1}
+        -\boldsymbol{\Sigma}_{jm}^{-1}\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}_{jm}\right)\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}_{jm}\right)^T\boldsymbol{\Sigma}_{jm}^{-1}\right)
+    \end{align*}
+    
+    Set the gradient to 0. We have
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        &\qquad\qquad\qquad -\frac{1}{2}\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\left(\boldsymbol{\Sigma}_{jm}^{-1}
+        -\boldsymbol{\Sigma}_{jm}^{-1}\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}_{jm}\right)\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}_{jm}\right)^T\boldsymbol{\Sigma}_{jm}^{-1}\right) = 0 \\
+        &\Longrightarrow\  \boldsymbol{\Sigma}_{jm}\left[\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\left(\boldsymbol{\Sigma}_{jm}^{-1}
+        -\boldsymbol{\Sigma}_{jm}^{-1}\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}_{jm}\right)\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}_{jm}\right)^T\boldsymbol{\Sigma}_{jm}^{-1}\right)\right]\boldsymbol{\Sigma}_{jm} = 0 \\
+        &\Longrightarrow\qquad\  \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\boldsymbol{\Sigma}_{jm}\left[\boldsymbol{\Sigma}_{jm}^{-1}
+        -\boldsymbol{\Sigma}_{jm}^{-1}\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}_{jm}\right)\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}_{jm}\right)^T\boldsymbol{\Sigma}_{jm}^{-1}\right]\boldsymbol{\Sigma}_{jm} = 0 \\
+        &\Longrightarrow\qquad\qquad \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\left(\boldsymbol{\Sigma}_{jm}        -\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}_{jm}\right)\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}_{jm}\right)^T\right) = 0 \\
+        &\Longrightarrow \qquad\qquad\boldsymbol{\Sigma}_{jm}^*=\frac{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}^*_{jm}\right)\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}^*_{jm}\right)^T}{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)}
+    \end{align*}
+    
+\vspace{-3.6em} \qedsymbol
+
+\vspace{5em}
+\hspace{-2.3em}
+3)\quad
+    For the update of $c_{jm}$, the optimization problem is actually a constrained one.
+    
+    \vspace{-1em}
+    $$c_{jm}^* = \underset{c_{jm}}{\mathrm{argmax}}\ \mathcal{Q}'_B\quad\text{ s.t. }\sum_{m=1}^{M_j}c_{jm}=1.$$
+    
+    \vspace{-0.7em}
+    The Lagrangian
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \mathcal{L}_{\mathcal{Q}'_B}&=\mathcal{Q}'_B+\xi\left(\sum_{m=1}^{M_j}c_{jm}-1\right) \\
+        \frac{\partial\mathcal{L}_{\mathcal{Q}'_B}}{\partial c_{jm}} &= \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\frac{\mathcal{N}\left(\mathbf{o}^{(r)}_t|\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\right)}{c_{jm}\mathcal{N}\left(\mathbf{o}^{(r)}_t|\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\right)}+\xi = \frac{1}{c_{jm}}\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)+\xi. \\
+        \frac{\partial\mathcal{L}_{\mathcal{Q}'_B}}{\partial \xi} &= \sum_{m=1}^{M_j}c_{jm}-1.
+    \end{align*}
+    
+    \vspace{-0.25em}
+    Set the gradient to 0, we have
+    
+    \vspace{-2.7em}
+    \begin{align*}
+        c_{jm}=-\frac{1}{\xi}\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t) \\
+        \xi = -\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{m=1}^{M_j}\gamma_{jm}^{(r)}(t)
+    \end{align*}
+    
+    Thus, the update of parameter $c_{jm}$ should be
+    
+    $$c_{jm}^* = \frac{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)}{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{m=1}^{M_j}\gamma_{jm}^{(r)}(t)}$$
+    
+    \vspace{-3em}\qedsymbol
+    
+    
+    \vspace{3.9em}
+    \underline{\textbf{IN CONCLUSION,}}
+    
+    We define 
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \gamma_{(i,j)} &\triangleq \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{(i,j)}^{(r)}(t),&\gamma_{jm}\triangleq\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t), \\
+        \boldsymbol{\mu}_{jm}^{\mathtt{acc}} &= \sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\mathbf{o}_t^{(r)}, &\boldsymbol{\Sigma}_{jm}^{\mathtt{acc}}\triangleq\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\mathbf{o}_t^{(r)}\left(\mathbf{o}_t^{(r)}\right)^T.
+    \end{align*}
+    
+    Then we can rewrite the update of all parameters as follows.
+    
+    \vspace{-3em}
+    \begin{align*}
+        & a_{ij}^* = \frac{\sum_{r=1}^R\sum_{t=1}^{t^{(r)}}\gamma_{(i,j)}^{(r)}(t)}{\sum_{r=1}^R\sum_{t=1}^{t^{(r)}}\sum_{j=1}^{N}\gamma_{(i,j)}^{(r)}(t)} = \frac{\gamma_{(i,j)}}{\sum_{j=1}^N\gamma_{(i,j)}} \\
+        & c_{jm}^* = \frac{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)}{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\sum_{m=1}^{M_j}\gamma_{jm}^{(r)}(t)} = \frac{\gamma_{jm}}{\sum_{m=1}^{M_j}\gamma_{jm}} \\
+        & \boldsymbol{\mu}_{jm}^* = \frac{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\cdot\mathbf{o}_t^{(r)}}{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}} = \frac{\boldsymbol{\mu}_{jm}^{\mathtt{acc}}}{\gamma_{jm}} \\
+        & \boldsymbol{\Sigma}_{jm}^*=\frac{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}^*_{jm}\right)\left(\mathbf{o}^{(r)}_t-\boldsymbol{\mu}^*_{jm}\right)^T}{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)} \\
+        &\qquad = \frac{\boldsymbol{\Sigma}_{jm}^{\mathtt{acc}}}{\gamma_{jm}}-\boldsymbol{\mu}_{jm}^*\frac{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\mathbf{o}^{(r)T}_t}{\gamma_{jm}}-\frac{\sum_{r=1}^R\sum_{t=1}^{T^{(r)}}\gamma_{jm}^{(r)}(t)\mathbf{o}^{(r)}_t}{\gamma_{jm}}\boldsymbol{\mu}_{jm}^{*\ \ T} + \frac{\boldsymbol{\mu}_{jm}^{\mathtt{acc}}\boldsymbol{\mu}_{jm}^{\mathtt{acc}T}}{\gamma_{jm}^2} \\
+        &\qquad = \frac{\boldsymbol{\Sigma}_{jm}^{\mathtt{acc}}}{\gamma_{jm}} - \frac{\boldsymbol{\mu}_{jm}^{\mathtt{acc}}}{\gamma_{jm}}\frac{\boldsymbol{\mu}_{jm}^{\mathtt{acc}T}}{\gamma_{jm}}-\frac{\boldsymbol{\mu}_{jm}^{\mathtt{acc}}}{\gamma_{jm}}\frac{\boldsymbol{\mu}_{jm}^{\mathtt{acc}T}}{\gamma_{jm}} + \frac{\boldsymbol{\mu}_{jm}^{\mathtt{acc}}\boldsymbol{\mu}_{jm}^{\mathtt{acc}T}}{\gamma_{jm}^2} \\
+        &\qquad = \frac{\boldsymbol{\Sigma}_{jm}^{\mathtt{acc}}}{\gamma_{jm}} - \frac{\boldsymbol{\mu}_{jm}^{\mathtt{acc}}\boldsymbol{\mu}_{jm}^{\mathtt{acc}T}}{\gamma_{jm}^2}
+    \end{align*}
+    
+     Thus, the update of all parameter set $\theta^*=\left\{a_{ij},c_{jm},\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}\right\}$ is as follows.
+     
+     $$a_{ij}^*=\frac{\gamma_{(i,j)}}{\sum_{j=1}^N\gamma_{(i,j)}}, \quad
+     c_{jm}^* =\frac{\gamma_{jm}}{\sum_{m=1}^{M_j}\gamma_{jm}},\quad \boldsymbol{\mu}_{jm}^*=\frac{\boldsymbol{\mu}_{jm}^{\mathtt{acc}}}{\gamma_{jm}}, \quad
+     \boldsymbol{\Sigma}_{jm}^*=\frac{\boldsymbol{\Sigma}_{jm}^{\mathtt{acc}}}{\gamma_{jm}} - \frac{\boldsymbol{\mu}_{jm}^{\mathtt{acc}}\boldsymbol{\mu}_{jm}^{\mathtt{acc}T}}{\gamma_{jm}^2}.\qquad\qquad$$
+     
+     \vspace{-2.85em}\qedsymbol
+     
+     \vspace{5em} \hspace{-4.5em} Task 3.\quad
+     \underline{The whole process of Expectation Maximization Algorithm of HMM-GMM is as follows.} \whiteqed
+     
+     \begin{itemize}
+         \item[] \begin{itemize}
+             \item Initialize $\theta$ with random values.
+             \item Repeat the following two steps until certain criteria are reached.
+             
+             (For example, the number of iterations is large enough, or the change of value of parameters are within a significantly small range).
+             
+             \item \textbf{Expectation Step.} 
+             
+             We use $\hat{\theta}$ of the former iteration in Expectation Step.
+             
+             For the first iteration, use the initial value as $\hat{\theta}$.
+             
+             \begin{itemize}
+                 \item Calculate $\alpha_j(t),\beta_j(t)$ for each $r$ with $\hat{\theta}$.
+                 
+                 (Definition is given in Task 0 Page 2).
+                 
+                 \item Calculate $\gamma_{(i,j)}^{(r)}(t), \gamma_{jm}^{(r)}(t)$ and then compute $\gamma_{(i,j)}$ and $\gamma_{jm}$.
+                 
+                 (Definition is given in Task 0 Page 2, Task 2 Page 3 and Conclusion Page 6.)
+                 
+                 
+                 \item Calculate $\boldsymbol{\mu}_{jm}^{\mathtt{acc}}$ and $\boldsymbol{\Sigma}_{jm}^{\mathtt{acc}}$.
+                 
+                 (Definition is given in Conclusion Page 6.)
+             \end{itemize}
+             
+             \item \textbf{Maximization Step.}
+             
+             Update the parameters $a_{ij},c_{jm},\boldsymbol{\mu}_{jm},\boldsymbol{\Sigma}_{jm}$ with calculated probabilities and expectations in Expectation Step.
+     
+     \vspace{-2em}
+     $$a_{ij}^*=\frac{\gamma_{(i,j)}}{\sum_{j=1}^N\gamma_{(i,j)}}, \quad
+     c_{jm}^* =\frac{\gamma_{jm}}{\sum_{m=1}^{M_j}\gamma_{jm}},\quad \boldsymbol{\mu}_{jm}^*=\frac{\boldsymbol{\mu}_{jm}^{\mathtt{acc}}}{\gamma_{jm}}, \quad
+     \boldsymbol{\Sigma}_{jm}^*=\frac{\boldsymbol{\Sigma}_{jm}^{\mathtt{acc}}}{\gamma_{jm}} - \frac{\boldsymbol{\mu}_{jm}^{\mathtt{acc}}\boldsymbol{\mu}_{jm}^{\mathtt{acc}T}}{\gamma_{jm}^2}.\qquad$$
+             
+            $a_{ij}^*,c_{jm}^*,\boldsymbol{\mu}_{jm}^*,\boldsymbol{\Sigma}_{jm}^*$ are the updated values of parameters.
+             
+         \end{itemize}
+     \end{itemize}
+         
+\vspace{3em}
+\hspace{29.5em}
+\textit{End of Solution and Proof.} \qedsymbol
+
+
+\end{document}
