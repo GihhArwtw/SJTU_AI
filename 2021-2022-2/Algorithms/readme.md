@@ -8,7 +8,7 @@ I took the course given by Dr. Chihao Zhang（张驰豪）.
 
 Since the size of a single file uploaded onto github should be no more than 25MB, I have to split the original scanned notes into two `pdf` files, part.1 and part.2.
 
-由于github对单个上传文件的大小有上限限制（25MB），笔记的扫描件文件被分为两个文件上传（part.1和part.2）。
+由于github对单个上传文件的大小上限有限制（25MB），笔记的扫描件文件被分为两个文件上传（part.1和part.2）。
 
 <br/>
 
