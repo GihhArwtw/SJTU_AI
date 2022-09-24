@@ -1,0 +1,511 @@
+\documentclass[a4paper]{article}
+
+\usepackage{ReportTemplate}
+
+\usepackage{setspace}
+\usepackage{amsmath}
+\usepackage[hidelinks]{hyperref}
+
+\usepackage{multirow}
+
+\renewcommand{\tt}[1]{\mathtt{#1}}
+\newcommand{\bd}[1]{\boldsymbol{#1}}
+
+\title{Project 3：LVCSR系统搭建}
+\name{邱一航}
+\studentid{520030910155}
+
+\begin{document}
+
+\maketitle
+
+\section{Baseline (70分)}
+
+\setcounter{subsection}{-1}
+\subsection{安装环境及脚本运行说明}
+
+笔者在Windows提供的Linux子系统即WSL（Windows Subsystem for Linux）环境下进行实验。
+
+所安装的WSL版本为2.0，笔者在该子系统中安装Ubuntu操作系统，Ubuntu版本为Ubuntu 20.04。WSL环境下已预先安装了CUDA 10.1。
+
+该部分只要求训练得到SAT+GMM-HMM。因此原脚本中涉及后续DNN训练的部分应当被注释，即注释以下两行（Line 142, 145）。
+
+\begin{lstlisting}[language=bash,firstnumber=142]
+local/nnet3/run_tdnn.sh
+\end{lstlisting}
+\vspace{-1em}
+\begin{lstlisting}[language=bash,firstnumber=145]
+local/chain/run_tdnn.sh
+\end{lstlisting}
+
+\vspace{-0.3em}
+\subsection{数据处理及特征提取(10分)}
+
+官方recipe的数据处理和特征提取步骤如下：
+
+\vspace{1em}
+\textbf{1. 词典准备。} 
+
+调用$\tt{local}/\tt{aishell}\_\tt{prepare\_dict.sh}$，根据提供的词库$(\tt{data/resource\_aishell}$ $\tt{/lexicon.txt})$准备词典。
+
+\vspace{1em}
+\textbf{2. 数据准备。} 
+
+调用$\tt{local/aishell\_data\_prep.sh}$，根据提供的文本标注文件$\tt{data/data\_aishell}$ $\tt{/transcript/aishell\_transcript\_v0.8.txt}$在train, test, dev数据集上准备文本标注及speaker与语音编号对应关系。
+
+\vspace{1em}
+\textbf{3. 词典生成。} 
+
+调用$\tt{utils/prepare\_lang.sh}$，根据准备好的词典文件，以标准格式构建词典的FST脚本。
+
+\vspace{1em}
+\textbf{4. 语言模型训练}。
+
+调用$\tt{local/aishell\_train\_lms.sh}$，进行语言模型训练。
+
+\vspace{1em}
+\textbf{5. 特征提取。}
+
+用$\tt{steps/make\_mfcc\_pitch.sh},\tt{steps/compute}$ $\tt{\_cmvn\_stats.sh}, \tt{utils/fix\_data\_dir.sh}$提取MFCC（Mel频率倒谱系数）和Pitch（音高）特征。其中第二个脚本用于归一化，第三个脚本检查$\tt{wav.scp}$文件格式的正确性。
+
+\vspace{1.5em}
+该过程曾出现以下错误信息：
+
+\begin{lstlisting}[language=bash]
+local/aishell_train_lms.sh: train_lm.sh is not found. That might mean it's not installed.
+\end{lstlisting}
+
+\textbf{解决}：根据提示使用$\tt{tools/extras/install}$ $\tt{\_kaldi\_lm.sh}$安装$\tt{train\_lm.sh}$即可。
+
+\subsection{模型训练(50分)}
+
+官方recipe中，SAT+GMM-HMM模型训练主要分为两个阶段：
+
+\subsubsection{单音素训练}
+
+利用MFCC和pitch特征进行单音素的GMM-HMM模型训练，利用最大似然法估计参数。使用EM（期望最大化）算法，默认迭代40次（可以在$\tt{steps/train\_mono.sh}$脚本中修改迭代次数），每次迭代增加一定的高斯数并重新进行参数估计。
+
+特别地，脚本通过${realign\_iters}$变量指定了一些需要执行对齐的迭代次数。
+
+训练完成后，生成解码图并利用该模型在数据集上解码，计算WER和CER。之后使用Verrtibi算法对解码后的特征进行对齐，以便之后的训练使用。下面简称该过程为“解码、评估、对齐”。
+
+\subsubsection{Triphone（三音素）训练1-2：train\_deltas，即一阶与二阶差分} 
+
+第一阶段和第二阶段均调用$\tt{steps/train\_}$ $\tt{deltas.sh}$，构建以GMM为节点的决策树。训练过程中也使用了上一次训练后对齐的特征。
+
+每一阶段的训练完成后，都进行了一次“解码、评估、对齐”。
+
+\vspace{1em}
+这两个阶段训练调用的脚本$\tt{steps/train\_}$ $\tt{deltas.sh}$的主要流程如下：
+
+\begin{itemize}
+    \item 首先对特征进行处理（CMVN，倒谱均值方差归一化方法）和差分。即对特征的倒谱值进行处理
+    
+    \vspace{-2em}
+    \begin{align*}
+        \hat{x}_i = \frac{x_i-\tt{mean}(x)}{\sqrt{\tt{var}(x)}}
+    \end{align*}
+    
+    后，再进行差分操作。
+    
+    这一处理能提高系统的泛化能力，提升了模型的鲁棒性。
+    
+    \item \textbf{stage -3:} 利用前一次训练得到的对齐结果，统计收集所有决策树的参数，结果在treeacc文件中。
+    \item \textbf{stage -2:} 使用k-means对三音素进行聚类，根据聚类结果和上一步统计完毕的决策树，利用前一次训练得到的模型（tri1：单因素模型，tri2：tri1得到的三音素决策树），构建基于三音素的决策树并初始化。决策树的每个节点都是一个GMM模型。
+    \item \textbf{stage -1:} 
+    将上一步的对齐（tri1：单因素表示的对齐，tri2：tri1得到的三音素决策树节点表示的对齐）转换为用上一步构建的三音素决策树的节点表示的对齐。
+    \item \textbf{stage 0:}
+    构建三音素决策树的训练图。
+    \item 此后类似\textbf{1.2.1}中单音素GMM的训练，使用EM算法，通过最大化似然来估计每个节点处GMM的具体参数。
+    
+    同样，也通过${realign\_iters}$变量指定了需要对齐的迭代次数。
+    
+\end{itemize}
+
+第一阶段和第二阶段分别针对MFCC特征经CMVN后一阶和二阶差分特征进行建模，完成了两个模型（三音素决策树）的建构和训练。
+
+\vspace{2em}
+
+\subsubsection{Triphone（三音素）训练3：LDA+MLLT}
+
+第三阶段生成并训练的模型为：对splice（帧链接）处理后的MFCC和pitch特征进行LDA降维，降维后再做MLLT变换，通过以GMM-HMM为节点的决策树得到结果。
+
+\vspace{1em}
+该阶段调用的脚本$\tt{steps/train\_lda\_mllt.}$ $\tt{sh}$的主要流程如下：
+
+\begin{itemize}
+    \item 对MFCC和pitch特征进行CMVN处理，然后使用splice进行对处理后的特征进行帧链接。拼接后的特征相当于三音素的“特征”。
+    \item \textbf{stage -5:} 使用LDA（线性判别分析）对拼接后的特征进行降维和去相关（默认降维至40维）。LDA的具体流程在机器学习课程\cite{ML}中已有详细讲解，此处只给出方法的核心。
+    
+    1) 构建类内散射矩阵：
+    
+    \vspace{-0.5em}
+    $$S_w=\sum_{c}\sum_{\bf{x}\in H_c}(\bf{x}-\bd{\mu}_c)(\bf{x}-\bd{\mu}_c)^T$$
+    
+    其中$c$为类别，$H_c$包括了第$c$类的全部数据点，$\bd{\mu}_c$为第$c$类全部数据点均值（中心）。
+    
+    2) 通过计算全局散度矩阵
+    
+    \vspace{-2em}
+    $$S_T=\sum_{\bf{x}}(\bf{x}-\bd{\mu})(\bf{x}-\bd{\mu})^T=S_b+S_w$$
+    
+    \vspace{-1em}
+    计算类间散度矩阵$S_b$。其中$\bd{\mu}$为所有数据点的均值。
+    
+    3) LDA的目标是最大化类间距离同时最小化类内距离，即
+    
+    \vspace{-1.5em}
+    $$\max J=\frac{\bd{w}^TS_w\bd{w}}{\bd{w}^TS_b\bd{w}}\ \Longrightarrow\ S_w^{-1}S_b\bd{w}=J\bd{w}$$
+    
+    其中$\bd{w}$为降维后的超平面的一个基，即将数据点$\bd{x}$投影到$\bd{w}^T\bf{x}$。该目标可转化为上式右侧的特征值分解问题。多个$\bd{w}$可以组成一个降维变换矩阵$\bf{W}$，很显然各个$\bd{w}$都是特征向量，彼此不相关。
+    
+    \item \textbf{stage -4 - stage 0} 
+    对三音素聚类，统计决策树参数，构建以GMM为节点的决策树并初始化。
+    
+    \item 用LDA降维和去相关后，类似$\tt{train\_}$ $\tt{deltas.sh}$，通过EM算法多次迭代最大似然估计得到“最优”的MLLT（最大似然线性变换）矩阵\cite{LDA}和以GMM-HMM为节点的三音素决策树模型。这一训练过程类似\textbf{1.2.2}中的训练，不再赘述。
+    
+    由于特征维度有40，GMM所需要的协方差矩阵参数量太大，因此使用MLLT矩阵，即通过相对较小的对角阵$\bd{\Sigma}_{diag}$和semi-tied covariance matrices $\bd{H}$来近似估计GMM中的协方差矩阵。数学表达式如下：
+    
+    \vspace{-1em}
+    $$\bd{\Sigma}=\bd{H}\bd{\Sigma}_{diag}\bd{H}^T$$
+    
+    为了方便EM算法的使用（每一次迭代都会使用上一次的迭代结果），同时对特征和GMM做这一处理，即
+    
+    \vspace{-2em}
+    \begin{align*}
+        \left\{
+        \begin{array}{l}
+            \hat{\bd{\mu}} = \bd{H}\bd{\mu}  \\
+            \hat{\bd{\Sigma}}=\bd{H}\bd{\Sigma}\bd{H}^T
+        \end{array}
+        \right.
+    \end{align*}
+    
+    因此，MLLT可视为特征空间的变换矩阵。
+\end{itemize}
+
+\vspace{1em}
+训练完成后，需要为后续SAT训练准备特征。这一步的目的是将原本数据集中的特征（是与说话人“无关”的特征）根据特定的说话人进行变换（对特征的均值进行一定变换处理，即
+
+\vspace{-1em}
+$$\bd{\mu}_{SA}=\bd{A}\bd{\mu}+\bd{b}$$
+
+（$\bd{\mu}$是原本的均值，$\bd{b}$是偏移量，$\bd{A}$是特征空间中的变换即一个矩阵。）
+
+这一变换生成了说话人自适应的音频。对变换$\bd{A}$的求解使用了fMLLR，该方法能在训练得到的模型上能取得最大似然。\cite{LDA}
+
+$\tt{steps/align\_fmllr.sh}$使用EM算法迭代求解fMLLR，默认迭代次数是两次。
+
+
+
+\vspace{1em}
+\subsubsection{Triphone（三音素）训练4-5：SAT}
+
+tri4a和tri5a都训练了SAT（说话人自适应训练）。该部分主要是根据说话人声音的特征（如性别，平均音高等）对音频特征进行一定处理，根据不同的“说话人”进行不同的处理。
+
+某种意义上这一操作可以被视为针对“说话人”的归一化，将原本不同的声线根据“说话人”自适应得到的变换，全部转化为“标准声线”下的音频进行后续识别处理。tri4a和tri5a所训练就是说话人自适应，即不同的声线该如何转化为“标准声线”。
+
+tri4a训练的SAT模型相对较小，tri5a训练的SAT模型参数量更大，高斯数也更多。
+
+其训练流程类似于前两阶段的训练，也是训练一个节点为GMM的三音素决策树。唯一的区别是输入的特征都经过了fMLLR处理。因此这里不再赘述。
+
+两次训练完成后都需要经过fMLLR变换，以便进行下一次的SAT训练。
+
+%在本节中，请运行并介绍官方recipe中从最初没有模型，直至训练出一个SAT + GMM-HMM模型的流程（可选：你遇到了什么问题？描述问题原因并介绍你的解决方法）。你可能需要查阅资料（尤其是SAT部分）以及与同学讨论才能理解这一流程，但请以自己的理解进行描述。\textbf{写作完成后，请删除本段。}
+
+\subsection{实验结果(10分)}
+
+不同阶段训练得到的模型在test测试集和dev开发集上的解码结果保存在$\tt{exp/}[1]\tt{/decode}$ $\_[2]\tt{/log/decode.}[3]\tt{.log}$文件中。其中，[1]是训练阶段的名称（mono, tri1, tri2, tri3a, tri4a, tri5a），[2]是数据集名称（test, dev），[3]是数值（1-6）.
+
+不同阶段训练得到的系统对应的评分结果相对目录如表\ref{tab1}：（均为test数据集上的结果）
+
+\begin{table}[th]
+  %\hspace{-5em}
+  \begin{tabular}{ c l }
+    \toprule
+    \textbf{阶段} & \textbf{相对路径}  \\
+    \midrule
+    mono & $\tt{exp/mono/decode\_test/scoring\_kaldi}$  \\
+    tri1 & $\tt{exp/tri1/decode\_test/scoring\_kaldi}$  \\
+    tri2 & $\tt{exp/tri2/decode\_test/scoring\_kaldi}$  \\
+    tri3a & $\tt{exp/tri3a/decode\_test/scoring\_kaldi}$  \\
+    tri4a & $\tt{exp/tri4a/decode\_test/scoring\_kaldi}$  \\
+    tri5a & $\tt{exp/tri5a/decode\_test/scoring\_kaldi}$  \\
+    \midrule
+    tri4a-si & $\tt{exp/tri4a/decode\_test.si/scoring\_kaldi}$  \\
+    tri5a-si & $\tt{exp/tri5a/decode\_test.si/scoring\_kaldi}$  \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.5em}
+  \centering \caption{Baseline不同阶段评分结果相对路径}
+  \label{tab1}
+\end{table}
+
+\vspace{-1em}
+评分结果为上述路径下的$\tt{best\_wer}$和$\tt{best}$ $\_\tt{cer}$ 文件，分别为WER和CER。
+
+\vspace{1em}
+不同阶段训练结果对应的性能对比如表\ref{tab2}：
+
+（以下评分均为test测试集上的评分结果）
+
+\begin{table}[th]
+  \centering
+  \begin{tabular}{ c | c c }
+    \toprule
+    \textbf{阶段} & \textbf{WER(\%)} & \textbf{CER(\%)} \\
+    \midrule
+    mono & 57.98 & 45.30 \\
+    tri1 & 43.64 & 28.50 \\
+    tri2 & 43.77 & 28.56 \\
+    tri3a & 41.23 & 25.81 \\
+    \textbf{tri4a} & \textbf{36.33} & \textbf{20.72} \\
+    tri5a & 38.01 & 22.38 \\
+    \midrule
+    tri4a-si & 42.80 & 27.56 \\
+    tri5a-si & 44.20 & 28.81 \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.5em}
+  \centering \caption{Baseline不同阶段训练结果对比}
+  \label{tab2}
+\end{table}
+
+
+显然，tri4a阶段训练后的系统性能最佳。
+
+tri5a的评分结果不如tri4a的可能原因是经过tri5a训练后SAT模型过拟合，导致泛化能力不如tri4a训练后的系统，性能下降。
+
+特别地，tri4a-si和tri5a-si可以看成消融实验，证明对不同说话人进行特定的fMMLR变换对降低WER和CER、提升系统性能有重要作用。
+
+
+
+
+%WER  [ 47461 / 104765, 1063 ins, 2546 del, 43852 sub ] exp/mono/decode_test/cer__0.0
+%WER 28.50 [ 29853 / 104765, 1116 ins, 1479 del, 27258 sub ] exp/tri1/decode_test/cer_14_0.5
+%WER 28.56 [ 29921 / 104765, 1331 ins, 1327 del, 27263 sub ] exp/tri2/decode_test/cer_13_0.5
+%WER 25.81 [ 27043 / 104765, 983 ins, 1349 del, 24711 sub ] exp/tri3a/decode_test/cer_13_1.0
+%WER 20.72 [ 21707 / 104765, 812 ins, 923 del, 19972 sub ] exp/tri4a/decode_test/cer_14_0.5
+%WER 22.38 [ 23444 / 104765, 989 ins, 1154 del, 21301 sub ] exp/tri5a/decode_test/cer_16_1.0
+
+
+\section{语料数量对模型性能的影响(15分)}
+
+%在本章中，你应该尝试将模型解码时使用的语言模型更换为由更大的原AIShell-1训练集语料（即压缩包中给出的\texttt{train\_large.txt}）训练的大语言模型，并对比语言模型的大小对系统性能造成的影响。通过本章，你应该学会如何在Kaldi recipe中使用外部语料。\textbf{写作完成后，请删除本段。}
+
+\subsection{修改方法}
+
+为使用更大的训练集语料（原本的AIShell-1训练集语料），需对语言模型训练脚本做一定修改。修改$\tt{local/aishell\_train\_lms.sh}$的第7行
+
+\begin{lstlisting}[language=bash,firstnumber=7]
+text=data/local/train/text
+\end{lstlisting}
+
+为
+
+\begin{lstlisting}[language=bash,firstnumber=7]
+text=data/data_aishell/transcript/train_large.txt
+\end{lstlisting}
+
+之前的词典准备、数据准备、词典构建的结果依然可以继续沿用（没有发生变化），不必重新执行$\tt{local/aishell\_prepare\_dict.sh}$，$\tt{local/}$ $\tt{aishell\_data\_prep.sh}$, $\tt{utils/prepare\_lang.}$  $\tt{sh}$。数据准备和特征提取部分只需要重新执行语言模型的训练即可。
+
+更换语料后，只需要重新执行\textbf{语言模型训练}步骤及模型训练部分的代码即可。
+
+\subsection{性能对比}
+
+换用大语料前后，SAT+GMM-HMM系统的性能对比如表\ref{tab3}。
+
+（仅给出test测试集上的最优结果）
+
+\begin{table}[th]
+  \centering
+  \begin{tabular}{ c | c c | c c}
+    \toprule
+    \multirow{2}*{\textbf{阶段}} & \multicolumn{2}{c|}{\textbf{baseline(小语料)}} & \multicolumn{2}{c}{\textbf{大语料}} \\
+    & \textbf{WER\%} & \textbf{CER\%} & \textbf{WER\%} & \textbf{CER\%}\\
+    \midrule
+    mono & 57.98 & 45.30 & 45.37 & 36.01 \\
+    tri1 & 43.64 & 28.50 & 32.18 & 21.98 \\
+    tri2 & 43.77 & 28.56 & 32.07 & 21.98 \\
+    tri3a & 41.23 & 25.81 & 29.62 & 19.50\\
+    \textbf{tri4a} & \textbf{36.33} & \textbf{20.72} & \textbf{25.13} & \textbf{15.18}\\
+    tri5a & 38.01 & 22.38 & 26.98 & 16.81\\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.5em}
+  \centering \caption{使用新旧语言模型的最佳系统评分结果对比}
+  \label{tab3}
+\end{table}
+
+\vspace{-1em}
+由表\ref{tab3}可见，使用大语料后模型的WER和CER均有明显的下降，系统的性能进一步提高。相对而言，使用大语料后WER的下降比CER更加明显。
+
+实际上，基于大语料训练得到的语言模型在训练过程tri3a阶段的WER和CER（分别为29.62\%和19.50\%）就已经优于baseline的最佳性能(tri4a，36.33\%和20.72\%)。
+
+由此可见，使用大语料训练语言模型能很大程度地提升系统的性能，而且对WER影响相对更大。这一点也符合直觉。
+
+\vspace{1em}
+进一步对比两者最佳性能系统的解码结果。第一个代码块显示的是baseline（小语料）的结果，第二个代码块显示的是大语料训练后的结果，第三个代码块为标准的文本。
+
+\begin{lstlisting}[language=bash]
+BAC009S0904W0121 为了 解救 额度 化 问题 
+BAC009S0904W0124 公积金 的 身影 贷款 直接 的 的 细察 王 
+BAC009S0904W0128 广州 和 深圳 分 并未 五万 元 和 七万 元
+\end{lstlisting}
+\begin{lstlisting}[language=bash]
+BAC009S0904W0121 为了 解决 入 额度 化 问题 
+BAC009S0904W0124 公积金 的 商业 贷款 直接 的 弟媳 岔路 
+BAC009S0904W0128 广州 和 深圳 分 别 为 五万 元 和 七万 元 \end{lstlisting}
+\begin{lstlisting}[language=bash]
+BAC009S0904W0121 为了 解决 额度 荒 的 问题 
+BAC009S0904W0124 公积金 贷款 与 商业 贷款 之间 的 利息 差额 
+BAC009S0904W0128 广州 和 深圳 分别 为 五万 元和 七万 元 \end{lstlisting}
+
+大语料训练的系统在解码结果中相对更细致，如第一行的结果将“救”字错误地拆解为两个字（“决入”）；但同时在准确率方面也更高，如第二行中“商业”的正确识别（baseline识别为“身影”）和第三行中“分别为”的正确识别（baseline识别为“分并未”）。
+
+
+\section{训练DNN-HMM系统(15分)}
+
+\setcounter{subsection}{-1}
+\subsection{遇到的问题及解决}
+调用$\tt{local/nnet3/run\_tdnn.sh}$脚本时，出现以下错误信息：
+
+\begin{lstlisting}[language=bash]
+Command 'python' not found, but can be installed with:
+apt install python3
+apt install python
+apt install python-minimal
+\end{lstlisting}
+
+实际上，python已经成功安装，但python指令默认调用python 2.x版本。
+
+\vspace{1em} \hspace{-2.2em}
+\textbf{解决方案}：笔者找到了以下两种解决方案。
+
+方案1. 为python3创建化名python，即输入以下指令。
+\begin{lstlisting}[language=bash]
+alias python=python3
+\end{lstlisting}
+
+方案2. 安装python-is-python3。
+
+
+\subsection{训练流程}
+
+DNN-HMM系统基于tri5a训练完毕后经fMMLR对齐的特征继续训练。主要流程分为ivector的准备和提取，及DNN部分的构建与训练。
+
+\subsubsection{ivector的准备和提取}
+
+\begin{enumerate}
+    \setstretch{1.1}
+    \item 使用不同的速度，基于训练集数据生成low-resolution speed-perturbed data；
+    \item 生成3-way speed-perturbed 数据集train\_ sp；
+    \item 在train\_sp数据上提取MFCC和pitch特征，并使用fMLLR进行对齐； 
+    \item 整合tri5a对齐后的特征，对原train数据集进行音量扰动，计算MFCC和pitch特征后，分别对同时具有MFCC与pitch的特征和只有MFCC的特征使用CMVN归一化；
+    \item 对开发集（dev）和测试集（test）也进行4中的处理；
+    \item 对扰动后的数据集进行PCA降维和去相关，得到一组数据子集用于训练diagonal UBM（通用背景模型）；
+    \item 训练ivector提取器;
+    \item 在train、dev、test数据集上提取ivector。
+\end{enumerate}
+
+\subsubsection{DNN部分的构建与训练}
+
+\begin{enumerate}
+    \setstretch{1.2}
+    \item 生成DNN的结构文件network.xconfig，初始化神经网络。
+    
+    网络结构为8层，第一层为fixed affine layer，第二至七层为256个神经元的全连接层，每一层后有batch norm层和ReLU层，第八层为输出层。
+    
+    \item 训练神经网络。默认迭代训练42次，学习率自动调整。
+    
+    \item 使用训练得到的DNN-HMM系统对测试集test进行解码和评估。
+\end{enumerate}
+
+% 请简要介绍使用前述脚本训练DNN-HMM系统的流程，有关ivector的部分可以略过（可选：你遇到了什么问题？描述问题原因并介绍你的解决方法）。\textbf{写作完成后，请删除本段。}
+
+\subsection{性能对比}
+
+%在本节中，请将前述GMM-HMM系统及刚刚训练的DNN-HMM系统的性能列入表格以作对比。为使比较更加公平，应使用相同的语言模型。\textbf{写作完成后，请删除本段。}
+
+笔者基于大语料的语言模型继续训练DNN-HMM系统。因此只对比基于大语料的GMM-HMM系统和DNN-HMM系统的评分结果。
+
+\begin{table}[th]
+  \centering
+  \begin{tabular}{ c | c c }
+    \toprule
+    \textbf{系统} & \textbf{WER(\%)} & \textbf{CER(\%)} \\
+    \midrule
+    GMM-HMM & 25.13 & 15.18 \\
+    DNN-HMM & 22.89 & 13.42 \\
+    \bottomrule
+  \end{tabular}
+  \vspace{0.5em}
+  \centering \caption{GMM-HMM与DNN-HMM评分结果对比}
+  \label{tab2}
+\end{table}
+
+\vspace{-1em}
+由上表可见，同样基于大语料训练得到的语言模型，使用DNN-HMM系统后的WER和CER均略低于GMM-HMM系统，性能相对更好。
+
+\vspace{1em}
+进一步对比两者最佳性能系统的解码结果。其中DNN-HMM系统的解码结果位于$\tt{exp/nnet3}$ $\tt{/new\_dnn\_sp/decode\_test/log}$目录下。
+
+下面第一个代码块显示的是大语料GMM-HMM的结果，第二个代码块显示的是大语料DNN-HMM的结果，第三个代码块是标准文本。
+
+\begin{lstlisting}[language=bash]
+BAC009S0904W0121 为了 解决 入 额度 化 问题 
+BAC009S0904W0124 公积金 的 商业 贷款 直接 的 弟媳 岔路 
+BAC009S0904W0134 包括 仔仔 三 部委 发布 弘基 金 新政 
+\end{lstlisting}
+\begin{lstlisting}[language=bash]
+BAC009S0904W0121 为了 给 就 额度 方 的 问题 
+BAC009S0904W0124 公积金 贷款 商业 贷款 之间 的 弟媳 差额
+BAC009S0904W0134 包括 次 三 部委 发布 公积金 新政 
+\end{lstlisting}
+\begin{lstlisting}[language=bash]
+BAC009S0904W0121 为了 解决 额度 荒 的 问题 
+BAC009S0904W0124 公积金 贷款 与 商业 贷款 之间 的 利息 差额 
+BAC009S0904W0134 包括 此次 三 部委 发布 公积金 新政 \end{lstlisting}
+
+可以发现DNN-HMM系统识别字词相对而言更加准确，如成功识别了第二行的“之间”和“差额”，第三行的“次”和“公积金”。同时，对语速不恒定的音频（如第一行的音频BAC009S0904W0121），DNN-HMM能捕捉时间较短的字词，如第一行中成功识别出了在音频中持续时间很短的“的”字，第二行中成功识别持续时间较短的“贷款”（在GMM-HMM系统中识别为“的”）。
+
+\section{优化系统(20分)}
+
+以下只是一些初步的想法，由于时间限制和资源限制，这些优化想法的具体实现并未完成。
+
+\begin{enumerate}
+\item RNN更适合序列的识别问题，相对DNN而言应该更适合语音转文本问题，而且本身也一定程度实现了HMM的功能。
+
+因此，如果使用RNN替代DNN（即搭建RNN-HMM系统），应该能进一步取得比较好的效果。
+    
+\item 语言模型的改进。
+
+实际上，语言模型也需要考虑上下文语境。因此如果使用RNN来建模语言模型，或许也能获得更准确的效果。
+\end{enumerate}
+
+\vspace{6em}
+
+\section{最佳性能}
+
+CER=13.42\%，WER=22.89\%
+
+\section{特别鸣谢}
+\textbf{王崇华}同学和\textbf{季弋琨}同学。
+
+通过与上述两位同学的讨论，笔者完成了本文中对脚本代码的理解和解读，以及对SAT部分具体流程、功能的解释。
+
+\begin{thebibliography}{}
+
+\bibitem[1]{ML} AI2611，机器学习
+
+\bibitem[2]{phone} Phoneme的相关概念以及Triphone, https://zhuanlan.zhihu.
+
+com/p/322194937
+
+\bibitem[3]{LDA} Feature and model-space transforms in Kaldi, http://kaldi-asr.org/doc/transform.html
+
+\bibitem[4]{DNN} Context and chunk-size in the "nnet3" setup, http://kaldi-asr.org/doc/dnn3\_scripts\_context.html
+
+\end{thebibliography}
+
+\end{document}

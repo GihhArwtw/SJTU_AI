@@ -1,0 +1,7 @@
+# ali-to-phones --per-frame=true exp/nnet3/new_dnn_sp/decode_test/../final.mdl "ark:gunzip -c exp/nnet3/new_dnn_sp/decode_test/ali_tmp.*.gz|" "ark,t:|gzip -c >exp/nnet3/new_dnn_sp/decode_test/ali_frame_tmp.gz" 
+# Started at Sat Jun 18 23:02:03 CST 2022
+#
+ali-to-phones --per-frame=true exp/nnet3/new_dnn_sp/decode_test/../final.mdl 'ark:gunzip -c exp/nnet3/new_dnn_sp/decode_test/ali_tmp.*.gz|' 'ark,t:|gzip -c >exp/nnet3/new_dnn_sp/decode_test/ali_frame_tmp.gz' 
+LOG (ali-to-phones[5.5]:main():ali-to-phones.cc:134) Done 7176 utterances.
+# Accounting: time=1 threads=1
+# Ended (code 0) at Sat Jun 18 23:02:04 CST 2022, elapsed time 1 seconds
