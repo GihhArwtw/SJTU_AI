@@ -1,3 +1,0 @@
-Bayer Format : BGGR
-Image Height : 296 Pixels
-Image Width  : 246 Pixels
