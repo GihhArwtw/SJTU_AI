@@ -1,0 +1,99 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\labelitemii}{\textbullet}
+\newenvironment{solution}{\begin{proof}[\indent\it Solution]}{\end{proof}}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.75}
+\title{\textbf{Machine Learning Homework 03}}
+\author{Qiu Yihang}
+\date{May.10, 2022}
+
+\begin{document}
+
+\maketitle
+
+\hspace{-1.9em}
+GMM: $p(\mathbf{x})=\sum_{k=1}^{K}\pi_k\cdot\mathcal{N}(\mathbf{x}|\boldsymbol{\mu}_k,\boldsymbol{\Sigma}_k)$. Hidden variable $z_i^k$ denotes the possibility that $x_i$ is of class $k$.
+
+\hspace{1.2em}
+Define $\gamma(z_{ik})\triangleq p(z_i^k|\mathbf{x}_i)=\frac{\mathcal{N}(\mathbf{x}_i|\boldsymbol{\mu}_k,\boldsymbol{\Sigma}_k)}{\sum_{j=1}^{K}\mathcal{N}(\mathbf{x}_i|\boldsymbol{\mu}_j,\boldsymbol{\Sigma}_j)},\ N_k \triangleq \sum_{n=1}^N\gamma(z_{nk}).$
+
+\vspace{0.5em}\hspace{1.2em}
+The log-likelihood is $\mathcal{L}=\sum_{n=1}^N \ln\left(\sum_{k=1}^K \pi_k\cdot\mathcal{N}(\mathbf{x}_n|\boldsymbol{\mu}_k,\boldsymbol{\Sigma}_k)\right)$.
+
+\vspace{0.3em} \hspace{1.2em}
+In the EM, we have $\boldsymbol{\mu}_k^{new}=\frac{1}{N_k}\sum_{n=1}^N\gamma(z_{nk})\mathbf{x}_n$.
+
+\vspace{0.3em} \hspace{-1.8em}
+Show that in the EM, $\boldsymbol{\Sigma}_k^{new}=\frac{1}{N_k}\sum_{n=1}^N \gamma(z_{nk})(\mathbf{x}_n-\boldsymbol{\mu}_k^{new})(\mathbf{x}_n-\boldsymbol{\mu}_k^{new})^T$.
+
+\vspace{1em}
+\begin{proof}
+    We have
+    
+    \vspace{-3em}
+    \begin{align*}
+        \frac{\partial}{\partial\boldsymbol{\Sigma}}\mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma}) &= \frac{\partial}{\partial\boldsymbol{\Sigma}}\left(\frac{1}{\sqrt{(2\pi)^d|\boldsymbol{\Sigma}|}}\exp\left(-\frac{1}{2}(\mathbf{x}-\boldsymbol{\mu})^T\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})\right)\right) \\
+        &= \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})\left(\sqrt{|\boldsymbol{\Sigma}|}\frac{\partial|\boldsymbol{\Sigma}|^{-\frac{1}{2}}}{\partial\boldsymbol{\Sigma}}-\frac{1}{2}\frac{\partial(\mathbf{x}-\boldsymbol{\mu})^T\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})}{\partial\boldsymbol{\Sigma}}\right)\\
+        &= \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})\left(-\frac{1}{2}|\boldsymbol{\Sigma}|^{\frac{1}{2}}|\boldsymbol{\Sigma}|^{-\frac{3}{2}}\frac{\partial|\boldsymbol{\Sigma}|}{\partial\boldsymbol{\Sigma}}
+        +\frac{1}{2}\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})\left(\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})\right)^T\right)\quad\ \ \\
+        &= \mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})\left(-\frac{1}{2}|\boldsymbol{\Sigma}|^{-1}|\boldsymbol{\Sigma}|\boldsymbol{\Sigma}^{-1}
+        +\frac{1}{2}\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})(\mathbf{x}-\boldsymbol{\mu})^T\left(\boldsymbol{\Sigma}^{-1}\right)^T\right) \\
+        &= -\frac{1}{2}\mathcal{N}(\mathbf{x}|\boldsymbol{\mu},\boldsymbol{\Sigma})\left(\boldsymbol{\Sigma}^{-1}
+        -\boldsymbol{\Sigma}^{-1}(\mathbf{x}-\boldsymbol{\mu})(\mathbf{x}-\boldsymbol{\mu})^T\boldsymbol{\Sigma}^{-1}\right) \\
+        &\qquad\text{(By the symmetry of $\boldsymbol{\Sigma}$ and $\boldsymbol{\Sigma}^{-1}$)}
+    \end{align*}
+    
+    \vspace{-1em}\hspace{1.3em}
+    Set the gradient to 0. We have
+    
+    \vspace{-3em}
+    \begin{align*}
+        0 = \frac{\partial\mathcal{L}}{\partial\boldsymbol{\Sigma}_k} &= \sum_{n=1}^N\frac{\partial}{\partial\boldsymbol{\Sigma}_k}\ln\left(\sum_{k=1}^K\pi_k\cdot\mathcal{N}(\mathbf{x}_n|\boldsymbol{\mu}_k,\boldsymbol{\Sigma}_k)\right) \\
+        &= \sum_{n=1}^N\frac{1}{\sum_{k=1}^K\pi_k\cdot\mathcal{N}(\mathbf{x}_n|\boldsymbol{\mu}_k,\boldsymbol{\Sigma}_k)}\frac{\partial}{\partial\boldsymbol{\Sigma}_k}\left(\pi_k\cdot\mathcal{N}(\mathbf{x}_n|\boldsymbol{\mu}_k,\boldsymbol{\Sigma}_k)\right) \\
+        &= -\frac{1}{2}\sum_{n=1}^N \frac{\pi_k\cdot\mathcal{N}(\mathbf{x}_n|\boldsymbol{\mu}_k,\boldsymbol{\Sigma}_k)}{\sum_{k=1}^K\pi_k\cdot\mathcal{N}(\mathbf{x}_n|\boldsymbol{\mu}_k,\boldsymbol{\Sigma}_k)}\left(\boldsymbol{\Sigma}_k^{-1}
+        -\boldsymbol{\Sigma}_k^{-1}(\mathbf{x}_n-\boldsymbol{\mu}_k)(\mathbf{x}_n-\boldsymbol{\mu}_k)^T\boldsymbol{\Sigma}_k^{-1}\right) \quad\\
+        &= -\frac{1}{2}\sum_{n=1}^N\gamma(z_{nk})\left(\boldsymbol{\Sigma}_k^{-1}
+        -\boldsymbol{\Sigma}_k^{-1}(\mathbf{x}_n-\boldsymbol{\mu}_k)(\mathbf{x}_n-\boldsymbol{\mu}_k)^T\boldsymbol{\Sigma}_k^{-1}\right)
+    \end{align*}
+    
+    \vspace{-2em}
+    i.e.
+    
+    \vspace{-3.8em}
+    \begin{align*}
+        \boldsymbol{\Sigma}_k^{-1}\sum_{n=1}^N\gamma(z_{nk}) &= \sum_{n=1}^N\gamma(z_{nk})\boldsymbol{\Sigma}_k^{-1} = \sum_{n=1}^N\gamma(z_{nk})\boldsymbol{\Sigma}_k^{-1}(\mathbf{x}_n-\boldsymbol{\mu}_k)(\mathbf{x}_n-\boldsymbol{\mu}_k)^T\boldsymbol{\Sigma}_k^{-1} \\
+        &= \boldsymbol{\Sigma}_k^{-1}\left(\sum_{n=1}^N\gamma(z_{nk})(\mathbf{x}_n-\boldsymbol{\mu}_k)(\mathbf{x}_n-\boldsymbol{\mu}_k)^T\right)\boldsymbol{\Sigma}_k^{-1} \\
+        &\quad\ \text{(Since $\gamma(z_{nk})$ is a number.)} \\
+        \qquad\quad\Longleftrightarrow\boldsymbol{\Sigma}_k\boldsymbol{\Sigma}_k^{-1}\boldsymbol{\Sigma}_k\sum_{n=1}^N\gamma(z_{nk}) &= \
+        \boldsymbol{\Sigma}_k\boldsymbol{\Sigma}_k^{-1}\left(\sum_{n=1}^N\gamma(z_{nk})(\mathbf{x}_n-\boldsymbol{\mu}_k)(\mathbf{x}_n-\boldsymbol{\mu}_k)^T\right)\boldsymbol{\Sigma}_k^{-1}\boldsymbol{\Sigma}_k \\
+        \Longleftrightarrow\qquad\qquad\qquad\ \  N_k\boldsymbol{\Sigma}_k &= \sum_{n=1}^N\gamma(z_{nk})(\mathbf{x}_n-\boldsymbol{\mu}_k)(\mathbf{x}_n-\boldsymbol{\mu}_k)^T 
+    \end{align*}
+    
+    
+    Therefore, 
+    
+    \vspace{-3em}
+    $$\boldsymbol{\Sigma}_k = \frac{1}{N_k}\sum_{n=1}^N\gamma(z_{nk})(\mathbf{x}_n-\boldsymbol{\mu}_k)(\mathbf{x}_n-\boldsymbol{\mu}_k)^T$$
+    
+\hspace{38em}
+\textit{Qed.}
+\end{proof}
+
+
+\end{document}

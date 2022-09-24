@@ -1,0 +1,79 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\labelitemii}{\textbullet}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newcommand{\staExp}[2][]{\mathbf{E}_{#1}\left[#2\right]}
+\newcommand{\bigstaExp}[2][]{\mathbf{E}_{#1}\big[#2\big]}
+\newenvironment{solution}{\begin{proof}[\indent\it Solution]}{\end{proof}}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.5}
+\title{\textbf{Machine Learning Homework 01}}
+\author{Qiu Yihang}
+\date{Mar.27, 2022}
+
+\begin{document}
+
+\maketitle
+
+\begin{proof}
+We use $\boldsymbol{I}_p$ to denote $p-$dimensional unit matrix, i.e. $\boldsymbol{I}_p=\mathtt{diag}(1,1,...,1)_{p\times p}.$
+
+\hspace{1.3em}
+Since $\boldsymbol{V}$ is a $p\times p$ orthogonal matrix, we know $\boldsymbol{V}^{T}\boldsymbol{V}=\boldsymbol{V}\boldsymbol{V}^T=\boldsymbol{I}_p.$
+
+\hspace{1.3em}
+Thus, we have
+
+\vspace{-2.5em}
+\begin{align*}
+    \left(\boldsymbol{Z}^T\boldsymbol{Z}+\lambda \boldsymbol{I}_p\right)^{-1}\boldsymbol{Z}^T\boldsymbol{y} &= \left(\left(\boldsymbol{UD}\boldsymbol{V}^T\right)^T\left(\boldsymbol{UD}\boldsymbol{V}^T\right)+\lambda \boldsymbol{V}^T\boldsymbol{V}\right)^{-1}\boldsymbol{Z}^T\boldsymbol{y} \\
+    &= \left(\boldsymbol{V}\boldsymbol{D}^T\boldsymbol{U}^T\boldsymbol{UD}\boldsymbol{V}^T+\lambda \boldsymbol{V}^T\boldsymbol{I}_p\boldsymbol{V}\right)^{-1}\boldsymbol{Z}^T\boldsymbol{y} \\
+    &= \left(\boldsymbol{V}\boldsymbol{D}^T\boldsymbol{D}\boldsymbol{V}^T+\boldsymbol{V}^T\left(\lambda\boldsymbol{I}_p\right)\boldsymbol{V}\right)^{-1}\boldsymbol{Z}^T\boldsymbol{y} \\
+    &= \left(\boldsymbol{V}\left(\boldsymbol{D}^2 +\lambda \boldsymbol{I}_p\right)\boldsymbol{V}^T\right)^{-1}\boldsymbol{Z}^T\boldsymbol{y} 
+\end{align*}
+
+\vspace{-1.2em} \hspace{1.3em}
+Meanwhile,
+
+\vspace{-3em}
+\begin{align*}
+    &\quad\ \left(\boldsymbol{V}\left(\boldsymbol{D}^2 +\lambda \boldsymbol{I}_p\right)\boldsymbol{V}^T\right)\left(\boldsymbol{V}\underset{j}{\mathtt{diag}}\left(\frac{1}{d_j^2+\lambda}\right)\boldsymbol{V}^T\right) \\
+    &=\ \boldsymbol{V}\underset{j}{\mathtt{diag}}\left(d_j^2+\lambda\right)\left(\boldsymbol{V}^T\boldsymbol{V}\right)\underset{j}{\mathtt{diag}}\left(\frac{1}{d_j^2+\lambda}\right)\boldsymbol{V}^T \\
+    &=\ \boldsymbol{V}\underset{j}{\mathtt{diag}}\left(d_j^2+\lambda\right)\underset{j}{\mathtt{diag}}\left(\frac{1}{d_j^2+\lambda}\right)\boldsymbol{V}^T\  =\  \boldsymbol{V}\boldsymbol{I}_p\boldsymbol{V}^T=\boldsymbol{V}\boldsymbol{V}^T=\boldsymbol{I}_p,
+\end{align*}
+
+\vspace{-1em} \hspace{1.3em}
+Therefore, 
+
+\vspace{-2.5em}
+\begin{align*}
+    \left(\boldsymbol{Z}^T\boldsymbol{Z}+\lambda \boldsymbol{I}_p\right)^{-1}\boldsymbol{Z}^T\boldsymbol{y} 
+    &= \left(\boldsymbol{V}\left(\boldsymbol{D}^2 +\lambda \boldsymbol{I}_p\right)\boldsymbol{V}^T\right)^{-1}\boldsymbol{Z}^T\boldsymbol{y} \\
+    &= \boldsymbol{V}\underset{j}{\mathtt{diag}}\left(\frac{1}{d_j^2+\lambda}\right)\boldsymbol{V}^T\boldsymbol{Z}^T\boldsymbol{y} \\
+    &= \boldsymbol{V}\underset{j}{\mathtt{diag}}\left(\frac{1}{d_j^2+\lambda}\right)\boldsymbol{V}^T\left(\boldsymbol{UD}\boldsymbol{V}^T\right)^T\boldsymbol{y} \\
+    &= \boldsymbol{V}\underset{j}{\mathtt{diag}}\left(\frac{1}{d_j^2+\lambda}\right)\boldsymbol{V}^T\boldsymbol{V}\boldsymbol{D}^T\boldsymbol{U}^T\boldsymbol{y} \\
+    &= \boldsymbol{V}\underset{j}{\mathtt{diag}}\left(\frac{1}{d_j^2+\lambda}\right)\underset{i}{\mathtt{diag}}\left(d_i\right)\boldsymbol{U}^T\boldsymbol{y} \\
+    &= \boldsymbol{V}\underset{j}{\mathtt{diag}}\left(\frac{d_j}{d_j^2+\lambda}\right)\boldsymbol{U}^T\boldsymbol{y} \\
+\end{align*}
+
+\vspace{-3em} \hspace{38em}
+\textit{Qed.}
+\end{proof}
+
+
+\end{document}

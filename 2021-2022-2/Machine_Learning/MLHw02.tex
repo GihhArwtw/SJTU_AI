@@ -1,0 +1,71 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\labelitemii}{\textbullet}
+\newenvironment{solution}{\begin{proof}[\indent\it Solution]}{\end{proof}}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.75}
+\title{\textbf{Machine Learning Homework 02}}
+\author{Qiu Yihang}
+\date{Apr.30, 2022}
+
+\begin{document}
+
+\maketitle
+
+\hspace{-1.9em}
+We change the classification of $\mathbf{\hat{x}}$ from $\mathbf{\hat{x}}\in H_i$ to $\mathbf{\hat{x}}\in H_j$. 
+
+\hspace{-1.8em}
+Notations: $\mathbf{m}_k\triangleq \sum_{\mathbf{x}\in H_k} \mathbf{x}$. $n_k$ is the number of data samples in $H_k$ before the change.
+
+\hspace{3.2em}
+$J_k = \sum_{\mathbf{x}\in H_k} \Vert\mathbf{x}-\mathbf{m}_i\Vert^2$. $J_k^*$ is the $J_k$ after the change.
+
+\hspace{-1.8em}
+Show that $J_i^*=J_i-\frac{n_i}{n_i-1}\left\Vert\hat{\mathbf{x}}-\mathbf{m}_i\right\Vert^2$.
+
+\vspace{1em}
+\begin{proof}
+Use $\alpha^*$ to denote the $\alpha$ after the change.
+
+\hspace{1.3em}
+We have
+
+\vspace{-2em}
+$$\mathbf{m}_i^* = \frac{n_i\mathbf{m}_i - \hat{\mathbf{x}}}{n_i-1} = \mathbf{m}_i + \frac{n_i\mathbf{m}_i - \hat{\mathbf{x}}}{n_i-1} -\mathbf{m}_i = \mathbf{m}_i - \frac{\hat{\mathbf{x}}-\mathbf{m}_i}{n_i-1}.$$
+
+\vspace{-1em} \hspace{1.3em}
+Thus,
+
+\vspace{-3em}
+\begin{align*}
+    J_i^* &= \sum_{\mathbf{x}\in H_i^*}\left\Vert\mathbf{x}-\mathbf{m}_i^*\right\Vert^2 = \sum_{\mathbf{x}\in H_i}\left\Vert\mathbf{x}-\mathbf{m}_i^*\right\Vert^2 - \left\Vert\hat{\mathbf{x}}-\mathbf{m}_i^*\right\Vert^2 \\
+    &= \sum_{\mathbf{x}\in H_i}\left\Vert\mathbf{x}-\mathbf{m}_i+ \frac{\hat{\mathbf{x}}-\mathbf{m}_i}{n_i-1}\right\Vert^2 - \left\Vert\frac{n_i}{n_i-1}(\hat{\mathbf{x}}-\mathbf{m}_i)\right\Vert^2 \\
+    & = \sum_{\mathbf{x}\in H_i}\left\Vert\mathbf{x}-\mathbf{m}_i\right\Vert^2 + \frac{2}{n_i-1}\sum_{\mathbf{x}\in H_i}\left(\hat{\mathbf{x}}-\mathbf{m}_i\right)^T\left(\mathbf{x}-\mathbf{m}_i\right) + \frac{1}{(n_i-1)^2}\sum_{\mathbf{x}\in H_i}\left\Vert\hat{\mathbf{x}}-\mathbf{m}_i\right\Vert^2\quad\ \\
+    &\quad\  - \frac{n_i^2}{(n_i-1)^2}\left\Vert\hat{\mathbf{x}}-\mathbf{m}_i\right\Vert^2 \\
+    & = J_i + \frac{2}{n_i-1}(\hat{\mathbf{x}}-\mathbf{m}_i)^T\sum_{\mathbf{x}\in H_i}(\mathbf{x}-\mathbf{m}_i)+\frac{n_i(1-n_i)}{(n_i-1)^2}\left\Vert\hat{\mathbf{x}}-\mathbf{m}_i\right\Vert^2 \\
+    & = J_i + 0 - \frac{n_i}{n_i-1}\Vert\hat{\mathbf{x}}-\mathbf{m}_i\Vert^2 \\
+    &= J_i - \frac{n_i}{n_i-1}\Vert\hat{\mathbf{x}}-\mathbf{m}_i\Vert^2
+\end{align*}
+
+\hspace{38em}
+\textit{Qed.}
+\end{proof}
+
+
+\end{document}
