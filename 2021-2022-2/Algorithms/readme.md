@@ -2,6 +2,8 @@
 
 I took the course given by Dr. Chihao Zhang（张驰豪）.
 
+注：本门课自21届起改为大二上学期讲授。
+
 <br/>
 
 ## Notes
