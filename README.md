@@ -68,8 +68,8 @@ Note that this repository only includes notes and assignments of **some** course
 - Programming [HONOR]（程序设计[荣誉]）
 - Mathematical Analysis I（数学分析I） 
 - Linear Algebra（线性代数）
-- AI003 (Introduction to AI)（人工智能导论）[tbd]
-- Introduction to Psychology（大学生心理健康）[tbd]
+- *AI003 (Introduction to AI)（人工智能导论）[tbd]*
+- *Introduction to Psychology（大学生心理健康）[tbd]*
 
 
 - 思修这种课没有记笔记所以就不传了
@@ -85,10 +85,10 @@ Note that this repository only includes notes and assignments of **some** course
     **我把两个学期的笔记合并到了同一个文件，在2020-2021-1/Mathematical_Analysis目录下。**
 
 - Data Structure [AI]（数据结构[AI]）
-- Circuit [HONOR]（电路理论[荣誉]）[tbd]
-- Digital Fundamentals（数字电子技术）[tbd]
-- College Physics I（大学物理1）[tbd]
-- AI004 (AI Problem Solving)（人工智能问题与求解）[tbd]
+- *Circuit [HONOR]（电路理论[荣誉]）[tbd]*
+- *Digital Fundamentals（数字电子技术）[tbd]*
+- *College Physics I（大学物理1）[tbd]*
+- *AI004 (AI Problem Solving)（人工智能问题与求解）[tbd]*
 
 
 - 近史纲这种课的笔记是不是不适合扔github
@@ -104,11 +104,11 @@ Note that this repository only includes notes and assignments of **some** course
 ### 2021-2022-1（大二第一学期）
 
 - Computer Architecture [AI]（计算机体系结构[AI]）
-- Linear and Convex Optimization（线性优化与凸优化）[Notes are yet to be uploaded.]
+- Linear and Convex Optimization（线性优化与凸优化）
 - Probability Theory and Mathematical Statistics（概率论与数理统计）
-- Signals and Systems（信号与系统）[tbd]
-- Fundamental Analog Electronic Devices（模拟电子技术）[tbd]
-- College Physics II（大学物理2）[tbd]
+- *Signals and Systems（信号与系统）[tbd]*
+- *Fundamental Analog Electronic Devices（模拟电子技术）[tbd]*
+- *College Physics II（大学物理2）[tbd]*
 
 
 - 马原的笔记是不是也不适合扔github
@@ -118,12 +118,12 @@ Note that this repository only includes notes and assignments of **some** course
 ### 2021-2022-2（大二第二学期）
 
 - Algorithms（算法分析与设计）
-- Stochastic Process（随机过程）[tbd]
-- Digital Signal and Image Processing（数字信号与图像处理）[tbd]
-- Machine Learning（机器学习）[tbd]
-- Intelligent Speech Distinguish（智能语音识别）[tbd]
-- Digital Logic Design [Verilog]（数字逻辑设计，本质是Verilog教学）[tbd]
-- College Physics III (Quantum Mechanics)（大学物理3/量子力学）[tbd]
+- *Stochastic Process（随机过程）[Notes are yet to be uploaded.]*
+- *Digital Signal and Image Processing（数字信号与图像处理）[tbd]*
+- Machine Learning（机器学习）
+- Intelligent Speech Distinguish（智能语音识别）
+- Digital Logic Design [Verilog]（数字逻辑设计，本质是Verilog教学）
+- *College Physics III (Quantum Mechanics)（大学物理3/量子力学）[tbd]*
 
 
 - 线上学期，所以莫得毛概的笔记（开卷考了）
