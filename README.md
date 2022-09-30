@@ -68,8 +68,8 @@ Note that this repository only includes notes and assignments of **some** course
 - Programming [HONOR]（程序设计[荣誉]）
 - Mathematical Analysis I（数学分析I） 
 - Linear Algebra（线性代数）
-- AI003 (Introduction to AI)（人工智能思维与伦理）
-- Introduction to Psychology（大学生心理健康）[tbd]
+- AI1601 (Introduction to AI)（人工智能思维与伦理）
+- Mental Health（大学生心理健康）[tbd]
 
 
 - 思修这种课没有记笔记所以就不传了
@@ -88,7 +88,7 @@ Note that this repository only includes notes and assignments of **some** course
 - *Circuit [HONOR]（电路理论[荣誉]）[tbd]*
 - *Digital Fundamentals（数字电子技术）[tbd]*
 - *College Physics I（大学物理1）[tbd]*
-- *AI004 (AI Problem Solving)（人工智能问题与求解）[tbd]*
+- *AI1602 (AI Problem Solving)（人工智能问题与求解）[tbd]*
 
 
 - 近史纲这种课的笔记是不是不适合扔github
