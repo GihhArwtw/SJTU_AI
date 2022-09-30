@@ -68,8 +68,8 @@ Note that this repository only includes notes and assignments of **some** course
 - Programming [HONOR]（程序设计[荣誉]）
 - Mathematical Analysis I（数学分析I） 
 - Linear Algebra（线性代数）
-- *AI003 (Introduction to AI)（人工智能导论）[tbd]*
-- *Introduction to Psychology（大学生心理健康）[tbd]*
+- AI003 (Introduction to AI)（人工智能思维与伦理）
+- Introduction to Psychology（大学生心理健康）[tbd]
 
 
 - 思修这种课没有记笔记所以就不传了
