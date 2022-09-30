@@ -1,6 +1,6 @@
 # SJTU_AI
 
-Notes and assignments during my time in SJTU as a student of AI class.
+Some notes and assignments during my time in SJTU as a student of AI class.
 
 [Still working on it.] 
 
@@ -69,7 +69,7 @@ Note that this repository only includes notes and assignments of **some** course
 - Mathematical Analysis I（数学分析I） 
 - Linear Algebra（线性代数）
 - AI1601 (Introduction to AI)（人工智能思维与伦理）
-- Mental Health（大学生心理健康）[tbd]
+- Mental Health（大学生心理健康）
 
 
 - 思修这种课没有记笔记所以就不传了
