@@ -104,7 +104,7 @@ Note that this repository only includes notes and assignments of **some** course
 - Computer Architecture [AI]（计算机体系结构[AI]）
 - Linear and Convex Optimization（线性优化与凸优化）
 - Probability Theory and Mathematical Statistics（概率论与数理统计）
-- *Signals and Systems（信号与系统）[tbd]*
+- Signals and Systems（信号与系统）
 - *Fundamental Analog Electronic Devices（模拟电子技术）[tbd]*
 - *College Physics II（大学物理2）[tbd]*
 
