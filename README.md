@@ -56,7 +56,7 @@ Please enjoy. Comments and suggestions are welcome.
 
 Note that this repository only includes notes and assignments of **some** courses. Not all courses are uploaded.
 
-请注意本仓库只包含了**部分**课程的笔记和作业。如有需要可以私下联系我，邮箱：qiuyihang_123456@126.com。
+请注意本仓库只包含了**部分**课程的笔记和作业。如有需要可以私下联系我，邮箱：qiuyihang_123456@126.com or qiuyihang.2002@gmail.com。
 
 <br/>
 
