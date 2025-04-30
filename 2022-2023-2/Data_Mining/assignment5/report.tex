@@ -1,0 +1,121 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{bbm}
+\usepackage{subfigure}
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage[UTF8]{ctex}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mycodestyle}{
+backgroundcolor=\color{backcolour},   
+commentstyle=\color{codegreen},
+keywordstyle=\color{magenta},
+numberstyle=\tiny\color{codegray},
+stringstyle=\color{codepurple},
+basicstyle=\ttfamily\footnotesize,
+breakatwhitespace=false,         
+breaklines=true,                 
+captionpos=b,                    
+keepspaces=true,                 
+numbers=left,                    
+numbersep=5pt,                  
+showspaces=false,                
+showstringspaces=false,
+showtabs=false,                  
+tabsize=2
+}
+
+\lstset{style=mycodestyle}
+
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\bd}[1]{\boldsymbol{#1}}
+
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Data Mining Homework 05}}
+\author{Qiu Yihang}
+\date{June 2023}
+
+\begin{document}
+
+
+\maketitle
+
+\vspace{1em}
+\section{Extract Code Features from AST}
+\vspace{0.5em}
+\begin{solution}
+    Please refer to code $\mathtt{task1/extractors/method\_declaration\_visitor.py}$, $\mathtt{object\_}$ $\mathtt{creation\_visitor.py}$, $\mathtt{method\_invocation\_visitor.py}$ for details.
+
+    \hspace{2.2em}
+    The output is as follows.
+
+\begin{lstlisting}[language=python]
+python -m unittest my_tests.MyTest.test_get_class_name
+
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.046s
+
+OK
+\end{lstlisting}
+
+\vspace{-2.5em}
+\end{solution}
+
+\vspace{0.5em}
+\section{Differentially Private Stochastic Gradient Descent}
+\vspace{0.5em}
+\begin{solution}
+    Please refer to the code $\mathtt{task2/model.py}$ for details.
+
+    \hspace{2.2em}
+    The results are as follows.
+
+
+    \begin{table}[htbp]
+        \centering
+        \begin{tabular}{ccc}
+            \toprule
+            ACC@10 & MRR & NDCG@10 \\
+            \midrule
+            $0.7580$ & $0.3172$ & $0.4219$ \\ 
+            \bottomrule
+        \end{tabular}
+        \caption{Results of Task 2}
+        \label{results}
+    \end{table}
+
+    \hspace{2.2em}
+    The evidence for model training is at $\mathtt{task2/output/202306111721/logs.txt}$.
+
+\end{solution}
+
+
+\end{document}

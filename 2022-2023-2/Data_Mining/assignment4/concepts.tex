@@ -1,0 +1,126 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{bbm}
+\usepackage{subfigure}
+\usepackage{tikz}
+\usepackage{booktabs}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\bd}[1]{\boldsymbol{#1}}
+
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Data Mining Homework 04}}
+\author{Qiu Yihang}
+\date{June 2023}
+
+\begin{document}
+
+
+\maketitle
+
+\vspace{1em}
+\section{Differential Privacy}
+\vspace{0.5em}
+\begin{solution}
+    Laplacian distribution with scale $b$ is $\mathrm{Lap}(x|b) = \dfrac{1}{2b}\exp\left(-\dfrac{|x|}{b}\right)$.
+
+    \vspace{0.5em} \hspace{2.6em}
+    L1-sensitivity of $1$ requires $\Delta f = \underset{x,y\in\mathcal{N}^{\mathcal{X}},\ \|x-y\|=1}{\max} \|f(x)-f(y)\|_1 = 1.$
+
+    \hspace{2.6em}
+    By Laplace Mechanism, the noise added should be $Y\sim\mathrm{Lap}\left(y|\dfrac{\Delta f}{\varepsilon}\right)$. Thus, 
+    
+    \[ b = \dfrac{\Delta f}{\varepsilon} = \dfrac{1}{\varepsilon}\]
+
+\vspace{-2.5em}
+\end{solution}
+
+\vspace{0.5em}
+\section{Differentially Private Stochastic Gradient Descent}
+\vspace{0.5em}
+\begin{solution}
+    The algorithm is as follows.
+
+    \vspace{0.5em}
+    \begin{algorithm}[H]
+        \caption{DP-SGD}
+        \KwIn{Training dataset $D=\set{x_1,...x_N}$, loss function $\mathcal{L}(\theta)=\dfrac{1}{N}\sum_{i=1}^N \mathcal{L}(\theta,x_i)$.}
+        \SetKwInput{KwParas}{Parameters}
+        \KwParas{Learning rate $\eta$, number of epochs $T$, batch size $L$, gradient norm clipping bound $C$, noise scale $\sigma$.}
+
+        Initialize $\theta_0$\;
+        \For{$t=1\to T$}
+        {
+            Randomly shuffle a batch $B_t$ with batch size $L$ from $D$\;
+            Compute gradient $\bd{g}_t(x_i)=\nabla\mathcal{L}(\theta_{t-1},x_i)$\;
+            Clip gradient $\bd{g}_t(x_i)\gets\dfrac{\bd{g}_t(x_i)}{\max\left(1,\dfrac{\|\bd{g}_t(x_i)\|_2}{C}\right)}$\;
+            Add noise $\hat{\bd{g}}_t\gets\dfrac{1}{L}\left(\left(\sum_{x_j\in B_t}\bd{g}_t(x_j)\right)+\mathcal{N}(0,\sigma^2C^2\bd{I})\right)$\;
+            update $\theta_{t+1}\gets\theta_t-\eta\hat{\bd{g}}_t$
+        }
+
+        \KwOut{$\theta_T$ and the overall privacy cost $(\varepsilon, \delta)$ computed by a privacy accounting method.}
+    \end{algorithm}
+
+    \vspace{-1.75em}
+\end{solution}
+
+
+\section{Gradient Matrix Compression}
+\begin{solution}
+    We use SVD to compress the gradient matrix $\bd{G}$.
+
+    \hspace{2.6em}
+    The modified DP-SGD algorithm is as follows.
+
+    \vspace{0.5em}
+    \begin{algorithm}[H]
+        \caption{Compressed DP-SGD}
+        \KwIn{Training dataset $D=\set{x_1,...x_N}$, loss function $\mathcal{L}(\theta)=\dfrac{1}{N}\sum_{i=1}^N \mathcal{L}(\theta,x_i)$.}
+        \SetKwInput{KwParas}{Parameters}
+        \KwParas{Learning rate $\eta$, number of epochs $T$, batch size $L$, gradient norm clipping bound $C$, noise scale $\sigma$.}
+
+        Initialize $\theta_0$\;
+        \For{$t=1\to T$}
+        {
+            Randomly shuffle a batch $B_t$ with batch size $L$ from $D$\;
+            Compute gradient $\bd{g}_t(x_i)=\nabla\mathcal{L}(\theta_{t-1},x_i)$ and get the gradient matrix $\bd{G}\in\mathbb{R}^{n\times p}$\;
+            Perform SVD on $\bd{G}$ and get $\bd{G}=\bd{U}\bd{\Sigma}\bd{V}^T$, where $\bd{U}\in\mathbb{R}^{n\times n}, \bd{V}\in\mathbb{R}^{p\times p}, \bd{\Sigma}\in\mathbb{R}^{n\times p}$\;
+            Let $\bd{B}=\bd{V}[:, :k]\in\mathbb{R}^{p\times k}$, i.e. the first $k$-th columns of $\bd{V}$. (Obvious $\bd{B}$ is orthogonal)\;
+            Let $\hat{\bd{G}}=\bd{U}[:, :k]\bd{\Sigma}[:k, :k]\in\mathbb{R}^{n\times k}$\;
+            \For{each row $\hat{\bd{g}}_i\in\mathbb{R}^k$, i.e. the compressed gradient, in $\hat{\bd{G}}$}
+            {
+                clip gradient $\hat{\bd{g}}'_i\gets\dfrac{\hat{\bd{g}}_i}{\max\left(1,\dfrac{\|\hat{\bd{g}}_i\|_2}{C}\right)}$\;
+            }
+            Add noise $\hat{\bd{g}}'_t\gets\dfrac{1}{L}\left(\sum_{x_j\in B_t}\hat{\bd{g}}'_i(x_j)+\mathcal{N}(0,\sigma^2C^2\bd{I})\right)$\;
+            Project $\hat{\bd{g}}'_t\in\mathbb{R}^k$ to the original $\mathbb{R}^p$ and get $\widetilde{\bd{g}}_t = \hat{\bd{g}}'_t\bd{B}^\top$\;
+            update $\theta_{t+1}\gets\theta_t-\eta\widetilde{\bd{g}}_t$
+        }
+
+        \KwOut{$\theta_T$ and the overall privacy cost $(\varepsilon, \delta)$ computed by a privacy accounting method.}
+    \end{algorithm}
+
+\vspace{-1.75em}
+\end{solution}
+
+
+
+\end{document}

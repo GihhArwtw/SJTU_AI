@@ -1,0 +1,3 @@
+[submodule "2022-2023-2/Data_Mining/assignment5/task1/parser/tree-sitter-java"]
+	path = 2022-2023-2/Data_Mining/assignment5/task1/parser/tree-sitter-java
+	url = https://github.com/tree-sitter/tree-sitter-java.git

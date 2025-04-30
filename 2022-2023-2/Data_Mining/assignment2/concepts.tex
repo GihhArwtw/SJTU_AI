@@ -1,0 +1,298 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{bbm}
+\usepackage{subfigure}
+\usepackage{tikz}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\bd}[1]{\boldsymbol{#1}}
+
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Data Mining Homework 02}}
+\author{Qiu Yihang}
+\date{April 2023}
+
+\begin{document}
+
+
+\maketitle
+
+\vspace{3em}
+\section{Problem 01}
+\vspace{1em}
+\begin{solution}
+    Let the adjacency matrix of the graph be $\bd{A}\in\mathbb{R}^{(n+1)\times(n+1)}$.
+    
+    \hspace{2.6em}
+    Let the PageRank of the graph be $\bd{r}$, with $\bd{r}_u$ being the PageRank of node $u$.
+
+    \hspace{2.6em}
+    We know
+
+    \vspace{-2em}
+    \begin{align*}
+        \bd{A} &= \left(
+            \begin{array}{cccccc}
+                0 & \frac{1}{n} & \frac{1}{n} & \cdots & \frac{1}{n} & 0 \\
+                \frac{1}{n} & 0 & \frac{1}{n} & \cdots & \frac{1}{n} & 0 \\
+                \frac{1}{n} & \frac{1}{n} & 0 & \cdots & \frac{1}{n} & 0 \\
+                \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+                \frac{1}{n} & \frac{1}{n} & \frac{1}{n} & \cdots & 0 & 0 \\
+                \frac{1}{n} & \frac{1}{n} & \frac{1}{n} & \cdots & \frac{1}{n} & 0
+            \end{array}
+        \right) 
+    \end{align*}
+
+    \hspace{2.6em}
+    Since there is a dead end, we introduce the teleport and adjust the adjacency matrix.
+
+    \vspace{-2em}
+    \begin{align*}
+        \bd{A} &= \left(
+            \begin{array}{cccccc}
+                0 & \frac{1}{n} & \frac{1}{n} & \cdots & \frac{1}{n} & \frac{1}{n+1} \\
+                \frac{1}{n} & 0 & \frac{1}{n} & \cdots & \frac{1}{n} & \frac{1}{n+1} \\
+                \frac{1}{n} & \frac{1}{n} & 0 & \cdots & \frac{1}{n} & \frac{1}{n+1} \\
+                \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+                \frac{1}{n} & \frac{1}{n} & \frac{1}{n} & \cdots & 0 & \frac{1}{n+1} \\
+                \frac{1}{n} & \frac{1}{n} & \frac{1}{n} & \cdots & \frac{1}{n} & \frac{1}{n+1}
+            \end{array}
+        \right) \\
+        \bd{r} &= \beta \bd{A}\cdot \bd{r} + \left[\frac{1-\beta}{n+1}\right]_{(n+1)\times 1}
+    \end{align*}
+
+    \hspace{2.6em}
+    Thus,
+
+    \vspace{-1.25em}
+    $$\qquad\qquad\quad\bd{r} = \left(\dfrac{n}{n^2+n+\beta},\ \dfrac{n}{n^2+n+\beta},\ \cdots,\ \dfrac{n}{n^2+n+\beta},\ \dfrac{n+\beta}{n^2+n+\beta}\right).$$
+
+    \vspace{-3.25em}
+\end{solution}
+
+\vspace{1em}
+\section{Problem 02}
+\vspace{1em}
+    The original adjacency matrix is 
+
+    \vspace{-1.5em}
+    $$\bd{W} =  \left(
+        \begin{array}{cccc}
+            0 & \frac{1}{2} & 1 & 0 \\
+            \frac{1}{3} & 0 & 0 & \frac{1}{2} \\
+            \frac{1}{3} & 0 & 0 & \frac{1}{2} \\
+            \frac{1}{3} & \frac{1}{2} & 0 & 0 
+        \end{array}
+    \right)$$
+
+\subsection{Teleport Set is $\set{\bd{A}}$}
+\vspace{1em}
+\begin{solution}
+    The adjusted adjacency matrix when $\beta=0.8$ is 
+
+    \vspace{-1.5em}
+    \begin{align*}
+        \qquad \bd{A} & = \beta \bd{W} + \left(1-\beta\right)\left(
+            \begin{array}{cccc}
+                1 & 1 & 1 & 1 \\
+                0 & 0 & 0 & 0 \\
+                0 & 0 & 0 & 0 \\
+                0 & 0 & 0 & 0
+            \end{array}
+        \right) = \left(
+        \begin{array}{cccc}
+            0 & \frac{2}{5} & \frac{4}{5} & 0 \\
+            \frac{4}{15} & 0 & 0 & \frac{2}{5} \\
+            \frac{4}{15} & 0 & 0 & \frac{2}{5} \\
+            \frac{4}{15} & \frac{2}{5} & 0 & 0 
+        \end{array}
+    \right) + \left(
+        \begin{array}{cccc}
+            \frac{1}{5} & \frac{1}{5} & \frac{1}{5} & \frac{1}{5} \\
+            0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0 \\
+            0 & 0 & 0 & 0
+        \end{array}
+    \right) \\
+    & = \left(
+        \begin{array}{cccc}
+            \frac{1}{5} & \frac{3}{5} & 1 & \frac{1}{5} \\
+            \frac{4}{15} & 0 & 0 & \frac{2}{5} \\
+            \frac{4}{15} & 0 & 0 & \frac{2}{5} \\
+            \frac{4}{15} & \frac{2}{5} & 0 & 0 
+        \end{array}
+    \right)
+    \end{align*}
+
+
+    \hspace{2.6em}
+    Since $\bd{r}=\bd{A}\bd{r}$ and $\sum_{u\in\set{A,B,C,D}} r_u=1$, we know
+    
+    \vspace{-0.5em}
+    $$\bd{r} = \left( \dfrac{3}{7}, \dfrac{4}{21}, \dfrac{4}{21}, \dfrac{4}{21} \right)$$
+
+    \vspace{-2.75em}
+\end{solution}
+
+\vspace{1em}
+\subsection{Teleport Set is $\set{\bd{A},\bd{C}}$}
+\vspace{1em}
+\begin{solution}
+    The adjusted adjacency matrix when $\beta=0.8$ is 
+
+    \vspace{-1.5em}
+    \begin{align*}
+        \qquad \qquad \bd{A} & = \beta \bd{W} + \left(1-\beta\right)\left(
+            \begin{array}{cccc}
+                \frac{1}{2} & \frac{1}{2} & \frac{1}{2} & 0 \\
+                0 & 0 & 0 & 0 \\
+                \frac{1}{2} & \frac{1}{2} & \frac{1}{2} & \frac{1}{2} \\
+                0 & 0 & 0 & 0
+            \end{array}
+        \right) = \left(
+            \begin{array}{cccc}
+                \frac{1}{10} & \frac{1}{2} & \frac{9}{10} & \frac{1}{10} \\
+                \frac{4}{15} & 0 & 0 & \frac{2}{5} \\
+                \frac{11}{30} & \frac{1}{10} & \frac{1}{10} & \frac{1}{2} \\
+                \frac{4}{15} & \frac{2}{5} & 0 & 0 
+            \end{array}
+        \right)
+    \end{align*}
+
+    \hspace{2.6em}
+    Since $\bd{r}=\bd{A}\bd{r}$ and $\sum_{u\in\set{A,B,C,D}} r_u=1$, we know
+
+    \vspace{-0.5em}
+    $$\bd{r} = \left(
+        \dfrac{27}{70}, \dfrac{6}{35}, \dfrac{19}{70}, \dfrac{6}{35}
+    \right)$$
+
+    \vspace{-2.75em}
+\end{solution}
+
+\vspace{1em}
+\section{Problem 03}
+\vspace{1em}
+\begin{solution}
+    The adjacency matrix is 
+
+    \vspace{-1.5em}
+    $$\bd{A} =  \left(
+        \begin{array}{ccccc}
+            1 & 1 & 0 & \cdots & 0\\
+            0 & 0 & 1 & \cdots & 0 \\
+            \vdots & \vdots & \vdots & \ddots & \vdots \\
+            0 & 0 & 0 & \cdots & 1 \\
+            0 & 0 & 0 & \cdots & 0
+        \end{array}
+    \right)_{n\times n}$$
+
+    \hspace{2.6em}
+    Let the hub and authority vector be $\bd{h}$ and $\bd{a}$ respectively. Then we have
+
+    \vspace{-1.5em}
+    \begin{align*}
+        \bd{a}^{(0)}=\bd{h}^{(0)} &= \left(\dfrac{1}{\sqrt{n}},\dfrac{1}{\sqrt{n}},\cdots,\dfrac{1}{\sqrt{n}}\right)_{n\times 1} \\
+        \bd{a}^{(i+1)} = \bd{A}^\top \bd{A} \bd{a}^{(i)} &= \left(
+            \begin{array}{cccccc}
+                1 & 0 & 0 & \cdots & 0 & 0\\
+                0 & 1 & 0 & \cdots & 0 & 0\\
+                0 & 0 & 1 & \cdots & 0 & 0\\
+                \vdots & \vdots & \vdots & \ddots & \vdots & \vdots\\
+                0 & 0 & 0 & \cdots & 1 & 0\\
+                0 & 0 & 0 & \cdots & 0 & 1
+            \end{array}
+        \right)_{n\times n} \bd{a}^{(i)} \\
+        \bd{h}^{(i+1)} = \bd{A}\bd{A}^\top \bd{h}^{(i)} &= \left(
+            \begin{array}{cccccc}
+                2 & 0 & 0 & \cdots & 0 & 0\\
+                0 & 1 & 0 & \cdots & 0 & 0\\
+                0 & 0 & 1 & \cdots & 0 & 0\\
+                \vdots & \vdots & \vdots & \ddots & \vdots & \vdots\\
+                0 & 0 & 0 & \cdots & 1 & 0\\
+                0 & 0 & 0 & \cdots & 0 & 0
+            \end{array}
+        \right)_{n\times n} \bd{h}^{(i)} \\
+    \end{align*}
+
+    \vspace{-2em} \hspace{2.6em}
+    Thus, the authority vector and the hub vector is
+
+    \vspace{-1.5em}
+    \begin{align*}
+        \bd{a}^{\infty} &= \left(
+            \dfrac{1}{\sqrt{n}}, \dfrac{1}{\sqrt{n}}, \dfrac{1}{\sqrt{n}}, \cdots, \dfrac{1}{\sqrt{n}}
+        \right)_{n\times 1} \\
+        \bd{h}^{\infty} &= \left(
+            1, 0, 0, \cdots, 0
+        \right)_{n\times 1}
+    \end{align*}
+
+\vspace{-4.75em}
+\end{solution}
+
+
+\vspace{2em}
+\section{Power Iteration}
+\vspace{1em}
+\begin{proof}
+    Suppose $\bd{M}\in\mathbb{R}^{n\times n}$. Let the eigenvalue of $\bd{M}$ be $\lambda_1,...\lambda_n$ ($\lambda_1\geq\lambda_2\geq...\geq\lambda_n$). 
+    
+    \hspace{1.3em}
+    Let the eigenvector releted to $\lambda_i$ be $\bd{v}_i$.
+    Then we have $\bd{M}\bd{v}_i = \lambda_i\bd{v}_i$ for $i=1,2,...,n$.
+
+    \hspace{1.3em}
+    Suppose $\lambda_1=\lambda_2=...=\lambda_p>\lambda_{p+1}$. We know $\lambda^*\triangleq\lambda_1=\lambda_2=...=\lambda_p$ is the principal eigenvalue of $\bd{M}$ and $\bd{v}_1, \bd{v}_2,...\bd{v}_p$ are the principal eigenvectors.
+
+    \hspace{1.3em}
+    We know all eigenvectors of a matrix are a basis of $\mathbb{R}^{n}$. 
+    
+    \hspace{1.3em}
+    Thus, exists $\bd{r}^{(0)}$ is a linear combination of $\bd{v}_1,...\bd{v}_n.$
+    Suppose $\bd{r}^{(0)}=\sum_{i=1}^n \alpha_i \bd{v}_i.$
+
+    \hspace{1.3em}
+    Thereby, we have
+
+    \vspace{-1.5em}
+    \begin{align*}
+        \bd{M}^k\bd{r}^{(0)} &= \bd{M}^k\sum_{i=1}^n \alpha_i \bd{v}_i = \bd{M}^{k-1}\sum_{i=1}^n \alpha_i\lambda_i\bd{v}_i = \cdots = \bd{M}\sum_{i=1}^n \alpha_i \lambda_i^{k-1}\bd{v}_i = \sum_{i=1}^n \alpha_i\lambda_i^k\bd{v}_i 
+    \end{align*}
+
+    \hspace{1.3em}
+    When $k\to\infty$, we have $\bd{M}^k\bd{r}^{(0)} \to (\lambda^*)^k\sum_{i=1}^p\alpha_i\bd{v}_i$. After unit normalization, we have 
+    
+    \vspace{-1.5em}
+    \begin{align*}
+        \bd{r}^{(\infty)}&=\dfrac{1}{\sqrt{\sum_{i=1}^p\alpha_i^2}}\sum_{i=1}^p\alpha_i\bd{v}_i \\
+        \bd{M}\bd{r}^{(\infty)}&=\dfrac{1}{\sqrt{\sum_{i=1}^p\alpha_i^2}}\sum_{i=1}^p\alpha_i\bd{M}\bd{v}_i = \dfrac{\lambda^*}{\sqrt{\sum_{i=1}^p\alpha_i^2}}\sum_{i=1}^p\alpha_i\lambda^*\bd{v}_i = \lambda^*\bd{r}^{(\infty)}
+    \end{align*}
+
+    \hspace{1.3em}
+    Since $\|\bd{r}^{(\infty)}\|=1$ and $\bd{M}\bd{r}^{(\infty)}=\lambda^*\bd{r}^{(\infty)}$, we know $\bd{r}^{(\infty)}$ is the principal eigenvector of $\bd{M}$.
+
+    \hspace{1.3em}
+    Therefore, the sequence $\bd{M}\bd{r}^{(0)}, \bd{M}^2\bd{r}^{(0)}, ... \bd{M}^k\bd{r}^{(0)}$ approaches the principal eigenvector.
+\end{proof}
+
+\end{document}

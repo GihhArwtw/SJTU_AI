@@ -143,3 +143,12 @@ Note that this repository only includes notes and assignments of **some** course
 - Bioinformatics（生物信息学）
 
 <br/>
+
+### 2022-2023-2
+
+*本学期的笔记都比较摆烂，这里只上传相对不摆烂的RL笔记，但其实内容也并不完整。*
+
+- Reinforcement Learning（强化学习）
+- Data Mining（数据挖掘）
+
+- *Virtual Reality*（虚拟现实）[No Notes]
