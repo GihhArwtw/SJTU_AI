@@ -9,3 +9,7 @@
 2022-2023-1/Mathematical_Logic/_Notes_Logics.pdf filter=lfs diff=lfs merge=lfs -text
 2022-2023-1/Natural_Language_Processing/_Notes_NLP.goodnotes filter=lfs diff=lfs merge=lfs -text
 2022-2023-1/Natural_Language_Processing/_Notes_NLP.pdf filter=lfs diff=lfs merge=lfs -text
+2022-2023-1/Operating_System/Notes_OS.goodnotes filter=lfs diff=lfs merge=lfs -text
+2022-2023-1/Operating_System/Notes_OS.pdf filter=lfs diff=lfs merge=lfs -text
+2022-2023-1/Lectures_on_Frontiers_of_Artificial_Intelligence_AIIA/人工智能前沿.goodnotes filter=lfs diff=lfs merge=lfs -text
+2022-2023-1/Lectures_on_Frontiers_of_Artificial_Intelligence_AIIA/人工智能前沿.pdf filter=lfs diff=lfs merge=lfs -text
