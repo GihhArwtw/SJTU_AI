@@ -1,0 +1,114 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{listings}
+\usepackage{xcolor}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{DarkBlue}{rgb}{0.25,0.5,0.65}
+\lstset{
+    basicstyle  = \tt,
+    backgroundcolor=\color{backcolour},
+    % keywordstyle = \bfseries\color{blue},
+    commentstyle = \color{DarkBlue}\bfseries,
+    showstringspaces=false,
+    breaklines = true
+    xleftmargin = -20em
+}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.5}
+\title{\textbf{Computer Vision Homework 02}}
+\author{Qiu Yihang}
+\date{Nov.27-Dec.3, 2022}
+
+\begin{document}
+
+\maketitle
+
+\vspace{3em}
+\section{Programming Assignment: Bag-of-Features}
+\vspace{1em}
+\subsection{Main Idea}
+\vspace{1em}
+
+The main idea for bag-of-features is as follows.
+
+\begin{itemize}
+    \item Extract \textbf{SIFT} features from each image. Collect features for each category.
+    
+    \item Divide features into $N\_Clusters$ clusters by \textbf{k-Means}, i.e. learn the "visual vocabulary".
+    
+    \item Quantize features in each image by the learned visual vocabulary. 
+    
+    \item Use the histogram of visual words to represent the image.
+\end{itemize}
+
+\hspace{-1.8em}
+Furthermore, since we need to classify images in \textbf{Caltech-101} Dataset, we need to further use \textbf{SVM} on the representation of images, i.e. the histogram for each image extracted by \textbf{bag-of-features}, to classify the images.
+
+\vspace{1em}
+\subsection{Some Details During Programming}
+\vspace{1em}
+
+\hspace{2em}
+\underline{To avoid the side effects brought by an unbalanced dataset}, before k-means clustering, we calculate \textbf{the minimum number of features in each category}, and force each category to have the same number of features, i.e. the minimum number.
+
+\hspace{0.6em}
+Specifically, since there are $102$ categories, we cluster image SIFT features into \underline{$102$ clusters}, i.e. we choose $\boldsymbol{N\_Clusters=102}$. In fact, different number of clusters is acceptable as long as it is not too small, since SVM is implemented on the histogram feature after bag-of-features.
+
+\subsection{Results}
+
+We also experiment on different kernel functions of SVM. 
+
+\hspace{-1.8em}
+The results are shown in the following table.
+
+\begin{table}[htbp]
+    \centering
+    \setstretch{1.2}
+    \begin{tabular}{c|c}
+        \hline
+        Kernel & Accuracy \\
+        \hline
+        Linear & $0.15051020408163265$ \\
+        Poly & $0.36698250728862974$ \\
+        RBF & $\boldsymbol{0.37572886297376096}$ \\
+        Sigmoid & $0.21829446064139943$ \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\hspace{-1.8em}
+It is plain to see that 
+
+\begin{itemize}
+    \item The linear kernel function seems not suitable for this problem. Thus, the data is likely to be not linearly separable.
+    \item The polynomial kernel function performs well but not as good as RBF. Meanwhile, the number of its parameter is more than RBF.
+    \item The \textbf{RBF kernel} performs the best, and we choose it as the kernel function for SVM.
+\end{itemize}
+
+\hspace{-1.8em}
+The best accuracy of our method is $0.37572886297376096$.
+
+\end{document}

@@ -1,0 +1,411 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{float}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{listings}
+\usepackage{xcolor}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{DarkBlue}{rgb}{0.25,0.5,0.65}
+\lstset{
+    basicstyle  = \tt,
+    backgroundcolor=\color{backcolour},
+    % keywordstyle = \bfseries\color{blue},
+    commentstyle = \color{DarkBlue}\bfseries,
+    showstringspaces=false,
+    breaklines = true
+    xleftmargin = -20em
+}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.5}
+\title{\textbf{Computer Vision Homework 01}}
+\author{Qiu Yihang}
+\date{Oct.13-19, 2022}
+
+\begin{document}
+
+\maketitle
+
+\vspace{3em}
+\section{Written Assignment}
+\vspace{1em}
+\subsection{The Image of Circular Disks}
+\vspace{1em}
+\begin{solution}
+    Let the optical axis be $x=0, y=0$.
+    Let the plane where the circular disk is on be $z=z_0$. 
+
+    \begin{figure}[htbp]
+    	\centering
+    	{\includegraphics[width=0.6\textwidth]{CVHw01_fig0.pdf}}
+    \end{figure}
+    
+    \vspace{-1em} \hspace{2.6em}
+    Let the circular disk be $C:(x-x_0)^2+(y-y_0)^2=r^2$. 
+    
+    \hspace{2.6em}
+    Then any point in $C$ can be represented as $(x_0+r\cos{\theta},y_0+r\sin{\theta})$.
+
+    \hspace{2.6em}
+    Since the camera is a pinhole camera, we know for any point $(x_0+r\cos{\theta},y_0+r\sin{\theta})\in C$,
+    
+    \vspace{-1em}
+    $$\frac{x_0+r\cos{\theta}}{-x_i}=\frac{y_0+r\sin{\theta}}{-y_i}=\frac{z_0}{h},$$
+    
+    \vspace{-0.3em} \hspace{2.6em}
+    where $h$ is the distance of the image plane to the pinhole.
+    
+    \hspace{2.6em}
+    Then we have
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        & x_i = -\dfrac{h}{z_0}\left(x_0+r\cos{\theta}\right),\quad
+        y_i = -\dfrac{h}{z_0}\left(y_0+r\sin{\theta}\right) \\
+        \Longrightarrow \qquad & C':\left(x_i-\frac{hx_0}{z_0}\right)^2+\left(y_i-\frac{hy_0}{z_0}\right)^2=\left(\frac{hr}{z_0}\right)^2
+    \end{align*}
+    
+    \hspace{2.6em}
+    Thus, the shape of the image is also \underline{\textbf{a circular disk}}.
+\end{solution}
+
+\vspace{1em}
+\subsection{Vanishing Points in Special Cases}
+\vspace{1em}
+\begin{solution}
+    First we consider the case where $A=C=D=0, B=1$, i.e. the plane is $y=0$.
+
+    \begin{figure}[htbp]
+    	\centering
+    	{\includegraphics[width=0.6\textwidth]{CVHw01_fig1.pdf}}
+    \end{figure}
+
+    \vspace{-1.25em} \hspace{2.6em}
+    We consider the following three sets of parallel lines in this plane: $z=\mathtt{const}, x=\mathtt{const},$
+    
+    $x-z=\mathtt{const}$, whose direction vectors are $l_1=(0,0,1), l_2=(1,0,0), l_3=(1,0,-1)$ respectively.
+
+    \hspace{2.6em}
+    For any $(x,y,z)$ on direction $l=(l_x,l_y,l_z)$, we know 
+    
+    \vspace{-2em}
+    \begin{align*}
+        \left\{\begin{array}{c}
+            x = x' + tl_x \\
+            y = y' + tl_y \\
+            z = z' + tl_z
+        \end{array}\right.,\qquad \frac{x}{x_i}=\frac{y}{y_i}=\frac{z}{f} \quad\Longrightarrow &\quad \left\{\begin{array}{l}
+            x_i = \dfrac{x'+tl_x}{z'+tl_z}f \\
+            y_i = \dfrac{y'+tl_y}{z'+tl_z}f \\
+            z_i = f
+        \end{array}
+            \right. \\
+        t\to\infty, \quad\text{we know}
+        & \text{ Vanishing Point}\left(\frac{fl_x}{l_z},\frac{fl_y}{l_z},f\right)
+    \end{align*}
+
+    \vspace{-0.5em} \hspace{2.6em}
+    \underline{\textbf{CASE 1}}. $l_1=(0,0,1).$ Thus, the vanishing point is $(0,0)$. \whiteqed
+
+    \hspace{2.6em}
+    \underline{\textbf{CASE 2}}. $l_2=(1,0,0).$ From the figure above we know there is no vanishing point in this 
+    
+    case, since $l_2$ is parallel to the image plane. The image of all lines is $y=0$.\whiteqed
+
+    \hspace{2.6em}
+    \underline{\textbf{CASE 3}}. $l_3=(1,0,-1).$ 
+    Thus, the vanishing point is $(-1,0)$. \whiteqed
+
+    \vspace{2em} \hspace{2.6em}
+    Now we consider the case where $B=C=D=0, A=1$, i.e. the plane is $x=0$.
+
+    \begin{figure}[htbp]
+    	\centering
+    	{\includegraphics[width=0.6\textwidth]{CVHw01_fig2.pdf}}
+    \end{figure}
+
+    \vspace{-1.25em} \hspace{2.6em}
+    We consider the following three sets of parallel lines in this plane: $z=\mathtt{const}, y=\mathtt{const},$
+    
+    $y-z=\mathtt{const}$, whose direction vectors are $l_1=(0,0,1), l_2=(0,1,0), l_3=(0,1,-1)$ respectively.
+
+    \hspace{2.6em}
+    \underline{\textbf{CASE 1}}. $l_1=(0,0,1).$ Thus, the vanishing point is $(0,0)$. \whiteqed
+
+    \hspace{2.6em}
+    \underline{\textbf{CASE 2}}. $l_2=(0,1,0).$ From the figure above we know there is no vanishing point in this 
+    
+    case, since $l_2$ is parallel to the image plane. The image of all lines is $x=0$.\whiteqed
+
+    \hspace{2.6em}
+    \underline{\textbf{CASE 3}}. $l_3=(0,1,-1).$ 
+    Thus, the vanishing point is $(0,-1)$.
+\end{solution}
+
+\vspace{1em}
+\subsection{General Relationship Between the Vanishing Point and Lines in a Plane}
+\vspace{1em}
+\begin{solution}
+    Consider the plane $Ax+By+Cz+D=0$. 
+
+    \hspace{2.6em}
+    Let the vanishing point of lines in the plane $Ax+By+Cz+D=0$ be $(x_p,y_p)$.
+
+    \vspace{-1em}
+    \begin{figure}[htbp]
+    	\centering
+    	{\includegraphics[width=0.5\textwidth]{CVHw01_fig3.pdf}}
+    \end{figure}
+
+    \vspace{-1em} \hspace{2.6em}
+    Obvious all directions of lines in the plane are in the plane. Thus, for lines in the plane, 
+    
+    we know their direction $l=(l_x,l_y,l_z)$ satisfies $Al_x+Bl_y+Cl_z=0$.
+
+    \hspace{2.6em}
+    When $l_z=0$, $l$ is parallel to the image plane, i.e. the vanishing point does not exist.
+
+    \vspace{0.2em} \hspace{2.6em}
+    When $l_z\neq0$, we know $A\dfrac{l_x}{l_z}+B\dfrac{l_y}{l_z}+C=0.$
+
+    \vspace{-0.3em} \hspace{2.6em}
+    In \textbf{1.2}, we have shown the vanishing point of lines with direction $(l_x,l_y,l_z)$ is $\left(\dfrac{fl_x}{l_z},\dfrac{fl_y}{l_z}, f\right)$.
+
+    \vspace{0.2em} \hspace{2.6em}
+    Thus, we know
+
+    \vspace{-1.2em}
+    $$x_p=\dfrac{fl_x}{l_z}, \ y_p=\dfrac{fl_y}{l_z}, \ z_p=f\ \Longrightarrow \ \frac{A}{f}x_p+\frac{B}{f}y_p+C=0,\ z_p=f.$$
+    
+    \vspace{-0.3em} \hspace{2.6em}
+    Therefore, the vanishing points of lines in the plane $Ax+By+Cz+D=0$ are \underline{\textbf{on the line}}
+    
+    \vspace{0.5em}
+    \underline{$\boldsymbol{\dfrac{A}{f}x+\dfrac{B}{f}y+C=0,\ z=f}$}.
+\end{solution}
+
+\newpage
+\section{Programming Assignment}
+\vspace{1em}
+\subsection{Problem 1: 2D Object Detecting Vision System}
+\vspace{1em}
+
+The main ideas for the three functions to be completed are listed as follows.
+
+\vspace{-0.5em}
+\begin{itemize}
+    \item $\mathtt{binarize}(\text{gray\_image,\ thresh\_val})$: Compare each pixel to the threshold. Here we \textbf{\underline{choose 128} \underline{as the threshold}}.
+
+    \item $\mathtt{label}(\text{binary\_image})$: Implement the \textbf{\underline{sequential labeling algorithm}}. In the second pass, we relabel each connected component and assign a color value $\mathtt{color}(C)=\dfrac{\mathtt{label}(C)}{N}\times 255$, where $N$ is the number of connected components, $\mathtt{label}(C)\in\set{1,2,...,N}$.
+
+    \item $\mathtt{get\_attribute}(\text{labeled\_image})$: Find a labeled pixel. Use \textbf{\underline{BFS}} to find all pixels in the same connected component while collecting their coordinates.
+    
+    Then we calculate position, orientation and roundness of objects as follows.
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        \bar{x} &= \frac{\sum_{(x,y)\in C}x}{\sum_{(x,y)\in C}1},\quad\ \ \qquad\bar{y} = \frac{\sum_{(x,y)\in C}x}{\sum_{(x,y)\in C}1} \\
+        a &= \sum_{(x,y)\in C}\left(x-\bar{x}\right)^2,\quad\quad
+        b = 2\sum_{(x,y)\in C}\left(x-\bar{x}\right)(y-\bar{y}), \quad
+        c = \sum_{(x,y)\in C}(y-\bar{y})^2 \\
+        \theta_1 &= \frac{1}{2}\mathrm{arctan}\left(\frac{b}{a-c}\right), \quad
+        \theta_2 = \theta_1 +\frac{\pi}{2} \\
+        \text{second moment}\quad\mathtt{E}(\theta) &= a\sin^2\theta-b\sin\theta\cos\theta+c\cos^2\theta\\
+        \mathtt{position}(C) &= \left(\bar{x},\bar{y}\right) \\
+        \mathtt{orientation}(C) &= \underset{\theta\in\set{\theta_1,\theta_2}}{\mathrm{argmin}}\mathtt{E}(\theta) \\
+        \mathtt{roundness}(C) &= \frac{\min{\mathtt{E}(\theta)}}{\max\mathtt{E}(\theta)} = \frac{\mathtt{E}(\mathtt{orientation}(C))}{\mathtt{E}\left(\theta_1(C)+\theta_2(C)-\mathtt{orientation}(C)\right)}
+    \end{align*}
+\end{itemize}
+
+\hspace{-1.8em}
+The object attributes are as follows.
+
+\small
+\begin{lstlisting}[language=python]
+    # two_objects.png
+    [{'position': {'x': 349.41329138812426, 'y': 216.40031458906802},
+      'orientation': 1.8790893714106605, 'roundedness': 0.5340063842834148}, 
+     {'position': {'x': 195.30663390663392, 'y': 223.4181818181818},
+      'orientation': 0.6871951338147986, 'roundedness': 0.4808419004110274}]
+    # many_objects_1.png
+    [{'position': {'x': 303.5553171196948, 'y': 178.1833571769194},
+      'orientation': 0.4019219108381822, 'roundedness': 0.26867770604637214}, 
+     {'position': {'x': 417.6541193181818, 'y': 241.35700757575756}, 
+      'orientation': -0.7761742875012226, 'roundedness': 0.024360729539394724}, 
+     {'position': {'x': 268.2888660851719, 'y': 257.8768599281683},
+      'orientation': -0.5370733149713873, 'roundedness': 0.48672580916164937}, 
+     ...]
+    # many_objects_2.png
+    [{'position': {'x': 130.19451943844493, 'y': 188.1729211663067}, 
+      'orientation': 1.6902675601989725, 'roundedness': 0.5062557354731094}, 
+     {'position': {'x': 265.9125412541254, 'y': 169.65291529152915}, 
+      'orientation': -0.496675233144095, 'roundedness': 0.4806924204306065},
+     {'position': {'x': 413.66658366533864, 'y': 204.97684262948206},
+      'orientation': 2.022752472102815, 'roundedness': 0.17358105360935486},
+     ...]
+\end{lstlisting}
+\normalsize
+
+% # two_objects.png
+% [{'position': {'x': 349.41329138812426, 'y': 216.40031458906802},
+% 'orientation': 1.8790893714106605, 'roundedness': 0.5340063842834148}, 
+% {'position': {'x': 195.30663390663392, 'y': 223.4181818181818},
+% 'orientation': 0.6871951338147986, 'roundedness': 0.4808419004110274}]
+% # many_objects_1.png
+% [{'position': {'x': 303.5553171196948, 'y': 178.1833571769194},
+% 'orientation': 0.4019219108381822, 'roundedness': 0.26867770604637214}, 
+% {'position': {'x': 417.6541193181818, 'y': 241.35700757575756}, 
+% 'orientation': -0.7761742875012226, 'roundedness': 0.024360729539394724}, 
+% {'position': {'x': 268.2888660851719, 'y': 257.8768599281683},
+% 'orientation': -0.5370733149713873, 'roundedness': 0.48672580916164937}, 
+% {'position': {'x': 325.9845179451091, 'y': 309.26812104152003}, 
+% 'orientation': 0.7779571467569345, 'roundedness': 0.1333982732249509、
+% {'position': {'x': 461.64912280701753, 'y': 313.7214035087719},
+% 'orientation': 0.947412345875192, 'roundedness': 0.9889554958020599},
+% {'position': {'x': 265.9498825371966, 'y': 365.1036282954842},
+% 'orientation': 0.0791760099881052, 'roundedness': 0.5211171306843906}]
+% # many_objects_2.png
+% [{'position': {'x': 130.19451943844493, 'y': 188.1729211663067}, 
+% 'orientation': 1.6902675601989725, 'roundedness': 0.5062557354731094}, 
+% {'position': {'x': 265.9125412541254, 'y': 169.65291529152915}, 
+% 'orientation': -0.496675233144095, 'roundedness': 0.4806924204306065},
+% {'position': {'x': 413.66658366533864, 'y': 204.97684262948206},
+% 'orientation': 2.022752472102815, 'roundedness': 0.17358105360935486},
+% {'position': {'x': 331.96705490848586, 'y': 338.2437049362174},
+% 'orientation': 1.6107697473495879, 'roundedness': 0.3075377030245566}, 
+% {'position': {'x': 188.3331747919144, 'y': 357.88180737217596},
+% 'orientation': -0.6432410931672945, 'roundedness': 0.007593853107792533}, 
+% {'position': {'x': 475.4301141622956, 'y': 339.99475470533787},
+% 'orientation': 0.40360483253430895, 'roundedness': 0.020670983157758064}]
+
+\vspace{1em} \hspace{-1.8em}
+The image results are as follows.
+
+\vspace{0.5em}
+\begin{figure*}[htbp]
+    \centering
+    \subfigbottomskip = 0pt
+    \subfigcapskip = 0pt
+    \subfigure[original image]{
+        \includegraphics[width=0.31\textwidth]{output/two_objects_gray.png}
+    }
+    \subfigure[binarized image]{
+        \includegraphics[width=0.31\textwidth]{output/two_objects_binary.png}
+    }
+    \subfigure[labeled image]{
+        \includegraphics[width=0.31\textwidth]{output/two_objects_labeled.png}
+    }
+    \\
+    \subfigure[original image]{
+        \includegraphics[width=0.31\textwidth]{output/many_objects_1_gray.png}
+    }
+    \subfigure[binarized image]{
+        \includegraphics[width=0.31\textwidth]{output/many_objects_1_binary.png}
+    }
+    \subfigure[labeled image]{
+        \includegraphics[width=0.31\textwidth]{output/many_objects_1_labeled.png}
+    }
+    \\
+    \subfigure[original image]{
+        \includegraphics[width=0.31\textwidth]{output/many_objects_2_gray.png}
+    }
+    \subfigure[binarized image]{
+        \includegraphics[width=0.31\textwidth]{output/many_objects_2_binary.png}
+    }
+    \subfigure[labeled image]{
+        \includegraphics[width=0.31\textwidth]{output/many_objects_2_labeled.png}
+    }
+    \caption{Results of Problem 1}
+\end{figure*}
+
+\vspace{1em}
+\subsection{Problem 2: Circle Detector}
+\vspace{1em}
+
+The main ideas for the three functions to be completed are as follows.
+
+\begin{itemize}
+    \item $\mathtt{detect\_edges}(\mathrm{image})$: Implement the \textbf{\underline{Sobel Filter}} using convolution. For borders, we use \textbf{\underline{reflective padding}}. The Sobel filters we used are as follows (where $I$ is the image). 
+    
+    \vspace{-2.5em}
+    \begin{align*}
+        &\mathtt{Sobel_x} = \left(
+        \begin{array}{rrr}
+            -1 & 0 & 1 \\
+            -2 & 0 & 2 \\
+            -1 & 0 & 1 
+        \end{array}\right),\ \mathtt{Sobel_y} = \left(
+            \begin{array}{rrr}
+                1 & 2 & 1 \\
+                0 & 0 & 0 \\
+                -1 & -2 & -1 
+            \end{array}\right),\\
+        G_x(I) = I &* \mathtt{Sobel_x},\ G_y(I)= I * \mathtt{Sobel_y}\ \Longrightarrow\ \text{edge maginitude }G(I) = |G_x(I)|+|G_y(I)|
+    \end{align*}
+
+    \vspace{-1.75em}
+    \item $\mathtt{hough\_circles}\mathrm{(edge\_image, edge\_thresh, radius\_values)}$:
+    Use the edge threshold to determine authentic edge points. For \textbf{\underline{Hough Transform}} implementation, we \underline{\textbf{choose 200 as the edge }} \underline{\textbf{threshold,} $\boldsymbol{\set{20,21,...,40}}$ \textbf{as possible radius values.}}
+    
+    \item $\mathtt{find\_circles}\mathrm{(image, accum\_array, radius\_values, hough\_thresh)}$: Use the Hough threshold to determine authentic circles. Here we \textbf{\underline{choose 80 as the Hough threshold.}}
+    
+    Specially, to achieve better results, we \textbf{\underline{implement NMS (Non-Maximum Suppression)}} on the candidates for the radii and positions $(r,y,x)$ of circles, i.e. only preserves circle candidates that are the local maxima in the $(r,y,x)$-voting accumulator.
+
+    In the end, we choose to apply \underline{$\boldsymbol{5\times 5}$ \textbf{NMS}} since its performance is seemingly the best.
+\end{itemize}
+
+\hspace{-1.8em}
+To use my version of $\mathtt{p2\_hough\_circles.py}$, you may use the following instruction.
+
+\small
+\begin{lstlisting}[language=c]
+    python3 p2_hough_circles.py [name] [edge] [hough] [r_min] [r_max] [nms]
+\end{lstlisting}
+
+\hspace{0.5em}
+where $\mathtt{name, edge, hough}$ are respectively the name of the image file, edge threshold and Hough threshold. $\mathtt{r\_min}$ and $\mathtt{r\_max}$ defines possible radius values, i.e. $\set{\mathtt{r\_min},\mathtt{r\_min}+1,...,\mathtt{r\_max}}$. We suppress the non-maxmimum pixels in all $(2\cdot\mathtt{nms}+1)\times(2\cdot\mathtt{nms}+1)$ grids. $\mathtt{nms}=2$ is recommended.
+ 
+\normalsize
+\vspace{2em} \hspace{-1.8em}
+The image results are as follows.
+
+\begin{figure*}[htbp]
+    \centering
+    \subfigbottomskip = 0pt
+    \subfigcapskip = 0pt
+    \subfigure[edge points]{
+        \includegraphics[width=0.31\textwidth]{output/coins_edges.png}
+    }
+    \subfigure[circles before NMS]{
+        \includegraphics[width=0.31\textwidth]{output/coins_circles_before_NMS.png}
+    }
+    \subfigure[circles after NMS \textbf{(final result)}]{
+        \includegraphics[width=0.31\textwidth]{output/coins_circles.png}
+    }
+    \caption{Results of Problem 2}
+\end{figure*}
+
+\vspace{-0.5em} \hspace{-1.8em}
+Thus, our program can detect the positions and the radii of circles precisely.
+
+\end{document}
