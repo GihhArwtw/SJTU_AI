@@ -22,19 +22,18 @@ Notes during my time as freshman and sophomore are mostly on paper and thus, som
 
 **Correctness are not guaranteed for all notes or assignments.**
 I have briefly checked most notes before updating, especailly those in English. 
-Still, there might exist typos, syntax errors or some words misused. **Note that most notes are in Chinese.**
+Still, there might be typos, syntax errors or some words misused. **Note that most notes are in Chinese.**
 
 For some courses, assignments and my version of solutions are also given. 
-Assignment during the second semister when I was sophomore are accomplished by LaTex. 
-For these assignments, original `tex` files are also uploaded.
+For assignments written by `LaTex`, the original `tex` files are also uploaded.
 
-Please enjoy. Comments and suggestions are welcome.
+Feel free to comment!
 
 <br/>
 
 ## 简介
 
-这里是交大的上课笔记和部分课程的作业。目前大三（我好老）。希望本仓库里我的笔记、程序和作业能对你有所帮助。（如果你对此项目中的内容有所参考，还请引用本网址_(:з」∠)_）
+这里是交大的上课笔记和部分课程的作业，本人已毕业。希望本仓库里我的笔记、程序和作业能对你有所帮助。（如果你对此项目中的内容有所参考，还请引用本网址_(:з」∠)_）
 
 大一和大二的笔记基本上都是手写的纸质版本，所以这里上传的也都是扫描件。（刚买平板，所以大三才开始电子化笔记……）
 
@@ -140,5 +139,7 @@ Note that this repository only includes notes and assignments of **some** course
 - Lectures on Frontiers of Artificial Intelligence_AIIA（人工智能前沿讲座）
 - Deep Learning（深度学习）
 - Brain-Inspired Intelligence（类脑智能）
+
 - Bioinformatics（生物信息学）
 
+<br/>
