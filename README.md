@@ -105,7 +105,7 @@ Note that this repository only includes notes and assignments of **some** course
 - Linear and Convex Optimization（线性优化与凸优化）
 - Probability Theory and Mathematical Statistics（概率论与数理统计）
 - Signals and Systems（信号与系统）
-- *Fundamental Analog Electronic Devices（模拟电子技术）[tbd]*
+- Fundamental Analog Electronic Devices（模拟电子技术）
 - *College Physics II（大学物理2）[tbd]*
 
 
@@ -127,3 +127,4 @@ Note that this repository only includes notes and assignments of **some** course
 - 线上学期，所以莫得毛概的笔记（开卷考了）
 
 <br/>
+
