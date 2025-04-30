@@ -116,7 +116,7 @@ Note that this repository only includes notes and assignments of **some** course
 
 - Algorithms（算法分析与设计）
 - *Stochastic Process（随机过程）[Notes are yet to be uploaded.]*
-- *Digital Signal and Image Processing（数字信号与图像处理）[tbd]*
+- *Digital Signal and Image Processing（数字信号与图像处理）[Notes are yet to be uploaded.] [! Missing solution & report for HW4 and 5.]*
 - *Machine Learning（机器学习）[Notes are yet to be uploaded.]*
 - Intelligent Speech Distinguish（智能语音识别）
 - Digital Logic Design [Verilog]（数字逻辑设计，本质是Verilog教学）
