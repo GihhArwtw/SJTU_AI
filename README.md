@@ -134,5 +134,7 @@ Note that this repository only includes notes and assignments of **some** course
 *本学期开始为电子笔记，但有几节课没有很认真地在做笔记*
 
 - Computer Vision（计算机视觉）
-- Brain-Inspired Intelligence（类脑智能）
+- Mathematical Logic（数理逻辑）
 - Deep Learning（深度学习）
+- Brain-Inspired Intelligence（类脑智能）
+- *Lectures on Frontiers of Artificial Intelligence_AIIA（人工智能前沿讲座）[Notes are yet to be uploaded.]*
