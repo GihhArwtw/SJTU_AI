@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{bbm}
+\usepackage{subfigure}
+\usepackage{ulem}
+\usepackage{xcolor}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\bd}[1]{\boldsymbol{#1}}
+
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Reinforcement Learning Homework 04}}
+\author{Qiu Yihang}
+\date{April 2023}
+
+\begin{document}
+
+\maketitle
+
+\vspace{1em}
+\section{Implementation of the DQN and Double DQN algorithms}
+\vspace{1em}
+The source code is under directory \colorbox{lightgray}{$\mathtt{code}$}. The results and analyses are as follows.
+
+\vspace{-1em}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{return_comparison_Pendulum-v0_9.pdf}
+    \caption{The comparison of the rewards of the DQN (with or without target network or buffer) and Double DQN algorithms on the \texttt{Pendulum-v0} environment during training.}
+\end{figure}
+
+\subsection{The Target Network}
+
+\hspace{1.2em}
+DQN without target network \textbf{\emph{appears more unstable}} and also fails to find a good policy to gain a higher reward. 
+
+The reason is that target network will be updated after several iterations of updating on the main network, help to stablize the expected Q value, which helps to stablize the training process.
+
+\subsection{Buffer}
+
+\hspace{1.2em}
+DQN without buffer \textbf{\emph{appears more unstable}} and also fails to find a good policy to gain a higher reward.
+
+The reason is that the buffer uniformly samples the information collected in the past to replay and helps the agent to learn from the experience of the past, which prevents repetitive exploration and meaningless repetitions. This also helps stablize the training since the distribution of the samples is more uniform.
+
+\subsection{The Difference between Vanilla DQN and Double DQN}
+
+\hspace{1.2em}
+
+The estimated maximal Q-value of the two algorithms during training are shown as follows.
+
+\vspace{-1em}
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\textwidth]{maxQ_comparison_Pendulum-v0_9.pdf}
+\end{figure}
+
+The results show that the Double DQN algorithm \textbf{\emph{converges faster}} and \textbf{\emph{appears more stable}} than the vanilla DQN algorithm. Also, from the perspective of the estimated Q value, the vanilla DQN tends to \textbf{\emph{overestimate}} the Q value.
+
+
+This is because the Double DQN algorithm uses the main network to select the action and the target network to evaluate the Q-value. 
+
+Actions selected by the main network are more precise, helping Double DQN converge faster. Value estimation by target network is more stable, which helps to stablize the training process and prevents overestimation.
+
+\end{document}
+

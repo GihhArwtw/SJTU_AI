@@ -1,0 +1,334 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{bbm}
+\usepackage{subfigure}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\bd}[1]{\boldsymbol{#1}}
+
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Reinforcement Learning Homework 01}}
+\author{Qiu Yihang}
+\date{Feb 2023}
+
+\begin{document}
+
+\maketitle
+
+\vspace{1em}
+\section{Convergence of Policy Iteration}
+
+\begin{proof}
+    Let the state space be $\mathcal{S}$, the action space be $\mathcal{A}$.
+
+    \hspace{1.3em}
+    To prove the new policy produced by policy iterations will be at least as good as the original one, we need to prove 
+
+    \vspace{-1.5em}
+    $$V^{\pi_{i+1}}\left(s\right) \geq V^{\pi_i}\left(s\right).$$
+    
+    \hspace{1.3em}
+    For $V^{\pi_i}(s)$, by the process of policy iteration, we know 
+
+    \vspace{-2em}
+    $$\qquad\quad\sum_{s'} P\left(s,\pi_i(s),s'\right) \left[ R\left(s,\pi_i(s),s'\right) + \gamma V^{\pi_i}(s')\right] \le\ \sum_{s'} \underset{a\in\mathcal{A}}{\max}\  P\left(s,\pi_i(s),s'\right) \left[ R\left(s,\pi_i(s),s'\right) + \gamma V^{\pi_i}(s')\right] $$
+
+    \hspace{1.3em}
+    Thus,
+    
+    \vspace{-2.3em}
+    \begin{equation}
+        \begin{split}
+        \qquad V^{\pi_i}(s) &\le Q(s,\pi_{i+1}(s)) \\
+         &= \staExp{\pi_{i+1}}{R(s_0,\pi_{i+1}(s_0),s_1)+\gamma V^{\pi_i}(s_1)\mid \pi_i,s_0=s} \\
+         &\le \staExp{\pi_{i+1}}{R(s_0,\pi_{i+1}(s_0),s_1)+\gamma Q(s_1, \pi_{i+1}(s_1))\mid \pi_i,s_0=s} \\
+         &= \staExp{\pi_{i+1}}{R(s_0,\pi_{i+1}(s_0),s_1)+\gamma R(s_1,\pi_{i+1}(s_1),s_2)+\gamma^2\cdot V^{\pi_i}(s_1)\mid \pi_i,s_0=s} \\
+         &\le \staExp{\pi_{i+1}}{R(s_0,\pi_{i+1}(s_0),s_1)+\gamma R(s_1,\pi_{i+1}(s_1),s_2)+\gamma^2 Q(s_2,\pi_{i+1}(s_2)) \mid \pi_i,s_0=s} \\
+         &= \dots \\
+         &\le \staExp{}{\sum_{t=0}^{\infty} R(s_t,\pi_{i+1}(s_t),s_{t+1})} = V^{\pi_{i+1}}(s)
+        \end{split}
+        \label{eq}
+    \end{equation}
+
+    \hspace{1.3em}
+    Moreover, $V^{\pi_{i+1}}(s)=V^{\pi_i}(s)$ \textbf{iff.} 
+
+    \vspace{-2.5em}
+    \begin{equation}
+        \begin{split}
+        \qquad \forall s^\prime\in\mathcal{S},
+        \ &\underset{a}{\max} P(s,a,s^\prime)\left[R(s,a,s^\prime)+\gamma V^{\pi_i}(s^\prime)\right] = P\left(s,\pi_i(s),s'\right) \left[ R\left(s,\pi_i(s),s'\right) + \gamma V^{\pi_i}(s')\right] \\
+        \text{i.e.}\ & \pi_i(s)\in \underset{a}{\arg\max} \sum_{s'} Q^{\pi_i}(s,a),\ \text{i.e.}\ \pi_i(s)\text{ is already an optimal policy.}
+        \end{split}
+        \label{iff}
+    \end{equation}
+    
+
+    \hspace{1.3em}
+    Thus, the new policy is at least as good as the original one. \whiteqed
+
+    \vspace{1em} \hspace{1.3em}
+    \underline{We prove the convergence of policy iterations as follows.} 
+
+    \hspace{1.3em}
+    Let the set of optimal policies be $\Pi^*$.
+
+    \hspace{1.3em}
+    Given that the state space, the action space and the reward function is all finite, we have
+
+    \vspace{-1.5em}
+    $$\forall s,s'\in\mathcal{S}, a\in\mathcal{A},\ R_{-}\le R(s,a,s')<R_+.$$
+
+    \vspace{-0.5em} \hspace{1.3em}
+    Then for any possible policy $\pi$, since $0\le\gamma<1$,
+
+    \vspace{-1em}
+    $$\frac{R_{-}}{1-\gamma}\le V^{\pi}(s)<\sum_{t=0}^{\infty} \gamma^t\cdot R_0 = \frac{R_+}{1-\gamma}$$
+    
+    \vspace{-0.5em} \hspace{1.3em}
+    By \ref{eq} and \ref{iff}, we know 
+
+    \vspace{-0.5em}
+    $$
+    \left\{
+        \begin{array}{ll}
+            V^{\pi_i}=V^{\pi_{i+1}} & \text{ \textbf{iff.} }\forall s\in\mathcal{S}, \pi_i(s),\pi_{i+1}(s)\in \underset{a}{\arg\max} \sum_{s'} Q^{\pi_i}(s,a). \\
+            \exists s\in\mathcal{S}, V^{\pi_i}(s)<V^{\pi_{i+1}}(s) & \text{otherwise} 
+        \end{array}
+    \right.
+    $$
+
+    \vspace{0.5em} \hspace{1.3em}
+    i.e.
+    
+    \vspace{-1em}
+    $$
+    \left\{
+        \begin{array}{ll}
+            V^{\pi_i}=V^{\pi_{i+1}} & \text{ \textbf{iff.} } \pi_i,\pi_{i+1}\in\Pi^*.\\
+            \exists s\in\mathcal{S}, V^{\pi_i}(s)<V^{\pi_{i+1}}(s) & \text{otherwise} 
+        \end{array}
+    \right.
+    $$
+
+    \vspace{.3em} \hspace{1.3em}
+    Meanwhile, there is at most $|\mathcal{S}|\times|\mathcal{A}|$ polices.
+    Then for $N\geq|\mathcal{S}|\times|\mathcal{A}|+1$, we know 
+
+    \vspace{-1em}
+    $$\forall s\in\mathcal{S}, \exists k_{s}\in\mathbb{N}, V^{\pi_1}(s)<V^{\pi_2}(s)<...<V^{\pi_{k_s-1}}(s)=V^{\pi_{k-s}}(s)=...=V^{\pi_N}(s).$$
+
+    \hspace{1.3em}
+    i.e.
+
+    \vspace{-2em}
+    $$V^{\pi_{N-1}} = V^{\pi_N} \Longrightarrow \pi_{N-1}(s) \in\Pi^*, \pi_N(s)\in\Pi^*.$$
+
+    \hspace{1.3em}
+    Moreover, by the definition of how $\pi_{i+1}$ derives from $\pi_i$, we know when $\pi_N\in\Pi^*$, $\pi_{N+1}=\pi_N$.
+
+    \hspace{1.3em}
+    Therefore, when $i\to\infty, \pi_i\to\pi_N\in\Pi^*$.
+    
+    \hspace{1.3em}
+    Thus, the policy iteration converges to an optimal policy.
+\end{proof}
+
+\vspace{3em}
+\section{Grid World}
+
+\subsection{Value Iteration}
+    The value iteration is implemented in $\mathtt{valueIterationAgent.py}$.
+
+    \hspace{-1.8em}
+    The results given by value iteration under $\varepsilon=0.01$ or $0.001$ are shown in Fig. \ref{fig:value}. 
+
+\subsection{Policy Iteration}
+    The policy iteration is implemented in $\mathtt{policyIterationAgent.py}$.
+
+    \hspace{-1.8em}
+    The results given by policy iteration under $\varepsilon=0.01$ or $0.001$ are shown in Fig. \ref{fig:policy}.
+
+    
+    \begin{figure*}[htbp]
+        \centering
+        \subfigure[Final Values when $\varepsilon=0.01$]{
+            \includegraphics[width=0.45\textwidth]{value-1.png}
+        }
+        \subfigure[Q-values when $\varepsilon=0.01$]{
+            \includegraphics[width=0.45\textwidth]{value-1-Q.png}
+        }
+        \\
+        \subfigure[Final Values when $\varepsilon=0.001$]{
+            \includegraphics[width=0.45\textwidth]{value-2.png}
+        }
+        \subfigure[Q-values when $\varepsilon=0.01$]{
+            \includegraphics[width=0.45\textwidth]{value-2-Q.png}
+        }
+        \caption{Value Iteration}
+        \label{fig:value}
+    \end{figure*}
+
+    \begin{figure*}[htbp]
+        \centering
+        \subfigure[Final Values when $\varepsilon=0.01$ or $0.001$]{
+            \includegraphics[width=0.45\textwidth]{policy-1.png}
+        }
+        \subfigure[Q-values when $\varepsilon=0.01$ or $0.001$]{
+            \includegraphics[width=0.45\textwidth]{policy-1-Q.png}
+        }
+        \caption{Policy Iteration}
+        \label{fig:policy}
+    \end{figure*}
+
+\subsection{Comparison of Speed of Convergence}
+
+
+The maximal change of value function during the iteration process is depicted in Fig. \ref{fig:converge}.
+
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[STATE = (0,0)]{
+        \includegraphics[width=0.31\textwidth]{converge-1.pdf}
+    }
+    \subfigure[STATE = (0,1)]{
+        \includegraphics[width=0.31\textwidth]{converge-2.pdf}
+    }
+    \subfigure[STATE = (0,2)]{
+        \includegraphics[width=0.31\textwidth]{converge-3.pdf}
+    }
+    \\
+    \subfigure[STATE = (1,0)]{
+        \includegraphics[width=0.31\textwidth]{converge-4.pdf}
+    }
+    \subfigure[STATE = (1,2)]{
+        \includegraphics[width=0.31\textwidth]{converge-5.pdf}
+    }
+    \subfigure[STATE = (2,0)]{
+        \includegraphics[width=0.31\textwidth]{converge-6.pdf}
+    }
+    \\
+    \subfigure[STATE = (2,1)]{
+        \includegraphics[width=0.31\textwidth]{converge-7.pdf}
+    }
+    \subfigure[STATE = (2,2)]{
+        \includegraphics[width=0.31\textwidth]{converge-8.pdf}
+    }
+    \subfigure[STATE = (3,0)]{
+        \includegraphics[width=0.31\textwidth]{converge-9.pdf}
+    }
+    \caption{Convergence of utilities of all states under value iteration and policy iteration}
+    \label{fig:converge}
+\end{figure*}
+
+\vspace{-0.5em} \hspace{0.5em}
+As shown above, in the aspect of utility, policy iteration \underline{\textbf{converges faster than}} value iteration. Moreover, closer a state is to the terminal state, faster the value iteration of the utility of it converges.
+
+\hspace{0.5em}
+* Still, it seems a little unfair to compare in such ways. In the process of policy iteration, value estimate also iterates for several times to estimate the value function of the current policy. But it is also possible to estimate the value by solving a linear function, which won't lead to large time consumption.
+
+\vspace{1em} 
+The policy actions of all states against the number of iterations are as follows. For policy iteration, policy actions are shown in Fig. \ref{fig:act-policy}. For value iteration, policy actions are shown in Fig. \ref{fig:act-value-1} and Fig. \ref{fig:act-value-2}. 
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[iteration=0]{
+        \includegraphics[width=0.31\textwidth]{figs/act-policy-0.png}
+    }
+    \subfigure[iteration=1]{
+        \includegraphics[width=0.31\textwidth]{figs/act-policy-1.png}
+    }
+    \subfigure[iteration=2]{
+        \includegraphics[width=0.31\textwidth]{figs/act-policy-2.png}
+    }
+    \caption{Policy Actions given by Policy Iterations}
+    \label{fig:act-policy}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[iteration = 0]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-0.png}
+    }
+    \subfigure[iteration = 1]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-1.png}
+    }
+    \\
+    \subfigure[iteration = 2]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-2.png}
+    }
+    \subfigure[iteration = 3]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-3.png}
+    }
+    \\
+    \subfigure[iteration = 4]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-4.png}
+    }
+    \subfigure[iteration = 5]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-5.png}
+    }
+    \caption{Policy Actions given by Value Iterations (Part. I)}
+    \label{fig:act-value-1}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \subfigure[iteration = 6]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-6.png}
+    }
+    \subfigure[iteration = 7]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-7.png}
+    }
+    \\
+    \subfigure[iteration = 8]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-8.png}
+    }
+    \subfigure[iteration = 9]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-9.png}
+    }
+    \\
+    \subfigure[iteration = 10]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-10.png}
+    }
+    \subfigure[iteration = 11]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-11.png}
+    }
+    \caption{Policy Actions given by Value Iterations (Part. II)}
+    \label{fig:act-value-2}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \subfigure[iteration = 12 \& 13]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-12+13.png}
+    }
+    \subfigure[iteration = 14 \& 15]{
+        \includegraphics[width=0.45\textwidth]{figs/act-value-14+15.png}
+    }
+    \caption{Policy Actions given by Value Iterations (Part. III)}
+    \label{fig:fig-value-3}
+\end{figure}
+
+The policy is stable and optimal after the 2nd policy iteration. Meanwhile, even the policy given by the 1st iteration is quite close to the final optimal policy. On the other hand, the policy converges to the optimal policy in the 9th value iteration. In fact, the 10th to 15th value iteration is trying to approximate the value function, though the policy is already stable and optimal.
+
+Thus, value iteration \underline{\textbf{converges slower than}} policy iteration. 
+\end{document}

@@ -151,4 +151,4 @@ Note that this repository only includes notes and assignments of **some** course
 - Reinforcement Learning（强化学习）
 - Data Mining（数据挖掘）
 
-- *Virtual Reality*（虚拟现实）[No Notes]
+- *Virtual Reality（虚拟现实）[No Notes]*

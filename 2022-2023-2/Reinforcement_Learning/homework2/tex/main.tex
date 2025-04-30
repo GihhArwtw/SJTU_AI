@@ -1,0 +1,168 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{bbm}
+\usepackage{subfigure}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\bd}[1]{\boldsymbol{#1}}
+
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Reinforcement Learning Homework 02}}
+\author{Qiu Yihang}
+\date{March 2023}
+
+\begin{document}
+
+\maketitle
+
+\vspace{3em}
+\section{Convergence of Temporal Difference Value Learning}
+\vspace{1em}
+\begin{proof}
+    First we prove that $\set{V_n}$, where $V_n=\left(1-\dfrac{1}{n^2}\right)V_{n-1}+\dfrac{1}{n^2}x_n$ is a Cauchy sequence. 
+
+    \vspace{0.5em} \hspace{1.3em}
+    For any $\varepsilon>0$, consider $N=\left\lceil\dfrac{\left|C_1-C_2\right|}{\varepsilon}\right\rceil$.
+
+    \vspace{0.5em} \hspace{1.3em}
+    Without loss of generality, we assume $m\geq n$. Then we have
+
+    \vspace{-2em}
+    \begin{align*}
+        V_m & = \left(1-\frac{1}{m^2}\right)V_{m-1} + \frac{1}{m^2} x_m \\
+        & = \left(1-\frac{1}{m^2}\right)\left(1-\frac{1}{(m-1)^2}\right)V_{m-2}+\left(1-\frac{1}{m^2}\right)\frac{1}{(m-1)^2}x_{m-1}+\frac{1}{m^2}x_m \\
+        & = \dots \\
+        & = \prod_{i=n+1}^m \left(1-\frac{1}{i^2}\right) V_n + \frac{1}{m^2}x_m + \sum_{k=n+1}^{m-1} \left[\prod_{i=k+1}^m\left(1-\frac{1}{i^2}\right)\right] \frac{1}{k^2} x_k \\
+        \qquad 
+        \left|V_m - V_n\right| & = \left|\left[\prod_{i=n+1}^m \left(1-\frac{1}{i^2}\right) - 1 \right] V_n + \frac{1}{m^2}x_m + \sum_{k=n+1}^{m-1} \left[\prod_{i=k+1}^m\left(1-\frac{1}{i^2}\right)\right] \frac{1}{k^2} x_k\right| \\
+        & \le \left|\left[\prod_{i=n+1}^m \left(1-\frac{1}{i^2}\right) - 1 \right] |V_n| + \frac{1}{m^2}|x_m| + \sum_{k=n+1}^{m-1} \left[\prod_{i=k+1}^m\left(1-\frac{1}{i^2}\right)\right] \frac{1}{k^2} |x_k|\right| \\
+        & \le \left|\left[\prod_{i=n+1}^m \left(1-\frac{1}{i^2}\right) - 1 \right] C_2 + \left\{\frac{1}{m^2} + \sum_{k=n+1}^{m-1} \left[\prod_{i=k+1}^m\left(1-\frac{1}{i^2}\right)\right] \frac{1}{k^2} \right\} C_1 \right|\\
+        & = \left|\left[\prod_{i=n+1}^m \left(1-\frac{1}{i^2}\right) - 1 \right] C_2 + \left\{1-\left(1-\frac{1}{m^2}\right) + \sum_{k=n+1}^{m-1} \left[\prod_{i=k+1}^{m}\left(1-\frac{1}{i^2}\right)\right] \frac{1}{k^2} \right\}C_1\right| \\
+        & = \dots \\
+        & = \left|\left[\prod_{i=n+1}^m \left(1-\frac{1}{i^2}\right) - 1 \right] C_2 + \left[1-\prod_{i=n+1}^m \left(1-\frac{1}{i^2}\right)\right] C_1 \right| \\
+        & = \left|\left[1-\prod_{i=n+1}^m \left(1-\frac{1}{i^2}\right)\right] \left(C_1-C_2\right) \right| = \left|\left(1-\frac{(m+1)n}{m(n+1)}\right) \left(C_1 - C_2\right)\right| \\
+        & < \left(1 - \frac{n}{n+1}\right) \left|C_1-C_2\right| = \frac{1}{n+1}\left|C_1-C_2\right| \\
+        & < \frac{1}{N} \left|C_1-C_2\right| \le \frac{\varepsilon}{\left|C_1-C_2\right|} \left|C_1-C_2\right| = \varepsilon
+    \end{align*}
+
+    \vspace{-1em} \hspace{1.3em}
+    i.e. for any $\varepsilon>0$, exists $N=\left\lceil\dfrac{\left|C_1-C_2\right|}{\varepsilon}\right\rceil$ such that $|V_n-V_m|<\varepsilon$ for any $n,m\geq N$.
+    
+    \hspace{1.3em}
+    Thus, $\set{V_n}$ is a Cauchy sequence.
+
+    \vspace{2em} \hspace{1.3em}
+    Now we prove that TD value learning with $\alpha_n=\dfrac{1}{n}$ will converge.
+
+    \vspace{0.5em} \hspace{1.3em}
+    Let $\varepsilon\to 0$. Since $\set{V_n}$ is a Cauchy sequence, $\lim_{k\to\infty}V_{k}=V^*$.
+
+    \vspace{0.5em} \hspace{1.3em}
+    Therefore, TD value learning with $\alpha_n=\dfrac{1}{n}$ will converge.
+\end{proof}
+
+\vspace{1em}
+\section{Implementation of the SARSA and Q-learning algorithms}
+\vspace{1em}
+\begin{solution}
+    Under different values of $\varepsilon$ in $\varepsilon$-greedy, the performances of SARSA, Q-learning algorithm are plotted in green and blue respectively as follows. Also, the performances of target policy in Q-learning are depicted in orange.
+
+    \begin{figure}[htbp]
+        \centering
+        \subfigure[$\varepsilon=0.01$]{
+            \includegraphics[width=0.45\textwidth]{cum_rewards_eps=0.01.pdf}
+        }
+        \subfigure[$\varepsilon=0.05$]{
+            \includegraphics[width=0.45\textwidth]{cum_rewards_eps=0.05.pdf}
+        }
+        \\
+        \subfigure[$\varepsilon=0.1$]{
+            \includegraphics[width=0.45\textwidth]{cum_rewards_eps=0.1.pdf}
+        }
+        \subfigure[$\varepsilon=0.2$]{
+            \includegraphics[width=0.45\textwidth]{cum_rewards_eps=0.2.pdf}
+        }
+        \\
+    \end{figure}
+
+    \begin{figure}[htbp]
+        \centering
+        \subfigure[$\varepsilon=0.3$]{
+            \includegraphics[width=0.45\textwidth]{cum_rewards_eps=0.3.pdf}
+        }
+        \subfigure[$\varepsilon=0.4$]{
+            \includegraphics[width=0.45\textwidth]{cum_rewards_eps=0.4.pdf}
+        }
+        \\
+        \subfigure[$\varepsilon=0.5$]{
+            \includegraphics[width=0.45\textwidth]{cum_rewards_eps=0.5.pdf}
+        }
+        \subfigure[$\varepsilon=0.6$]{
+            \includegraphics[width=0.45\textwidth]{cum_rewards_eps=0.6.pdf}
+        }
+        \\
+        \subfigure[$\varepsilon=0.7$]{
+            \includegraphics[width=0.31\textwidth]{cum_rewards_eps=0.7.pdf}
+        }
+        \subfigure[$\varepsilon=0.8$]{
+            \includegraphics[width=0.31\textwidth]{cum_rewards_eps=0.8.pdf}
+        }
+        \subfigure[$\varepsilon=0.9$]{
+            \includegraphics[width=0.31\textwidth]{cum_rewards_eps=0.9.pdf}
+        }
+        \caption{Performance of SARSA and Q-learning algorithms (behaviour policy and target policy) under different values of $\varepsilon$ in $\varepsilon$-greedy.}
+    \end{figure}
+
+    \subsection{Comparisons of Different Policies}
+
+    \hspace{1.9em}
+    We know that in theory, the best cumulative reward is $-12$.
+
+    \hspace{0.5em}
+    For \textbf{SARSA}, the best performance under all $\varepsilon$ is lower than that of \textbf{Q-learning}, especially in the case when $\varepsilon=0.01, 0.05, 0.1, 0.2, 0.3$.
+
+    \hspace{0.5em}
+    Meanwhile, when $\varepsilon<0.2$, \textbf{Q-learning} can maintain the best performance in most time.
+
+    \subsection{Impacts of Different Values of $\bd{\varepsilon}$}
+
+    \hspace{1.9em}
+    We know when $\varepsilon$ is smaller, the $\varepsilon$-greedy tends to be conservative and maintains the optimal policy at the time. When $\varepsilon$ is larger, the $\varepsilon$-greedy tends to be more bold and explores more actions.
+
+    \hspace{0.5em}
+    This is also reflected in the results. When $\varepsilon$ is smaller, the cumulative rewards of both SARSA and Q-learning behaviour policy appear more stable. When $\varepsilon$ is larger, the cumulative rewards of both SARSA and Q-learning behaviour policy become more fluctuated.
+
+    \hspace{0.5em}
+    Moreover, when $\varepsilon$ is too large, $\varepsilon=0.7, 0.8, 0.9$ for example, the cumulative rewards of both SARSA and Q-learning behaviour policy tend to be much lower than that when $\varepsilon$ is smaller. In other words, when $\varepsilon$ is too large, the $\varepsilon$-greedy tends to be too bold and explores too much actions instead of optimizing a stable policy.
+
+    \hspace{0.5em}
+    Meanwhile, the target policy of Q-learning converges to an optimal policy slower as $\varepsilon$ becomes larger.
+
+    \vspace{1em}
+    \subsection{Differences Between Behaviour Policy and Target Policy of Q-Learning}
+
+    \hspace{1.9em}
+    Compared with target policy, behaviour policy explores more and tends to be fluctuated. It is plain to see from the results that the cumulative reward of target policy is more stable than that of behaviour policy.
+
+\end{solution}
+
+\end{document}

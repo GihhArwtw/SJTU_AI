@@ -1,0 +1,294 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{bbm}
+\usepackage{subfigure}
+\usepackage{ulem}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\bd}[1]{\boldsymbol{#1}}
+
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Reinforcement Learning Homework 03}}
+\author{Qiu Yihang}
+\date{April 2023}
+
+\begin{document}
+
+\maketitle
+
+\vspace{2em}
+\section{Policy Gradient}
+\vspace{1em}
+\begin{proof}
+    We know $\sum_{a\in\mathcal{A}}\pi(a|s)=1$, i.e. $\dfrac{\partial\sum_{a\in\mathcal{A}}}{\partial\theta}=0$. Thus,
+
+    \vspace{-2em}
+    \begin{align*}
+        \mathrm{LHS} &= \sum_{s\in\mathcal{S}}\rho^{\pi_\theta}(s) \sum_{a\in\mathcal{A}} \pi_\theta(a|s)\frac{\partial \log \pi_\theta(a|s)}{\partial \theta} f(s) \\
+        & = \sum_{s\in\mathcal{S}}\rho^{\pi_\theta}(s)\sum_{a\in\mathcal{A}}\pi_\theta(a|s) \frac{1}{\pi_\theta(a|s)}\frac{\partial \pi_\theta(a|s)}{\partial\theta}f(s) \\
+        & = \sum_{s\in\mathcal{S}}\rho^{\pi_\theta}(s)\sum_{a\in\mathcal{A}}\frac{\partial\pi_\theta(a|s)}{\partial\theta}f(s) = \sum_{s\in\mathcal{S}}\rho^{\pi_\theta}(s)\frac{\partial\sum_{a\in\mathcal{A}}\pi_\theta(a|s)}{\partial\theta}f(s) = 0.
+    \end{align*}
+
+    \vspace{-3.7em}
+\end{proof}
+
+\vspace{3em}
+\section{Implementation of the Dyna-Q and Dyna-Q+ Algorithms}
+\vspace{1em}
+\setcounter{subsection}{-1}
+\subsection{Tricks in the Implementation of Dyna-Q+}
+\vspace{1em}
+
+    \hspace{2em}
+    Before we move on to discuss the impacts of the number of planning steps and the differences between Dyna-Q and Dyna-Q+, I would like to talk about the implementation of Dyna-Q+ first.
+
+    \hspace{0.7em}
+    We figure out that compared with Dyna-Q, Dyna-Q+ algorithm needs more time to explore and learn before taking a good action. The performances without any initialization is shown in Fig.\ref{fig:init}.
+
+    \hspace{0.7em}
+    It is in fact explainable. Dyna-Q and Dyna-Q+ only explore visited states along with the past actions at these states. Meanwhile, with the additional reward, Dyna-Q+ is more likely to explore the states that was once visited but have not been revisited for a long time while it is less likely to explore unvisited states and unperformed actions. Therefore, it takes longer time for Dyna-Q+ to explore and find the optimal policy in static environments, which is supported by Fig.\ref{fig:woinit_longterm_basic}, \ref{fig:woinit_longterm_blocking}, and \ref{fig:woinit_longterm_cut}. 
+    
+    \hspace{0.7em}
+    Note that in Fig.\ref{fig:woinit_longterm_blocking} and \ref{fig:woinit_longterm_cut}, in order to show that Dyna-Q+ is able to find the optimal policy eventually, we set the time when blocking and shortcut maze changes to be $T=20000$. 
+
+    \begin{figure*}[htbp]
+        \centering
+        \subfigure[w.o. init]{
+        \includegraphics[width=0.31\textwidth]{comp_w.o.init_basic.pdf}
+        }
+        \subfigure[w.o. init]{
+        \includegraphics[width=0.31\textwidth]{comp_w.o.init_blocking.pdf}
+        }
+        \subfigure[w.o. init]{
+        \includegraphics[width=0.31\textwidth]{comp_w.o.init_cut.pdf}
+        }
+        \\
+        \subfigure[w. init, seed=666]{
+            \includegraphics[width=0.31\textwidth]{comp_basic.pdf}
+            \label{fig:init_basic}
+        }
+        \subfigure[w. init, seed=666]{
+            \includegraphics[width=0.31\textwidth]{comp_blocking.pdf}
+            \label{fig:init_blocking}
+        }
+        \subfigure[w. init, seed=666]{
+            \includegraphics[width=0.31\textwidth]{comp_cut.pdf}
+            \label{fig:init_cut}
+        }
+        \\
+        \subfigure[w.o. init, time=50000]{
+            \includegraphics[width=0.31\textwidth]{comp_w.o.init_lt_basic.pdf}
+            \label{fig:woinit_longterm_basic}
+        }
+        \subfigure[w.o. init, changes at $T=20000$]{
+            \includegraphics[width=0.31\textwidth]{comp_w.o.init_lt_blocking.pdf}
+            \label{fig:woinit_longterm_blocking}
+        }
+        \subfigure[w.o. init, changes at $T=20000$]{
+            \includegraphics[width=0.31\textwidth]{comp_w.o.init_lt_cut.pdf}
+            \label{fig:woinit_longterm_cut}
+        }
+        \caption{Performances of Dyna-Q+ without initialization}
+        \label{fig:init}
+    \end{figure*}
+
+    \hspace{0.7em}
+    We notice that when environment changes, it seems that Dyna-Q+ spends shorter time on finding the optimal policy in the new environment than it spends on the attempts to find the optimal policy in the original environment. We suppose it is the exploration on the original environment that helps Dyna-Q+ to find the optimal policy on the new environment.
+
+    \hspace{0.7em}
+    Based on the above observations, we use a small trick to help Dyna-Q+ to find the optimal policy faster in our implementation. We initialize the model in Dyna-Q+ in the following way. \textbf{\emph{The main idea is to initialize the last visit time of all possible states and actions.}}
+
+    \vspace{-2.75em}
+    \begin{align*}
+        \mathtt{model}(s,a) = \left\{ \mathtt{reward}=0, \mathtt{next\_state}=s, \mathtt{last\_visit\_time}=T_0 \right\} \qquad\left(T_0\le 0\right)
+    \end{align*}
+
+    \vspace{-0.75em} \hspace{0.7em}
+    With the initialization, during the early period, with the help of additional reward $\kappa\sqrt{\tau}$, Q-planning would assign greater Q-value for these unvisited states and unperformed actions, leading to more exploration in Q-learning. In this way, Dyna-Q+ would find the optimal policy faster.
+
+    \hspace{0.7em}
+    Note that we actually initialize with a faulty observation of the next state and reward. We could interpret the initialization in the following way. \emph{The environment used to be the faulty environment, the one we use in initialization, in the past (before time $0$) and Dyna-Q+ has already observed the environment correctly at time $T_0\le 0$. At time $0$, the environment suddenly changes to the real environment and Dyna-Q+ starts to collect correct observations.}
+
+    \hspace{0.7em}
+    Based on the above analyses, it is recommended to assign $T_0$ with some negative integers, $-100$ for example, \emph{since the initialization should be regarded as observations long before.}
+
+    \hspace{0.7em}
+    Moreover, $T_0$ should be a hyperparameter. Nevertheless, altering code without marker \textit{YOUR CODE HERE} is not allowed. Thus, we set $T_0=0$ in our implementation. 
+    
+    \hspace{0.7em}
+    To be fair in the comparison, we also implement this initialization trick in Dyna-Q algorithms when comparing the performances between Dyna-Q and Dyna-Q+.
+    
+    \hspace{0.7em}
+    Fig.\ref{fig:init_basic}, \ref{fig:init_blocking}, and \ref{fig:init_cut} have shown the effectiveness of this initialization trick. Setting hyperparameter $T_0$ to a negative integer would result in better performances, though. 
+
+\vspace{1.5em}
+\subsection{The Impacts of the Number of Planning Steps}
+\vspace{1em}
+
+    \hspace{2em}
+    In this section, we do not apply the initialization trick mentioned in \textbf{2.0}. The performances of Dyna-Q and Dyna-Q+ with different planning steps in three different environments are shown in Fig.\ref{fig:planning_steps}.
+
+
+    \begin{figure*}[htbp]
+        \centering
+        \subfigure[]{
+        \includegraphics[width=0.31\textwidth]{DynaQ_basic.pdf}
+        }
+        \subfigure[]{
+        \includegraphics[width=0.31\textwidth]{DynaQ_blocking.pdf}
+        }
+        \subfigure[]{
+        \includegraphics[width=0.31\textwidth]{DynaQ_cut.pdf}
+        }
+        \\
+        \subfigure[]{
+        \includegraphics[width=0.31\textwidth]{DynaQ+_basic.pdf}
+        }
+        \subfigure[]{
+        \includegraphics[width=0.31\textwidth]{DynaQ+_blocking.pdf}
+        }
+        \subfigure[]{
+        \includegraphics[width=0.31\textwidth]{DynaQ+_cut.pdf}
+        }
+        \caption{Dyna-Q and Dyna-Q+ under different planning steps in three different environments.}
+        
+        \label{fig:planning_steps}
+    \end{figure*}
+
+
+    \hspace{0.7em}
+    Note that for dynamic environments, i.e. blocking and shortcut maze, this section of experiments only consider the maze at time 0, which is in fact a static environment.
+
+    \hspace{0.7em}
+    It is plain to see that \textbf{\emph{the larger}} the number of planning steps, \textbf{\emph{the less fluctuated}} the performance, both for Dyna-Q and Dyna-Q+.
+   
+    \hspace{0.7em}
+    Meanwhile, at first more planning steps might lead to more steps per episode. However, after a few iterations, which is only one iteration in most cases, steps per episode with more planning steps will decrease greatly. Also, Dyna-Q and Dyna-Q+ with more planning steps \textbf{\emph{converges to the optimal policy faster}} than those with less planning steps.
+
+    \hspace{0.7em}
+    The reason is that more planning steps helps the agent to simulate the environment more times based on past observations, leading to a more accurate model of the environment. Thus, the agent can learn faster and converge to the optimum faster.
+
+\vspace{1.5em}
+\subsection{Differences between Dyna-Q and Dyna-Q+}
+\vspace{1em}
+    \hspace{2em}
+    In this section, to be fair, we implement the initialization trick in both Dyna-Q and Dyna-Q+.
+
+    \hspace{0.7em}
+    The performances of Dyna-Q and Dyna-Q+ in three different environments under different random seeds and with or without initialization tricks are shown in Fig.\ref{fig:comp}.
+
+    \vspace{1em} 
+    \subsubsection{Basic Environment (Simple Environment)}
+
+    \hspace{2em}
+    On the simple maze, which is a static environment, the cumulative reward of Dyna-Q+ \textbf{\emph{is smaller than}} Dyna-Q in most cases. 
+    
+    \hspace{0.7em}
+    \emph{The application of initialization helps to decrease the difference}, but Dyna-Q+ with initialization \textbf{\emph{is still slightly smaller}} in cumulative reward than Dyna-Q with initialization.
+    
+    \hspace{0.7em}
+    The reason might be that Dyna-Q+ tends to visit states that have not been revisited for a long time, which might waste some time compared with Dyna-Q, who sticks to the optimal path found before.
+
+    \vspace{1em} 
+    \subsubsection{Blocking Environment (Blocking Maze)}
+
+    \hspace{2em}
+    On the blocking maze, since the original path is blocked for both Dyna-Q and Dyna-Q+, \emph{both algorithms tends to find the new path.} 
+    
+    \hspace{0.7em}
+    With initialization, Dyna-Q+ can find the new path \emph{\textbf{no slower than}} Dyna-Q. In the case when random seed is 5454122 (shown in Fig.\ref{fig:54_init_basic}, \ref{sub@fig:54_init_blocking}, \ref{sub@fig:54_init_cut}, \ref{sub@fig:54_wo_basic}, \ref{sub@fig:54_wo_blocking}, and \ref{sub@fig:54_wo_cut}), Dyna-Q+ \emph{finds the new path \textbf{even faster}} than Dyna-Q, \emph{with or without initialization.}
+    
+    \hspace{0.7em}
+    However, without initialization, in most cases Dyna-Q+ \textbf{\emph{is slightly slower than Dyna-Q}} in finding the new path in most cases. This is because Dyna-Q+ tends to explore more states that have not been revisited for a long time and requires more time to find the optimal policy.
+
+    
+\begin{figure*}[htbp]
+    \centering
+    \subfigure[w.o. init, seed=666]{
+    \includegraphics[width=0.31\textwidth]{comp_w.o.init_basic.pdf}
+    }
+    \subfigure[w.o. init, seed=666]{
+    \includegraphics[width=0.31\textwidth]{comp_w.o.init_blocking.pdf}
+    }
+    \subfigure[w.o. init, seed=666]{
+    \includegraphics[width=0.31\textwidth]{comp_w.o.init_cut.pdf}
+    }
+    \\
+    \subfigure[w. init, seed=666]{
+    \includegraphics[width=0.31\textwidth]{comp_basic.pdf}
+    }
+    \subfigure[w. init, seed=666]{
+    \includegraphics[width=0.31\textwidth]{comp_blocking.pdf}
+    }
+    \subfigure[w. init, seed=666]{
+    \includegraphics[width=0.31\textwidth]{comp_cut.pdf}
+    }
+    \\
+    \subfigure[w. init, seed=20230404]{
+    \includegraphics[width=0.31\textwidth]{comp_seed=20230404_basic.pdf}
+    }
+    \subfigure[w. init, seed=20230404]{
+    \includegraphics[width=0.31\textwidth]{comp_seed=20230404_blocking.pdf}
+    }
+    \subfigure[w. init, seed=20230404]{
+    \includegraphics[width=0.31\textwidth]{comp_seed=20230404_cut.pdf}
+    }
+    \\ 
+    \subfigure[w. init, seed=5454122]{
+    \includegraphics[width=0.31\textwidth]{comp_seed=5454122_basic.pdf}
+    \label{fig:54_init_basic}
+    }
+    \subfigure[w. init, seed=5454122]{
+    \includegraphics[width=0.31\textwidth]{comp_seed=5454122_blocking.pdf}
+    \label{fig:54_init_blocking}
+    }
+    \subfigure[w. init, seed=5454122]{
+    \includegraphics[width=0.31\textwidth]{comp_seed=5454122_cut.pdf}
+    \label{fig:54_init_cut}
+    }
+    \\
+    \subfigure[w.o. init, seed=5454122]{
+    \includegraphics[width=0.31\textwidth]{comp_w.o.init_5454122_basic.pdf}
+    \label{fig:54_wo_basic}
+    }
+    \subfigure[w.o. init, seed=5454122]{
+    \includegraphics[width=0.31\textwidth]{comp_w.o.init_5454122_blocking.pdf}
+    \label{fig:54_wo_blocking}
+    }
+    \subfigure[w.o. init, seed=5454122]{
+    \includegraphics[width=0.31\textwidth]{comp_w.o.init_5454122_cut.pdf}
+    \label{fig:54_wo_cut}
+    }
+    \caption{Performances of Dyna-Q and Dyna-Q+ on different random seeds and w./w.o. initialization.}
+    \label{fig:comp}
+
+\end{figure*}
+
+\subsubsection{Shortcut Environment (Shortcut Maze)}
+\hspace{2em}
+On the shortcut maze, it is plain to see that \emph{Dyna-Q+, with or without initialization, }\textbf{\emph{can find the shortcut}} while Dyna-Q could not.
+
+\hspace{0.7em}
+The explanation for this is that Dyna-Q+ \emph{tends to explore states that have not been revisited for a long time}, which helps it to find the shortcut. On the other hand, Dyna-Q tends to stick to the optimal path found before, which makes it unable to find the shortcut.
+
+\end{document}
+

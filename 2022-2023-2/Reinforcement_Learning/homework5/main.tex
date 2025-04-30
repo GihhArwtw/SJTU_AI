@@ -1,0 +1,99 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{mathrsfs}
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+\usepackage{bbm}
+\usepackage{subfigure}
+\usepackage{ulem}
+\usepackage{xcolor}
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newenvironment{disproof}{\begin{proof}[\noindent\it Disproof]}{\end{proof}}
+\newcommand{\staExp}[2]{\mathbb{E}_{#1}\left[#2\right]}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\bd}[1]{\boldsymbol{#1}}
+
+\allowdisplaybreaks[4]
+\setstretch{1.5}
+
+
+\title{\textbf{Reinforcement Learning Homework 04}}
+\author{Qiu Yihang}
+\date{May 2023}
+
+\begin{document}
+
+\maketitle
+
+\vspace{1em}
+\section{Implementation of TRPO and PPO algorithms}
+\vspace{1em}
+The source code is under directory \colorbox{lightgray}{$\mathtt{code}$}. The results and analyses are as follows.
+
+\vspace{1em}
+\subsection{TRPO with different trust region constraints}
+\vspace{1em}
+
+\hspace{1.8em}
+The performance of TRPO algorithms with different trust region constraints $\delta$ is as follows.
+
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[random seed=14985]{
+        \includegraphics[width=0.45\textwidth]{seed=14985/TRPO_vary_kl.pdf}
+    }
+    \subfigure[random seed=20210530]{
+        \includegraphics[width=0.45\textwidth]{seed=20210530/TRPO_vary_kl.pdf}
+    }
+
+    \caption{The performance of TRPO algorithms with different values of trust region constraints $\delta$ in environment $\mathtt{CartPole-v0}$.}
+\end{figure}
+
+It is plain to see that the trust region constraints with too small or too big values will lead to a decrease in performance, especially small $\delta$s. Small $\delta$s will keep the agent stuck in a certain policy and prevent it from exploring to a better one. On the other hand, big $\delta$s will make the agent act out of the relatively trusted region sometimes and thus lead to a minor decrease in performance. 
+
+The best performance is achieved when $\delta=0.0001$.
+
+\vspace{1em}
+\subsection{PPO with different fixed penalty coefficients}
+\vspace{1em}
+
+\hspace{1.8em}
+The performance of PPO algorithm with different fixed penalty coefficients $\beta$ is as follows.
+
+\begin{figure}[htbp]
+    \centering
+    \subfigure[random seed=14985]{
+        \includegraphics[width=0.45\textwidth]{seed=14985/PPO_vary_beta.pdf}
+    }
+    \subfigure[random seed=20210530]{
+        \includegraphics[width=0.45\textwidth]{seed=20210530/PPO_vary_beta.pdf}
+    }
+
+    \caption{The performance of PPO algorithms with different values of fixed penalty coefficients $\beta$ in environment $\mathtt{CartPole-v0}$.}
+\end{figure}
+
+It can be seen that penalty coefficients with too small or too big values will cause the performance to decrease. The reason is similar to that of TRPO algorithms. Small $\beta$s lead to greater tolerance on the KL divergence and the agent is more likely to fall into untrusted regions. Large $\beta$s lead to more strict constraints on the KL divergence and the agent is more likely to be stuck in a certain policy, which hurts the exploration and decreases the performance.
+
+The best performance is achieved when $\beta=10$.
+
+\vspace{1em}
+\subsection{The Similarity Between $\bd{\delta}$ of TRPO and $\bd{\beta}$ of PPO}
+\vspace{1em}
+
+\hspace{1.8em}
+The impacts of the two parameters are similar. Both $\delta$ in TRPO and $\beta$ in PPO adjusts how different the distribution of the new policy can be away from the old one. They help to explore policies in a relatively trusted region and balance the exploration and exploitation.
+
+\end{document}
+
