@@ -135,6 +135,9 @@ Note that this repository only includes notes and assignments of **some** course
 
 - Computer Vision（计算机视觉）
 - Mathematical Logic（数理逻辑）
+- Natural Language Processing（自然语言处理）
+- *Operating System（操作系统）[Notes are yet to be uploaded.]*
 - Deep Learning（深度学习）
 - Brain-Inspired Intelligence（类脑智能）
 - *Lectures on Frontiers of Artificial Intelligence_AIIA（人工智能前沿讲座）[Notes are yet to be uploaded.]*
+
