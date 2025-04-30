@@ -1,0 +1,413 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\usepackage{graphicx}
+\usepackage{proof}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.5}
+\title{\textbf{Mathematical Logic Homework 04}}
+\author{Qiu Yihang}
+\date{Nov.8-10, 2022}
+
+\begin{document}
+
+\maketitle
+
+\vspace{2.2em}
+\section{DNF and CNF Formalization}
+\vspace{1em}
+\subsection{DNF Formalization}
+\vspace{1em}
+\begin{solution}
+    The truth table of $\left(A\leftrightarrow B\right)\leftrightarrow C$ is as follows.
+
+    \begin{table}[htbp]
+        \centering
+        \setstretch{1.2}
+        \begin{tabular}{ccc|c}
+            \hline
+            $v(A)$ & $v(B)$ & $v(C)$ & $\bar{v}\left(\left(A\leftrightarrow B\right)\leftrightarrow C\right)$ \\
+            \hline
+            $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$ \\
+            $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{False}$ \\
+            $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{False}$ \\
+            $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{True}$ \\
+            $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{False}$ \\
+            $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{True}$ \\
+            $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{True}$ \\
+            $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{False}$ \\
+            \hline
+        \end{tabular}
+    \end{table}
+
+    \hspace{2.6em}
+    Thus, the DNF of $\left(A\leftrightarrow B\right)\leftrightarrow C$ is 
+
+    \vspace{-1.5em}
+    $$\underline{\boldsymbol{\left(A\land B\land C\right)\lor\left(A\land\neg B\land\neg C\right)\lor\left(\neg A\land B\land C\right)\lor\left(\neg A\land\neg B\land\neg C\right)}.}$$
+
+\vspace{-2.75em}
+\end{solution}
+
+\vspace{1em}
+\subsection{CNF Formalization}
+\vspace{1em}
+\begin{solution}
+    We can derive the CNF of $\left(A\leftrightarrow B\right)\leftrightarrow C$ from its DNF.
+
+    \vspace{-2.5em}
+    \begin{align*}
+        & \left(A\land B\land C\right)\lor\left(A\land\neg B\land\neg C\right)\lor\left(\neg A\land B\land C\right)\lor\left(\neg A\land\neg B\land\neg C\right)\\
+        |\!\!\!==\!\!\!|\ &\left(A\lor\left(A\land\neg B\land\neg C\right)\lor\left(\neg A\land B\land C\right)\lor\left(\neg A\land\neg B\land\neg C\right)\right)\\
+        & \land \left(B\lor\left(A\land\neg B\land\neg C\right)\lor\left(\neg A\land B\land C\right)\lor\left(\neg A\land\neg B\land\neg C\right)\right) \\
+        & \land \left(C\lor\left(A\land\neg B\land\neg C\right)\lor\left(\neg A\land B\land C\right)\lor\left(\neg A\land\neg B\land\neg C\right)\right) \\
+        |\!\!\!= =\!\!\!|\ & \qquad \cdots \\
+        |\!\!\!= =\!\!\!|\ & \left(A\lor A\lor\neg A\lor\neg A\right)\land\left(A\lor A\lor\neg A\lor\neg B\right)\land\left(A\lor A\lor\neg A\lor\neg C\right) \\
+        & \land\left(A\lor A\lor B\lor\neg A\right)\land\left(A\lor A\lor B\lor\neg B\right)
+        \lor\left(A\lor A\lor B\lor\neg C\right) \\
+        & \land\left(A\lor A\lor C\lor\neg A\right)\land\left(A\lor A\lor C\lor\neg B\right)\land\left(A\lor A\lor C\lor\neg C\right) \\
+        & \land\left(A\lor\neg B\lor\neg A\lor\neg A\right)\land\left(A\lor\neg B\lor\neg A\lor\neg B\right)\land\left(A\lor\neg B\lor\neg A\lor\neg C\right) \\
+        & \land\left(A\lor\neg B\lor B\lor\neg A\right)\land\left(A\lor\neg B\lor B\lor\neg B\right)
+        \lor\left(A\lor\neg B\lor B\lor\neg C\right) \\
+        & \land\left(A\lor\neg B\lor C\lor\neg A\right)\land\left(A\lor\neg B\lor C\lor\neg B\right)\land\left(A\lor\neg B\lor C\lor\neg C\right) \\
+        & \land\left(A\lor\neg C\lor\neg A\lor\neg A\right)\land\left(A\lor\neg C\lor\neg A\lor\neg B\right)\land\left(A\lor\neg C\lor\neg A\lor\neg C\right) \\
+        & \land\left(A\lor\neg C\lor B\lor\neg A\right)\land\left(A\lor\neg C\lor B\lor\neg B\right)\land\left(A\lor\neg C\lor B\lor\neg C\right) \\
+        & \land\left(A\lor\neg C\lor C\lor\neg A\right)\land\left(A\lor\neg C\lor C\lor\neg B\right)\land\left(A\lor\neg C\lor C\lor\neg C\right) \\
+        & \land\left(B\lor A\lor\neg A\lor\neg A\right)\land\left(B\lor A\lor\neg A\lor\neg B\right)\land\left(B\lor A\lor\neg A\lor\neg C\right) \\
+        & \land\left(B\lor A\lor B\lor\neg A\right)\land\left(B\lor A\lor B\lor\neg B\right)
+        \lor\left(B\lor A\lor B\lor\neg C\right) \\
+        & \land\left(B\lor A\lor C\lor\neg A\right)\land\left(B\lor A\lor C\lor\neg B\right)\land\left(B\lor A\lor C\lor\neg C\right) \\
+        & \land\left(B\lor\neg B\lor\neg A\lor\neg A\right)\land\left(B\lor\neg B\lor\neg A\lor\neg B\right)\land\left(B\lor\neg B\lor\neg A\lor\neg C\right) \\
+        & \land\left(B\lor\neg B\lor B\lor\neg A\right)\land\left(B\lor\neg B\lor B\lor\neg B\right)\land\left(B\lor\neg B\lor B\lor\neg C\right) \\
+        & \land\left(B\lor\neg B\lor C\lor\neg A\right)\land\left(B\lor\neg B\lor C\lor\neg B\right)\land\left(B\lor\neg B\lor C\lor\neg C\right) \\
+        & \land\left(B\lor\neg C\lor\neg A\lor\neg A\right)\land\left(B\lor\neg C\lor\neg A\lor\neg B\right)\land\left(B\lor\neg C\lor\neg A\lor\neg C\right) \\
+        & \land\left(B\lor\neg C\lor B\lor\neg A\right)\land\left(B\lor\neg C\lor B\lor\neg B\right)\land\left(B\lor\neg C\lor B\lor\neg C\right) \\
+        & \land\left(B\lor\neg C\lor C\lor\neg A\right)\land\left(B\lor\neg C\lor C\lor\neg B\right)\land\left(B\lor\neg C\lor C\lor\neg C\right) \\
+        & \land\left(C\lor A\lor\neg A\lor\neg A\right)\land\left(C\lor A\lor\neg A\lor\neg B\right)\land\left(C\lor A\lor\neg A\lor\neg C\right) \\
+        & \land\left(C\lor A\lor B\lor\neg A\right)\land\left(C\lor A\lor B\lor\neg B\right)
+        \lor\left(C\lor A\lor B\lor\neg C\right) \\
+        & \land\left(C\lor A\lor C\lor\neg A\right)\land\left(C\lor A\lor C\lor\neg B\right)\land\left(C\lor A\lor C\lor\neg C\right) \\
+        & \land\left(C\lor\neg B\lor\neg A\lor\neg A\right)\land\left(C\lor\neg B\lor\neg A\lor\neg B\right)\land\left(C\lor\neg B\lor\neg A\lor\neg C\right) \\
+        & \land\left(C\lor\neg B\lor B\lor\neg A\right)\land\left(C\lor\neg B\lor B\lor\neg B\right)\land\left(C\lor\neg B\lor B\lor\neg C\right) \\
+        & \land\left(C\lor\neg B\lor C\lor\neg A\right)\land\left(C\lor\neg B\lor C\lor\neg B\right)\land\left(C\lor\neg B\lor C\lor\neg C\right) \\
+        & \land\left(C\lor\neg C\lor\neg A\lor\neg A\right)\land\left(C\lor\neg C\lor\neg A\lor\neg B\right)\land\left(C\lor\neg C\lor\neg A\lor\neg C\right) \\
+        & \land\left(C\lor\neg C\lor B\lor\neg A\right)\land\left(C\lor\neg C\lor B\lor\neg B\right)\land\left(C\lor\neg C\lor B\lor\neg C\right) \\
+        & \land\left(C\lor\neg C\lor C\lor\neg A\right)\land\left(C\lor\neg C\lor C\lor\neg B\right)\land\left(C\lor\neg C\lor C\lor\neg C\right) \\
+        |\!\!\!==\!\!\!|\ &\left(A\lor B\lor C\right)\land\left(A\lor\neg B\lor\neg C\right)\land\left(\neg A\lor\neg B\lor C\right)\land\left(\neg A\lor B\lor\neg C\right)
+    \end{align*}
+
+    Thus, the CNF of $\left(A\leftrightarrow B\right)\leftrightarrow C$ is 
+    
+    \vspace{-1.5em}
+    $$\underline{\boldsymbol{\left(A\lor B\lor C\right)\land\left(A\lor\neg B\lor\neg C\right)\land\left(\neg A\lor\neg B\lor C\right)\land\left(\neg A\lor B\lor\neg C\right)}}$$
+
+    \vspace{-2.7em}
+\end{solution}
+
+\vspace{1em}
+\section{Problem 02}
+\vspace{1em}
+\begin{proof}
+    By Compactness Theorem, we know if $\Delta'$ is finitely satisfiable, $\Delta'$ is satisfiable.
+
+    \hspace{1.3em}
+    Since $\Sigma\cup\set{\neg\alpha}$ is not satisfiable, we know $\Sigma\cup\set{\neg\alpha}$ is not finitely satisfiable.
+
+    \hspace{1.3em}
+    i.e. exists a finite subset $\Delta^*\subset\Sigma\cup\set{\neg\alpha}$ s.t. $\Delta^*$ is not satisfiable.
+
+    \hspace{1.3em}
+    \textbf{CASE 01}. $\neg\alpha\in\Delta^*$. Let $\Delta^*=\Delta\cup\set{\neg\alpha}$. Then $\Delta\subset\Sigma$. 
+    
+    \hspace{6.6em}
+    We know $\Delta\cup\set{\neg\alpha}$ is not satisfiable $\Longleftrightarrow \Delta|\!\!\!=\alpha$.
+
+    \hspace{1.3em}
+    \textbf{CASE 02}. $\neg\alpha\notin\Delta^*$. Let $\Delta=\Delta^*\subset\Sigma$. Then $\Delta$ is not satisfiable. Thus, $\Delta|\!\!\!=\alpha$.
+
+    \hspace{1.3em}
+    In conclusion, there exists some finite set $\Delta$ s.t. $\Delta\subset\Sigma$.
+\end{proof}
+
+\vspace{1em}
+\section{Semantic Consequences of $\boldsymbol{\Sigma}$ is Effectively Decidable}
+\vspace{1em}
+\begin{proof}
+    Since $\Sigma$ is effectively enumerable, exists an algorithm $\mathcal{A}$ for enumerating members in $\Sigma$.
+    
+    \hspace{1.3em}
+    We can design an algorithm $\mathcal{B}$ as follows.
+
+    \vspace{-0.5em}
+    \begin{algorithm}
+        \setstretch{1.1}
+        \SetKwProg{function}{\\Algo.}{begin}{end}
+        \SetKwInOut{print}{Output}
+        
+	    \function{$\mathcal{B}$\\}
+	    {
+	    on \textbf{Input} $\alpha$\;
+	    \For{$n=1,2,3,...$}
+        {
+            Run $\mathcal{A}$ until the $n$-th output appears\;
+            Let the outputs of $\mathcal{A}$ be $\sigma_1,\sigma_2,...\sigma_n\in\Sigma$\;
+            Collect all sentence symbols appearing in these wff in the set $S$\;
+            Let $V\triangleq\set{f\mid f:S\to\set{\mathtt{True},\mathtt{False}}}$\;
+            $not\gets 0$\;
+            $yes\gets 0$\;
+            \For{$v\in V$}
+            {
+                \lIf{$\bar{v}(\neg\alpha)=\mathtt{False}$}{$not\gets not+1$}
+                \lIf{$\bar{v}(\alpha)=\mathtt{False}$}{$yes\gets yes+1$}
+            }
+            \lIf{$not==|V|$}{\qquad\textbf{Output:}"YES"}
+            \lIf{$yes==|V|$}{\qquad\textbf{Output:}"NO"}
+        }
+        }
+    \end{algorithm}
+
+    \hspace{1.3em}
+    Let the set of semantic consequences of $\Sigma$ be $\Gamma$.
+
+    \hspace{1.3em}
+    Now we prove $\mathcal{B}$ is an algorithm for effectively determining membership in $\Gamma$.
+
+    \hspace{1.3em}
+    \underline{First we prove the correctness}.
+
+    \hspace{1.3em}
+    If the algorithm returns "YES", then there exists a subset $\Delta=\set{\sigma_1,\sigma_2,...\sigma_n}\subset\Sigma$ s.t. for all truth assignment $v$ satisfying $\Delta$, $\bar{v}(\neg\alpha)=\mathtt{False} \Longrightarrow \Delta\nvDash\neg\alpha \Longrightarrow\Sigma\nvDash\neg\alpha$. Since for each wff $\alpha$, either $\Sigma\vDash\alpha$ or $\Sigma\vDash\neg\alpha$, we know $\Sigma\vDash\alpha$, i.e. $\alpha\in\Gamma$.
+
+    \hspace{1.3em}
+    If the algorithm returns "NO", then there exists a subset $\Delta=\set{\sigma_1,\sigma_2,...\sigma_n}\subset\Sigma$ s.t. for all truth assignment $v$ satisfying $\Delta$, $\bar{v}(\alpha)=\mathtt{False}\Longrightarrow\Delta\nvDash\alpha\Longrightarrow\Sigma\nvDash\alpha$, i.e. $\alpha\notin\Gamma$.
+
+    \hspace{1.3em}
+    Thus, the result of $\mathcal{B}$ is correct. \whiteqed
+
+    \vspace{1em}\hspace{1.3em}
+    \underline{Then we prove the algorithm will terminate within finite steps.}
+
+    \hspace{1.3em}
+    In the loop of $n$, since $S$ is finite, we know $\set{f\mid f:S\to\set{\mathtt{True},\mathtt{False}}}$ is finite. Calculating $\bar{v}(\neg\alpha)$ and $\bar{v}(\alpha)$ can terminate within finite steps. Thus, each loop will terminate within finite steps.
+    
+    \hspace{1.3em}
+    If $\alpha\in\Gamma$, then exists a finite subset $\Delta\subset\Sigma$ s.t. $\Delta\vDash\alpha$. Obvious there must exist some $k$ s.t. $\Delta\subset\set{\sigma_1,\sigma_2...\sigma_k}$. Then exists a $v$ satisfying $\set{\sigma_1,...\sigma_k}$ s.t. $\bar{v}(\alpha)=\mathtt{True}$. Thus, $\mathcal{B}$ will terminate within $k$ loops.
+
+    \hspace{1.3em}
+    If $\alpha\notin\Gamma$, since either $\Sigma\vDash\alpha$ or $\Sigma\vDash\neg\alpha$, we know $\Sigma\vDash\neg\alpha\Longrightarrow\neg\alpha\in\Gamma$. Thus, $\mathcal{B}$ will still terminate within $k$ loops.
+
+    \hspace{1.3em}
+    Thus, $\mathcal{B}$ will return a result within finite steps. \whiteqed
+
+    \vspace{1em} \hspace{1.3em}
+    In conclusion, $\Gamma$ is effectively decidable, 
+    
+    \hspace{1.3em}
+    i.e. semantic consequences of $\Sigma$ is effectively decidable.
+\end{proof}
+
+\vspace{1em}
+\section{Proof Trees}
+\vspace{1em}
+\subsection{$\boldsymbol{A\land(B\lor C)\to (A\land B)\lor (A\land C)}$}
+\vspace{1em}
+\begin{solution}
+    The proof tree is as follows.
+
+    \vspace{-1.5em}
+    \begin{align*}
+        \infer[\to\text{-I}]
+        {A\land(B\lor C)\to (A\land B)\lor (A\land C)}
+        {\infer[\lor\text{-E}]
+            {(A\land B)\lor (A\land C)}
+            {
+                \infer[\land\text{-E}]
+                {B\lor C}
+                {[A\land(B\lor C)]}
+                &
+                \quad
+                \infer[\lor\text{-I1}]
+                {(A\land B)\lor (A\land C)}
+                {
+                    \infer[\land\text{-I}]
+                    {A\land B}
+                    {
+                        \infer[\land\text{-E1}]
+                        {A}
+                        {[A\land(B\lor C)]}
+                        & \quad
+                        [B]
+                    }
+                }
+                &
+                \infer[\lor\text{-I1}]
+                {(A\land B)\lor (A\land C)}
+                {
+                    \infer[\land\text{-I}]
+                    {A\land C}
+                    {
+                        \infer[\land\text{-E1}]
+                        {A}
+                        {[A\land(B\lor C)]}
+                        & \quad
+                        [C]
+                    }
+                }
+            }
+        }
+    \end{align*}
+    
+\vspace{-3.6em}
+\end{solution}
+
+\vspace{1em}
+\subsection{$\boldsymbol{\neg\left(\neg A\lor\neg B\right)\to A\lor B}$}
+\vspace{1em}
+\begin{solution}
+    The proof tree is as follows.
+
+    \vspace{-1.5em}
+    \begin{align*}
+        \infer[\to\text{-I}]
+        {\neg\left(\neg A\lor\neg B\right)\to A\lor B}
+        {
+            \infer[\lor\text{-E}]
+            {A\lor B}
+            {
+                \left\{B\lor\neg B\right\}
+                &
+                \infer[\lor\text{-I2}]
+                {A\lor B}
+                {[B]}
+                &
+                \quad
+                \infer[\neg\text{-E}]
+                {
+                    A\lor B
+                }
+                {
+                    \infer[\lor\text{-I2}]
+                    {\neg A\lor\neg B}
+                    {[\neg B]}
+                    &
+                    \quad
+                    [\neg\left(\neg A\lor\neg B\right)]
+                }
+            }
+        }
+    \end{align*}
+
+\vspace{-3.3em}
+\end{solution}
+
+\vspace{1em}
+\subsection{$\boldsymbol{\left(\left(P\to Q\right)\to P\right)\to P}$}
+\vspace{1em}
+\begin{solution}
+    The proof tree is as follows.
+
+    \vspace{-1.5em}
+    \begin{align*}
+        \infer[\to\text{-I}]
+        {\left(\left(P\to Q\right)\to P\right)\to P}
+        {
+            \infer[\lor\text{-E}]
+            {P}
+            {
+                \left\{P\lor\neg P\right\}
+                &
+                [P]
+                &
+                \infer[\to\text{-E}]
+                {P}
+                {
+                    \infer[\to\text{-I}]
+                    {P\to Q}
+                    {
+                        \infer[\neg\text{-E}]
+                        {Q}
+                        {[P] & [\neg P]}
+                    }
+                    & 
+                    [\left(P\to Q\right)\to P]
+                }
+            }
+        }
+    \end{align*}
+
+\vspace{-3.3em}
+\end{solution}
+
+\vspace{1em}
+\section{Part of the Proof of the Soundness of Natural Deduction}
+\vspace{1em}
+\subsection{$\boldsymbol{\neg}$-I Case}
+\vspace{1em}
+\begin{proof}
+    We have $\set{\gamma_1,...\gamma_n,\beta}\vdash \delta\land\neg\delta$.
+
+    \hspace{1.3em}
+    By \textbf{Inductive Hypothesis}, $\set{\gamma_1,...\gamma_n,\beta}\vDash \delta\land\neg\delta$.
+
+    \hspace{1.3em}
+    i.e. for any truth assignment $v$ satisfying $\gamma_1,...\gamma_n,\beta$, $\bar{v}(\delta\land\neg\delta)=\mathtt{True}$. Thus, There exists no truth assignment $v$ satisfies $\gamma_1,...\gamma_n,\beta$.
+
+    \hspace{1.3em}
+    Therefore, $\set{\gamma_1,...\gamma_n,\beta}$ is not satisfiable. 
+    
+    \hspace{1.3em}
+    Assume $\set{\gamma_1,...\gamma_n}\nvDash\neg\beta$. For any truth assignment $v$ satisfying $\set{\gamma_1,...\gamma_n}$, $\bar{v}(\neg\beta)=\mathtt{False}$, i.e. $\bar{v}(\beta)=\mathtt{True}$, i.e. exists $v$ satisfying $\set{\gamma_1,...\gamma_n}$ s.t. $v$ satisfies $\beta$, i.e. $v$ satisfies $\set{\gamma_1,...\gamma_n,\beta}$. \underline{\textbf{Contradiction.}}
+
+    \hspace{1.3em}
+    Thus, $\set{\gamma_1,...\gamma_n}\vDash\neg\beta$.
+
+    \hspace{1.3em}
+    Since $\set{\gamma_1,...\gamma_n}\subset\Sigma$, we know $\Sigma\vDash\neg\beta$.
+\end{proof}
+
+\vspace{1em}
+\subsection{$\boldsymbol{\neg}$-E Case}
+\vspace{1em}
+\begin{proof}
+    We know $\set{\gamma_1,...\gamma_n}\vdash\beta$ and $\set{\sigma_1,...\sigma_m}\vdash\neg\beta$.
+
+    \hspace{1.3em}
+    By \textbf{Inductive Hypothesis}, $\set{\gamma_1,...\gamma_n}\vDash\beta$ and $\set{\sigma_1,...\sigma_m}\vDash\neg\beta$.
+
+    \hspace{1.3em}
+    Since $\set{\gamma_1,...\gamma_n}\subset\Sigma,\set{\sigma_1,...\sigma_m}\subset\Sigma$, we know $\Sigma\vDash\beta$ and $\Sigma\vDash\neg\beta$.
+    
+    \hspace{1.3em}
+    Thus, for any truth assignment $v$ satisfying $\Sigma$, $\bar{v}(\beta)=\bar{v}(\neg\beta)=\mathtt{True}$.
+
+    \hspace{1.3em}
+    Therefore, there exists no truth assignment $v$ satisfying $\Sigma$, i.e. $\Sigma$ is not satisfiable. 
+    
+    \hspace{1.3em}
+    Then for any wff $\delta$, $\Sigma\vDash\delta$.
+
+    \hspace{1.3em}
+    Thus, $\Sigma\vDash\alpha$.
+\end{proof}
+
+\end{document}

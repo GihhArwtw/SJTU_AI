@@ -133,7 +133,7 @@ Note that this repository only includes notes and assignments of **some** course
 *本学期开始为电子笔记，但有几节课没有很认真地在做笔记*
 
 - Computer Vision（计算机视觉）
-- Mathematical Logic（数理逻辑）
+- Mathematical Logics（数理逻辑）
 - Natural Language Processing（自然语言处理）
 - Operating System（操作系统）
 - Lectures on Frontiers of Artificial Intelligence_AIIA（人工智能前沿讲座）

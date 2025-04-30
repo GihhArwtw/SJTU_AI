@@ -1,0 +1,371 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\usepackage{graphicx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.5}
+\title{\textbf{Mathematical Logic Homework 02}}
+\author{Qiu Yihang}
+\date{Sept.28 - 30, 2022}
+
+\begin{document}
+
+\maketitle
+
+\vspace{3em}
+\section{The Set of Real Numbers in $\boldsymbol{(-1,0]}$ is Uncountable}
+\vspace{1em}
+\begin{proof}
+    Assume $R$ is countable. 
+    
+    \hspace{1.3em}
+    Then we can find a listing of $R$ without repetitions: $a_0, a_1, a_2, ... a_n, ...$ (which could be finite).
+
+    \hspace{1.3em}
+    Meanwhile, any real number in the interval $(-1,0]$ can be rewritten as a binary decimal, i.e. $-\left(\overline{0.h_0h_1h_2...h_m...}\right)_2$, where $h_i\in\set{0,1}, i\in\mathbb{N}$.
+    
+    \hspace{1.3em}
+    For infinite binary decimal, its fraction part is obvious a sequence only containing 0s and 1s. For finite binary decimal, we can convert it to an infinite sequence by adding infinite 0s at its end.
+
+    \hspace{1.3em}
+    Therefore, any number $a_i$ can be rewritten as $-\left(\overline{0.a_{i0}a_{i1}a_{i2}...a_{ik}...}\right)_2$, where $a_{ij}\in\set{0,1}, j\in\mathbb{N}$.
+
+    \vspace{1em} \hspace{1.3em}
+    Then we construct a real number $x$ by diagnal argument as follows. Let $x=-\left(\overline{0.x_0x_1x_2...x_k...}\right)_2$, where $x_i = 1-a_{ii}\in\set{0,1}. i\in\mathbb{N}.$
+
+    \hspace{1.3em}
+    To further clarify, an example is given as below.
+
+    \begin{table}[htbp]
+        \centering
+        \begin{tabular}{rcccccccccc}
+            $a_0=$ & $-0.$ & $\boldsymbol{0}$ & $1$ & $0$ & $1$ & $1$ & $0$ & $0$ & $0$ & \dots \\
+            $a_1=$ & $-0.$ & $1$ & $\boldsymbol{1}$ & $1$ & $0$ & $0$ & $0$ & $1$ & $1$ & \dots \\
+            $a_2=$ & $-0.$ & $0$ & $0$ & $\boldsymbol{1}$ & $1$ & $1$ & $1$ & $1$ & $1$ & \dots \\
+            $a_3=$ & $-0.$ & $1$ & $0$ & $0$ & $\boldsymbol{0}$ & $0$ & $0$ & $0$ & $0$ & \dots \\
+            \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+            $x=$ & $-0.$ & $\boldsymbol{1}$ & $\boldsymbol{0}$ & $\boldsymbol{0}$ & $\boldsymbol{1}$ & $1$ & $0$ & $0$ & $1$ & \dots \\
+        \end{tabular}
+    \end{table}
+    
+    \vspace{-0.75em} \hspace{1.3em}
+    Then we know $x\neq a_n$ for any $a_n$ in the listing. (Since the $(n+1)$-th bits are different).
+
+    \hspace{1.3em}
+    Therefore, $x\notin (-1,0].$ 
+    Meanwhile, by the construction of $x$, we know $x>-1$ and $x\le 0,$ i.e. $x\in(-1,0]$. \underline{\textbf{Contradiction.}}
+
+    \vspace{1em} \hspace{1.3em}
+    Thus, $R$ is uncountable.
+\end{proof}
+    
+\vspace{1em}
+\section{An Algorithm for Determining Membership in $\boldsymbol{\mathbbm{P}}$}
+\vspace{1em}
+\begin{solution}
+    We design the following algorithm.
+
+    \vspace{-0.5em}
+    \begin{algorithm}
+        \caption{Algorithm for Determining Membership in Set of Prime Numbers}
+        \setstretch{1.1}
+        \SetKwProg{function}{\\Algo.}{begin}{end}
+        \SetKwInOut{print}{Output}
+        
+	    \function{Prime Number Discriminator\\}
+	    {
+	    on \textbf{Input} $n$\;
+	    \lIf{$n=0$ or $n=1$}{\textbf{Output:}$\ $"NO"}
+	    \For{$i=2\to (n-1)$}
+	    {
+	        \lIf{$i|n$}{\qquad\textbf{Output:}$\ $"NO"}
+	    }
+	    \print{"YES";}
+	    }
+    \end{algorithm}
+    
+    \vspace{-0.9em} \hspace{1.3em}
+    Obvious the algorithm will halt within finite steps. Now we prove its correctness.
+    
+    \hspace{1.3em}
+    If the input $n$ is a prime number, we know for any $k\in\mathbb{N}, k\geq 2, k\neq n$, $k\nmid n.$ Thus, the algorithm will output "YES". 
+    
+    \hspace{1.3em}
+    If the input $n$ is 0 or 1, neither of which is not a prime number, the algorithm outputs "NO".
+    
+    \hspace{1.3em}
+    If the input $n$ is not a prime number, we know exists $k\in\mathbb{N}, 2\le k\le (n-1)$ s.t. $k\mid n$. Then the algorithm will output "NO" at $i=k$.
+    
+    \hspace{1.3em}
+    Thus, the algorithm can correctly determine the membership of the input in $\mathbb{P}$.
+    
+    \hspace{1.3em}
+    In fact, $i=2\to\lfloor\sqrt{n}\rfloor$ is enough for the for-loop, considering $k\mid n\Leftrightarrow \dfrac{n}{k}\Big| n.$
+    
+    \hspace{1.3em}
+    Therefore, the \textbf{Algorithm 1} is an algorithm for determining membership in $\mathbb{P}$.
+\end{solution}
+
+\vspace{1em}
+\section{An Algorithm For Enumerating Prime Numbers}
+\vspace{1em}
+\begin{solution}
+    Based on the \textbf{Algorithm 1}, we design the algorithm as follows.
+    
+    \vspace{-0.5em}
+    \begin{algorithm}
+        \caption{Algorithm for Enumerating Prime Numbers}
+        \setstretch{1.1}
+        \SetKwProg{algo}{\\Algo.}{begin}{end}
+        \SetKwInOut{print}{Output}
+        
+	    \algo{Prime Number Enumerator\\}
+	    {
+	    \For{$n=0,1,2,...$}
+	    {
+            Run \textit{Prime Number Discriminator} on $n$\;
+	        \lIf{the result is \textsc{"YES"}}{\qquad\textbf{print:}$\ n$}
+	    }
+	    }
+    \end{algorithm}
+    
+    \vspace{-0.9em}\hspace{1.3em}
+    Let the numbers listed by the algorithm above be $a_0,a_1,a_2,...a_n,...$.
+    
+    \hspace{1.3em}
+    For any $i\in\mathbb{N},$ $a_i$ is a prime number, which is guaranteed by the correctness of \textbf{Algorithm 1}.
+    
+    \hspace{1.3em}
+    For any prime number $p$, let $p$ be the $k$-th smallest prime number. Then exists $k$ s.t. $p=a_k$.
+    
+    \hspace{1.3em}
+    Thus, \textbf{Algorithm 2} is an algorithm for enumerating prime numbers.    
+\end{solution}
+
+\vspace{1em}
+\section{Range of Total Function $\boldsymbol{f}$ is Effectively Decidable}
+\vspace{1em}
+\begin{proof}
+    Since $f$ is a total function, we know $\mathtt{domain}(f)=\mathbb{N}$, i.e. for any $n\in\mathtt{N}, f(n)$ is defined.
+    
+    \hspace{1.3em}
+    Meanwhile, $f$ is effectively computable.
+    
+    \hspace{1.3em}
+    Then exists an algorithm $\mathcal{A}$ s.t. on input $n$, $\mathcal{A}$ prints $f(n)$ within finite steps.
+    
+    \hspace{1.3em}
+    Considering $f$ is strictly increasing, we know $x\in\mathtt{range}(f) \Longleftrightarrow $ exists $n\in\mathbb{N}$ s.t. $f(n)=x$ while $x\notin\mathtt{range}(f) \Longleftrightarrow $ exists $n\in\mathbb{N}$ s.t. $f(n)<x, f(n+1)>x$.
+
+    \vspace{1em} \hspace{1.3em}
+    Thus, we can construct an algorithm for determining membership in $\mathtt{range}(f)$ as follows.
+
+    \vspace{-0.5em}
+    \begin{algorithm}
+        \caption{Algorithm for Determining Membership in $\mathtt{range}(f)$}
+        \setstretch{1.1}
+        \SetKwProg{algo}{\\Algo.}{begin}{end}
+        \SetKwInOut{print}{Output}
+        
+	    \algo{Strictly Increasing Total Function Range Discriminator\\}
+	    {
+        on \textbf{Input} $n$\;
+        Run $\mathcal{A}$ on $0$; \quad\tcp{Since $f$ is total, $\mathcal{A}$ will terminate in finite steps.}
+        \lIf{the result $=n$}{\quad\textbf{Output: }"YES"}
+        \lIf{the result $>n$}{\quad\textbf{Output: }"NO"}
+	    \For{$i=1,2,...$}
+	    {
+            Run $\mathcal{A}$ on $i$; \quad\tcp{Since $f$ is total, $\mathcal{A}$ will terminate in finite steps.}
+            \lIf{the result $=n$}{\quad\textbf{Output: }"YES"}
+            \lIf{the result $>n$}{\quad\textbf{Output: }"NO"}
+	    }
+
+        }
+    \end{algorithm}
+    
+    \vspace{-0.9em} \hspace{1.3em}
+    Now we prove the algorithm above is one for determining membership in $\mathtt{range}(f)$.
+
+    \vspace{1em} \hspace{1.3em}
+    \underline{First we prove that for any input $n\in\mathbb{N}$, the algorithm will halt within finite steps.}
+    
+    \hspace{1.3em}
+    Each time we run $\mathcal{A}$, it will terminate in finite steps. 
+    
+    \hspace{1.3em}
+    Meanwhile, for input $n\in\mathbb{N}$, we run $\mathcal{A}$ for at most $n$ times. Otherwise, exists $x\in\mathbb{N}$ s.t. $f(x)\geq f(x+1)$, which contradicts
+    to that $f$ is strictly increasing.
+
+    \hspace{1.3em}
+    Thus, on any input $n\in\mathbb{N}$, the algorithm will terminate within finite steps. \whiteqed
+
+    \vspace{1em} \hspace{1.3em}
+    \underline{Then we prove the correctness of the algorithm.}
+    
+    \hspace{1.3em}
+    When the algorithm returns "YES", either $f(0)=\mathcal{A}(0)=n\in\mathtt{range}(f)$ or exists a number $i\in\mathbb{N}$ s.t. $f(i)=\mathcal{A}(i)=n\in\mathtt{range}(f)$. Correct.
+
+    \hspace{1.3em}
+    When the algorithm returns "NO", there exists two cases. 
+    
+    \hspace{1.3em}
+    \textbf{CASE 01}. $f(0)>n$. Then for any $i\in\mathbb{N}$, $f(i)>f(0)>n$. Thus, $n\notin\mathtt{range}(f)$.
+
+    \hspace{1.3em}
+    \textbf{CASE 02}. $f$ terminates at $i=k$. Then we know for $i<k$, $f(i)<n$ while $f(k)>n.$ Thus, exists $x=k-1\in\mathbb{N}$ s.t. $f(x)<k<f(x+1)$, i.e. $n\notin\mathtt{range}(f).$
+
+    \hspace{1.3em}
+    In conclusion, \textbf{Algorithm 3} gives the correct result. \whiteqed
+
+    \vspace{1em} \hspace{1.3em}
+    Therefore, \textbf{Algorithm 3} is an algorithm for determining membership in $\mathtt{range}(f)$.
+\end{proof}
+
+\vspace{1em}
+\section{$\boldsymbol{A}$ is Effectively Decidable}
+\vspace{1em}
+\begin{proof}
+    $A$ is effectively enumerable $\Longrightarrow$ exists algorithm $\mathcal{A}$ for enumerating members in $A$.
+
+    \hspace{1.3em}
+    $\mathbb{N}\setminus A$ is effectively enumerable $\Longrightarrow$ exists algorithm $\mathcal{B}$ for enumerating members in $\mathbb{N}\setminus A$.
+
+    \hspace{1.3em}
+    Let the output of $\mathcal{A}$ and $\mathcal{B}$ be $a_0,a_1,...a_n,...$ and $b_0,b_1,...b_n,...$ respectively. 
+    
+    \hspace{1.3em}
+    Then we know
+
+    \vspace{-0.6em}
+    \begin{itemize}
+        \setstretch{1.1}
+        \item[] \begin{itemize}
+            \item[$\bullet$] $a\in A\Rightarrow a=a_n$ for some $n\in\mathbb{N}$, i.e. $a$ will show up in the output of $\mathcal{A}$ after finite steps.
+            \item[$\bullet$] $a\in \mathbb{N}\setminus A \Rightarrow a=b_n$ for some $n\in\mathbb{N}$, i.e. $a$ will show up in the output of $\mathcal{B}$ after finite steps.
+        \end{itemize}
+    \end{itemize}
+
+    \vspace{0.5em} \hspace{1.3em}
+    Then we con construct an algorithm $\mathcal{C}$ for determining membership in $A$ as follows.
+
+    \vspace{-0.5em}
+    \begin{algorithm}
+        \caption{Algorithm for Determining Membership in $A$}
+        \setstretch{1.1}
+        \SetKwProg{algo}{\\Algo.}{begin}{end}
+        \SetKwInOut{print}{Output}
+        
+	    \algo{Algorithm $\mathcal{C}$\\}
+	    {
+        on \textbf{Input} $n$\;
+        \For{$i=1,2,...$}
+        {
+            Run $\mathcal{A}$ until it prints the $i$-th number\;
+            \lIf{the $i$-th output $=n$}{\qquad \textbf{Output: }"YES"}
+            Run $\mathcal{B}$ until it prints the $i$-th number\;
+            \lIf{the $i$-th output $=n$}{\qquad \textbf{Output: }"NO"}
+        }
+        }
+    \end{algorithm}
+
+    \vspace{-0.9em} \hspace{1.3em}
+    Now we prove $\mathcal{C}$ is an algorithm for determining membership in $A$.
+
+    \hspace{1.3em}
+    When $n\in A$, we know exists $k$ s.t. $a_k=n$. Thus, $\mathcal{C}$ will terminate when $i=k$ with "YES", i.e. $\mathcal{C}$ returns "YES" within finite steps.
+
+    \hspace{1.3em}
+    When $n\in\mathbb{N}\setminus A$, we know exists $k$ s.t. $b_k=n.$ Thus, $\mathcal{C}$ will terminate when $i=k$ with "NO", i.e. $\mathcal{C}$ returns "NO" within finite steps.
+
+    \hspace{1.3em}
+    Thus, $\mathcal{C}$ is an algorithm for determining membership in $A$.
+
+    \hspace{1.3em}
+    Therefore, $A$ is effectively deicidable.
+\end{proof}
+
+\vspace{5em}
+\section{$\boldsymbol{P}$ is Effectively enumerable}
+\vspace{1em}
+\begin{solution}
+    $P=\set{n\in\mathbb{N}\mid \forall x<n, x\in R}$.
+
+    \hspace{2.6em}
+    Since $R$ is effectively enumerable, there exists algorithm $\mathcal{A}$ for enumerating members of $R$.
+
+    \hspace{2.6em}
+    Then we can construct an algorithm $\mathcal{A}'$ for listing members in $P$ as follows.
+
+    \newpage
+
+    \vspace{-0.5em}
+    \begin{algorithm}
+        \caption{Algorithm for Enumerating Members in $P$}
+        \setstretch{1.1}
+        \SetKwProg{algo}{\\Algo.}{begin}{end}
+        \SetKwInOut{print}{Output}
+        
+	    \algo{Algorithm $\mathcal{A'}$\\}
+        {
+        $S\gets\varnothing$\;
+        \textbf{print: }$0$\;
+        \For{$i=1,2,3,...$}
+        {
+            Continue running $\mathcal{A}$ until it prints the $i$-th number $a_{i}$\;
+            $S\gets S\cup\set{a_i}$\;
+            \For {$j=0,1,2,...$}
+            {
+                \lIf{$j\notin S$}{\textbf{break}}
+                \textbf{print: }$j+1$\;
+            }
+        }
+        }
+    \end{algorithm}
+
+    \vspace{-0.9em} \hspace{1.3em}
+    Now we prove $\mathcal{A'}$ is an algorithm for enumerating members in $P$.
+
+    \hspace{1.3em}
+    Let the output of $\mathcal{A'}$ be $p_0,p_1,p_2,...p_n,...$. Obvious $p_0=0$.
+
+    \hspace{1.3em}
+    When $n=0$, $p_n=0$. $0\in P$.
+    
+    \hspace{1.3em}
+    For any $n\in\mathbb{N}, n\geq 1$, by the process of algorithm, we know $0,1,...,(p_n-1)\in S$. Meanwhile, $S\subset R$. Thus, $p_n\in P$.
+
+    \hspace{1.3em}
+    Suppose $x\in R$ will appear in the output of $\mathcal{A}$ after $\mathtt{num}(x)$ steps. 
+
+    \hspace{1.3em}
+    Then for any $a\in P$, we know for any $x\in\mathbb{N}, x<a \Rightarrow x\in R$, i.e. $x$ will appear in the output of $\mathcal{A}$ within finite steps. Thus, $a$ will appear in the output of $\mathcal{A'}$ within $\sum_{k\in\mathbb{N},k<a}\mathtt{num}(k)$ steps, i.e. within finite steps.
+
+    \hspace{1.3em}
+    Therefore, $\mathcal{A'}$ is an algorithm for listing the members in $P$.
+
+    \hspace{1.3em}
+    Thus, $P$ is effectively enumerable.
+\end{solution}
+
+
+\end{document}

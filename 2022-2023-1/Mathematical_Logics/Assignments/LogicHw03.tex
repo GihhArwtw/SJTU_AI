@@ -1,0 +1,429 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\usepackage{graphicx}
+\usepackage{mathabx}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.5}
+\title{\textbf{Mathematical Logic Homework 03}}
+\author{Qiu Yihang}
+\date{Oct.21, 2022}
+
+\begin{document}
+
+\maketitle
+
+\vspace{2.2em}
+\section{The Binary Relation of Membership in Effectively Decidable Subset of $\boldsymbol{\mathbbm{N}}$ is Not Effectively Decidable}
+\vspace{1em}
+\begin{proof}
+    Assume $B$ is effectively decidable.
+    
+    \hspace{1.3em}
+    Then exists an algorithm $\mathcal{B}$ for determining the membership of input $(m,n)$ in $B$.
+
+    \hspace{1.3em}
+    Since $A_0,A_1,...,A_n,...$ is a listing of all effectively decidable sets of $\mathbbm{N}$, we know there exists algorithms $\mathcal{A}_0, \mathcal{A}_1,...,\mathcal{A}_n,...$ for determining the membership in $A_0,A_1,...,A_n,...$. 
+    
+    \hspace{1.3em}
+    We can construct a subset $A^*$ of $\mathbbm{N}$ as follows. For any number $n\in\mathbbm{N}$, 
+
+    \vspace{-1.2em}
+    $$
+    \left\{
+        \begin{array}{rl}
+            n\notin A^*, & \text{if algorithm }\mathcal{B}\text{ returns "YES" on input }(n,n) \\
+            n\in A^*, & \text{if algorithm }\mathcal{B}\text{ returns "NO" on input }(n,n)
+        \end{array}
+    \right.
+    $$
+
+    \hspace{1.3em}
+    Now we prove $A^*$ is an effectively decidable. We can construct the following algorithm $\mathcal{A}^*$.
+    
+    \vspace{-1em}
+    \begin{algorithm}
+        \setstretch{1.1}
+        \SetKwProg{algo}{\\Algo.}{begin}{end}
+        \SetKwInOut{print}{Output}
+        
+	    \algo{$\mathcal{A}^*$\\}
+	    {
+        on \textbf{Input} $n$\;
+        Find $\mathcal{A}_n$ in the listing $\mathcal{A}_0,\mathcal{A}_1,...,\mathcal{A}_m,...$ and run algorithm $\mathcal{A}_n$ on $n$\;
+        \leIf{the result is "YES"}
+        {\quad\textbf{Output: }"NO"\quad}
+        {\quad\textbf{Output: }"YES"}
+        }
+    \end{algorithm}
+
+    \vspace{-1.5em}\hspace{6em}
+    $n\in A^*\Leftrightarrow \mathcal{A}_n$ on input $n$ returns "NO" $\Leftrightarrow \mathcal{A}^*$ on input $n$ returns "YES".
+
+    \hspace{6em}
+    $n\notin A^*\Leftrightarrow \mathcal{A}_n$ on input $n$ returns "YES" $\Leftrightarrow \mathcal{A}^*$ on input $n$ returns "NO".
+
+    \hspace{1.3em}
+    Thus, $\mathcal{A}^*$ determines the membership in $A^*$, i.e. $A^*$ is an effectively decidable subset of $\mathbbm{N}$.
+
+    \hspace{1.3em}
+    Since $A_0,A_1,...,A_n,...$ is a listing of \underline{\textit{all}} effectively decidable subsets of $\mathbbm{N}$, exists $k\in\mathbbm{N}$ s.t. $A^*=A_k$. Consider the membership of $k$ in $A^*$.
+
+    \hspace{1.3em}
+    When $k\in A^*$, $k\in A^*\Rightarrow\mathcal{A}^*$ returns "YES" on $k\Rightarrow\mathcal{A}_k$ returns "NO" on $k\Rightarrow k\notin A_k\Rightarrow k\notin A^*.$
+
+    \hspace{1.3em}
+    When $k\notin A^*$, 
+    $k\notin A^*\Rightarrow\mathcal{A}^*$ returns "NO" on $k\Rightarrow\mathcal{A}_k$ returns "YES" on $k\Rightarrow k\in A_k\Rightarrow k\in A^*.$
+    
+    \hspace{1.3em}
+    \underline{\textbf{Contradiction.}}
+    
+    \hspace{1.3em}
+    Thus, $B$ is \underline{\textbf{not}} effectively decidable.
+\end{proof}
+
+\section{For any Wff $\boldsymbol{\alpha}$, $\boldsymbol{s(\alpha) = 1+c(\alpha)}$}
+\vspace{1em}
+\begin{proof}
+    Proof by induction.
+
+    \hspace{1.3em}
+    $S=\set{\alpha\mid\alpha\text{ is a wff and $s(\alpha)=1+c(\alpha)$.}}$
+
+    \hspace{1.3em}
+    Now we prove $S=$ the set of all wffs.
+
+    \hspace{1.3em}
+    \underline{\textbf{BASE CASE.}} $\alpha=A$, where $A$ is a sentence symbol. 
+    
+    \hspace{1.3em}
+    $c(\alpha)=0, s(\alpha)=1.$ Thus, $s(\alpha)=1+c(\alpha)$ holds, i.e. $\alpha\in S$.
+
+    \hspace{1.3em}
+    \underline{\textbf{INDUCTIVE CASE.}}
+
+    \hspace{1.3em}
+    (1) $\alpha=(\neg\beta)$. Obvious $s(\alpha)=s(\beta), c(\alpha)=c(\beta)$. Assume $\beta\in S$.
+
+    \hspace{7.7em}
+    Then $s(\alpha)=s(\beta)=1+c(\beta)=1+c(\alpha)$. Thus, $\alpha\in S$. \whiteqed
+
+    \hspace{1.3em}
+    (2) $\alpha=(\beta\land\gamma)$. Then $s(\alpha)=s(\beta)+s(\gamma), c(\alpha)=c(\beta)+c(\gamma)+1$.
+
+    \hspace{8.8em}
+    Assume $\beta,\gamma\in S$.
+    Then $s(\alpha)=s(\beta)+s(\gamma)=c(\beta)+1+c(\gamma)+1=1+c(\alpha)$.
+
+    \hspace{8.8em}
+    Thus, $\alpha\in S$. \whiteqed
+
+    \hspace{1.3em}
+    (3) Similarly, for cases where $\alpha=(\beta\lor\gamma)$ or $\alpha=(\beta\to\gamma)$ or $\alpha=(\beta\leftrightarrow\gamma)$, 
+
+    \hspace{2.9em}
+    when $\beta,\gamma\in S$, $s(\alpha)=s(\beta)+s(\gamma)=1+c(\beta)+1+c(\gamma)=1+c(\alpha)$.
+
+    \hspace{2.9em}
+    Thus, $\alpha\in S$. \whiteqed
+
+    \vspace{1em} \hspace{1.3em}
+    Therefore, $S=$ the set of all wffs.
+
+    \hspace{1.3em}
+    Thus, for any wff $\alpha$, $s(\alpha)=1+c(\alpha)$, i.e. the number of occurrences of sentence symbols in $\alpha$ is 1 greater than the number of binary connectives in $\alpha$.
+\end{proof}
+
+\vspace{1em}
+\section{Parsing Tree of a Wff}
+\vspace{1em}
+\begin{solution}
+    The resulting parse tree is as follows.
+
+    \begin{figure}[htbp]
+    	\centering
+    	{\includegraphics[width=0.5\textwidth]{LogicHw03-3.pdf}}
+        \caption{Parse Tree}
+    \end{figure}
+
+    \vspace{-0.5em} \hspace{2.6em}
+    How the algorithm constructs the parse tree above is explained as follows.
+    
+    \hspace{2.6em}
+    First create a single node $\left(\left(A\lor\left(B\land C\right)\right)\leftrightarrow\left(\left(A\lor B\right)\land\left(A\lor C\right)\right)\right)$.
+
+    \hspace{2.6em}
+    The only existing leaf node is not a sentence symbol. Since the second symbol is not $\neg$, 
+    find 
+    
+    $\left(A\lor\left(B\land C\right)\right)$ followed by $\leftrightarrow$. The remaining part is $\left(\left(A\lor B\right)\land\left(A\lor C\right)\right)$. Create two children.
+
+    \hspace{2.6em}
+    Leaf node $\left(A\lor\left(B\land C\right)\right)$ is not a sentence symbol. Since the second symbol is not $\neg$, find $A$ 
+    
+    and $\left(B\land C\right)$. Create two children.
+
+    \hspace{2.6em}
+    Leaf node $\left(\left(A\lor B\right)\land\left(A\lor C\right)\right)$ is not a sentence symbol. Since the 2nd symbol is not $\neg$, 
+    
+    find $\left(A\lor B\right)$ and $\left(A\lor C\right)$. Create two children.
+
+    \hspace{2.6em}
+    Leaf node $A$ is a sentence symbol.
+
+    \hspace{2.6em}
+    Leaf node $\left(B\land C\right)$ is not a sentence symbol. Since the 2nd symbol is not $\neg$, find $B$ and $C$. 
+    
+    \hspace{2.6em}
+    Create two children.
+
+    \hspace{2.6em}
+    Leaf node $\left(A\lor B\right)$ is not a sentence symbol. Since the 2nd symbol is not $\neg$, find $A$ and $B$. 
+    
+    \hspace{2.6em}
+    Create two children.
+
+    \hspace{2.6em}
+    Leaf node $\left(A\lor C\right)$ is not a sentence symbol. Since the 2nd symbol is not $\neg$, find $A$ and $C$. 
+    
+    \hspace{2.6em}
+    Create two children.
+
+    \hspace{2.6em}
+    All leaf nodes $A,B,C,A,B,A,C$ are sentence symbols. 
+    
+    \hspace{2.6em}
+    Terminate.
+\end{solution}
+
+\vspace{1em}
+\section{Problem 4}
+\vspace{1em}
+\subsection{Whether $\boldsymbol{(P\land Q)\to R\vDash(P\to R)\lor(Q\to R)}$ or not}
+\vspace{1em}
+\begin{solution}
+    $(P\land Q)\to R\vDash(P\to R)\lor(Q\to R)$. The proof is as follows.
+
+    \hspace{2.6em}
+    Under truth assignment $v$, 
+
+    \vspace{-2em}
+    \begin{align*}
+        &\bar{v}\big[(P\to R)\lor(Q\to R)\big]=\mathtt{False} \\
+        \text{\textbf{only if.}}\quad &\bar{v}(P\to R)=\mathtt{False}\text{ and }\bar{v}(Q\to R)=\mathtt{False} \\
+        \text{\textbf{only if.}}\quad &v(P)=v(Q)=\mathtt{True}, v(R)=\mathtt{False}.
+    \end{align*}
+    
+    \hspace{2.6em}
+    $v$ does not satisfy $((P\land Q)\to R)$, given that $\bar{v}\big[((P\land Q)\to R)\big]=\mathtt{False}$.
+
+    \vspace{1em} \hspace{2.6em}
+    Thus, truth assignments that do not satisfy $(P\to R)\lor(Q\to R)$ 
+    
+    \hspace{2.6em}
+    \textbf{only if.} they do not satisfy $((P\land Q)\to R)$, 
+    
+    \hspace{5em}
+    i.e. truth assignments satisfying $((P\land Q)\to R)$ satisfies $(P\to R)\lor(Q\to R)$. 
+
+    \vspace{1em} \hspace{2.6em}
+    Therefore, \underline{$\boldsymbol{(P\land Q)\to R}$ \textbf{tautologically implies} $\boldsymbol{(P\to R)\lor(Q\to R)}$}.
+\end{solution}
+
+\vspace{1em}
+\subsection{Whether $\boldsymbol{(P\land Q)\to R\ |\!\!\!==\!\!\!|\ \vDash \Dashv (P\to R)\lor(Q\to R)}$ or not}
+\vspace{1em}
+\begin{solution}
+    $(P\land Q)\to R\ |\!\!\!==\!\!\!|\ (P\to R)\lor(Q\to R)$. The proof is as follows.
+
+    \hspace{2.6em}
+    The truth table of $(P\land Q)\to R$ and $(P\to R)\lor(Q\to R)$ is as follows.
+
+    \begin{table}[htbp]
+        \centering
+        \setstretch{1.2}
+        \begin{tabular}{ccc|c|c}
+            \hline
+            $v(P)$ & $v(Q)$ & $v(R)$ & $\bar{v}((P\land Q)\to R)$ & $\bar{v}((P\to R)\lor(Q\to R))$ \\
+            \hline
+            $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$ \\
+            $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{False}$ \\
+            $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$ \\
+            $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{True}$ \\
+            $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$ \\
+            $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{True}$ \\
+            $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$ \\
+            $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{True}$ \\
+            \hline
+        \end{tabular}
+    \end{table}
+
+    \vspace{-0.5em} \hspace{2.6em}
+    Thus, under any truth assignment $v$, $\bar{v}\big[(P\land Q)\to R\big]=\bar{v}\big[(P\to R)\lor(Q\to R)\big]$.
+
+    \hspace{2.6em}
+    Therefore, any truth assignment satisfying $(P\land Q)\to R$ satisfies $(P\to R)\lor(Q\to R)$ while any truth assignment satisfying $(P\to R)\lor(Q\to R)$ satisfies $(P\land Q)\to R$.
+
+    \vspace{1em} \hspace{2.6em}
+    Thus, \underline{$\boldsymbol{(P\land Q)\to R}$ \textbf{is tautologically equivalent to} $\boldsymbol{(P\to R)\lor(Q\to R)}$.}
+\end{solution}
+
+\vspace{5em}
+\section{Problem 5}
+\vspace{1em}
+\subsection{$\boldsymbol{((P\to Q)\to P)\to P}$ Is a Tautology}
+\vspace{1em}
+\begin{solution}
+    $((P\to Q)\to P)\to P$ is a tautology. The proof is as follows.
+
+    \hspace{2.6em}
+    The truth table of $((P\to Q)\to P)\to P$ is as follows.
+
+    \begin{table}[htbp]
+        \centering
+        \setstretch{1.2}
+        \begin{tabular}{cc|cc|c}
+            \hline
+            $v(P)$ & $v(Q)$ & $\bar{v}[P\to Q]$ & $\bar{v}\big[(P\to Q)\to P\big]$ & $\bar{v}\big[((P\to Q)\to P)\to P\big]$\\
+            \hline
+            $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$\\
+            $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{True}$\\
+            $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{True}$\\
+            $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{True}$\\
+            \hline
+        \end{tabular}
+    \end{table}
+
+    \hspace{2.6em}
+    Thus, for any truth assignment $v$, $\bar{v}\big[((P\to Q)\to P)\to P\big]=\mathtt{True}$.
+
+    \hspace{2.6em}
+    Therefore, $((P\to Q)\to P)\to P$ \underline{\textbf{is a tautology.}}
+\end{solution}
+
+\vspace{1em}
+\subsection{$\boldsymbol{(A\leftrightarrow B)\to\neg((A\to B)\to\neg(B\to A))}$ Is a Tautology}
+\vspace{1em}
+\begin{solution}
+    $(A\leftrightarrow B)\to\neg((A\to B)\to\neg(B\to A))P$ is a tautology. The proof is as follows.
+
+    \hspace{2.6em}
+    The truth table of $(A\leftrightarrow B)\to\neg((A\to B)\to\neg(B\to A))$ is as follows.
+
+    \begin{table}[htbp]
+        \centering
+        \setstretch{1.2}
+        \begin{tabular}{cc|c}
+            \hline
+            $v(A)$ & $v(B)$ & $\bar{v}\big[(A\leftrightarrow B)\to\neg((A\to B)\to\neg(B\to A))\big]$\\
+            \hline
+            $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$\\
+            $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{True}$\\
+            $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{True}$\\
+            $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{True}$\\
+            \hline
+        \end{tabular}
+    \end{table}
+
+    \hspace{2.6em}
+    Thus, for any truth assignment $v$, $\bar{v}\big[(A\leftrightarrow B)\to\neg((A\to B)\to\neg(B\to A))\big]=\mathtt{True}$.
+
+    \hspace{2.6em}
+    Therefore, $(A\leftrightarrow B)\to\neg((A\to B)\to\neg(B\to A))$ \underline{\textbf{is a tautology.}}
+\end{solution}
+
+\vspace{3em}
+\section{Problem 6}
+\vspace{1em}
+\subsection{If $\boldsymbol{\Sigma\vDash\alpha}$ Then For Any $\boldsymbol{\beta}$, $\boldsymbol{\Sigma\vDash\beta\to\alpha}$}
+\vspace{1em}
+\begin{proof}
+    $\Sigma\vDash\alpha\Longrightarrow$ for any truth assignment $v$ satisfying $\Sigma$, $\bar{v}(\alpha)=\mathtt{True}$.
+
+    \hspace{4em}
+    $\Longrightarrow$ for any $\beta$, for any truth assignment $v$ satisfying $\Sigma$, $\bar{v}(\beta\to\alpha)=\mathtt{True}$. 
+    
+    \hspace{6em}
+    ( Since when $\bar{v}(\alpha)=\mathtt{True}$, either $\bar{v}(\beta)=\mathtt{True}$ or $\mathtt{False}$, $\bar{v}(\beta\to\alpha)=\mathtt{True}$. )
+
+    \hspace{4em}
+    $\Longrightarrow$ for any $\beta$, for any truth assignment $v$ satisfying $\Sigma$, $v$ satisfies $\beta\to\alpha$. 
+
+    \hspace{4em}
+    $\Longrightarrow$ for any $\beta,\ \underline{\boldsymbol{\Sigma\vDash\beta\to\alpha}}$. 
+\end{proof}
+
+\vspace{1em}
+\subsection{$\boldsymbol{\Sigma,\beta\vDash\alpha\text{ iff. }\Sigma\vDash\beta\to\alpha}$}
+\vspace{1em}
+\begin{proof}
+    First we prove $\Sigma,\beta\vDash\alpha\Longrightarrow\Sigma\vDash\beta\to\alpha$.
+
+    \hspace{1.3em}
+    $\Sigma,\beta\vDash\alpha\Longrightarrow$ for any truth assignment $v$ satisfying $\Sigma$ and $\beta$, $\bar{v}(\alpha)=\mathtt{True}$.
+
+    \hspace{5.1em}
+    $\Longrightarrow$ for any truth assignment $v$ satisfying $\Sigma$ s.t. $\bar{v}(\beta)=\mathtt{True}$, we have $\bar{v}(\alpha)=\mathtt{True}$.
+
+    \hspace{5.1em}
+    $\Longrightarrow$ for any truth assignment $v$ satisfying $\Sigma$, $\bar{v}(\beta\to\alpha)=\mathtt{True}$.
+
+    \hspace{7em}
+    ( Since for truth assignment $v$ satisfying $\Sigma$,
+
+    \hspace{7.6em}
+    When $\bar{v}(\beta)=\mathtt{False},$ either $\bar{v}(\alpha)=\mathtt{True}$ or $\mathtt{False}$, $\bar{v}(\beta\to\alpha)=\mathtt{True}$.
+
+    \hspace{7.6em}
+    When $\bar{v}(\beta)=\mathtt{True}\Longrightarrow\bar{v}(\alpha)=\mathtt{True}$, we also have $\bar{v}(\beta\to\alpha)=\mathtt{True}$. )
+
+    \hspace{5.1em}
+    $\Longrightarrow$ for any truth assignment $v$ satisfying $\Sigma$, $v$ satisfies $\beta\to\alpha$.
+
+    \hspace{5.1em}
+    i.e. $\ \Sigma\vDash\beta\to\alpha$. \whiteqed
+
+    \vspace{1em} \hspace{1.3em}
+    Now we prove $\Sigma\vDash\beta\to\alpha\Longrightarrow\Sigma,\beta\vDash\alpha$.
+
+    \hspace{1.3em}
+    $\Sigma\vDash\beta\to\alpha\Longrightarrow$ for any truth assignment $v$ satisfying $\Sigma$, $\bar{v}(\beta\to\alpha)=\mathtt{True}$.
+
+    \hspace{6.3em}
+    $\Longrightarrow$ for any truth assignment $v$ satisfying $\Sigma$ s.t. $\bar{v}(\beta)=\mathtt{True}$, we have $\bar{v}(\alpha)=\mathtt{True}$.
+
+    \hspace{8.2em}
+    ( Otherwise, $\bar{v}(\beta\to\alpha)=\mathtt{False}$. )
+
+    \hspace{6.3em}
+    $\Longrightarrow$ for any truth assignment $v$ satisfying $\Sigma$ and $\beta$, $\bar{v}(\alpha)=\mathtt{True}$.
+
+    \hspace{6.3em}
+    i.e. $\ \Sigma,\beta\vDash\alpha$. \whiteqed
+
+    \vspace{2em} \hspace{1.3em}
+    Therefore, $\Sigma\vDash\beta\to\alpha$ \textbf{iff.} $\Sigma,\beta\vDash\alpha$.
+\end{proof}
+
+\end{document}

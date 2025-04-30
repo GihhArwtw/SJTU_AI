@@ -1,0 +1,416 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{setspace}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{bbm}
+\usepackage{geometry}
+\usepackage{verbatim}
+\usepackage{mathrsfs}
+\usepackage{graphicx}
+\usepackage{proof}
+\usepackage[ruled,lined,commentsnumbered]{algorithm2e}
+
+\geometry{left=3cm,right=3cm,top=2.25cm,bottom=2.25cm} 
+
+\renewcommand{\qedsymbol}{\hfill $\blacksquare$\par}
+\renewcommand{\emptyset}{\varnothing}
+\renewcommand{\Pr}[2]{\mathbf{Pr}_{#1}\left[#2\right]}
+\newcommand{\set}[1]{\left\{#1\right\}}
+\newenvironment{solution}{\begin{proof}[\noindent\it Solution]}{\end{proof}}
+\newcommand{\whiteqed}{\hfill $\square$\par}
+
+\allowdisplaybreaks[4]
+
+\setstretch{1.5}
+\title{\textbf{Mathematical Logic Homework 05}}
+\author{Qiu Yihang}
+\date{Dec.2-5, 2022}
+
+\begin{document}
+
+\maketitle
+
+\vspace{2em}
+\section{Provability in Sentential Logic}
+\vspace{1em}
+\subsection{$\boldsymbol{\left(A\land B\right)
+\lor\left(\neg A\lor\neg B\right)}$ is Provable}
+\vspace{1em}
+\begin{proof}
+    We can construct the following proof tree.
+
+    \small
+    \vspace{-1em}
+    \begin{align*}
+        \infer[\lor\text{-E}]{\left(A\land B\right)
+        \lor\left(\neg A\lor\neg B\right)}
+        {
+            \left\{A\lor\neg A\right\}
+            & 
+            \infer[\lor\text{-E}]{\left(A\land B\right)
+            \lor\left(\neg A\lor\neg B\right)}
+            {
+                \left\{B\lor\neg B\right\}
+                &
+                \infer[\lor\text{-I1}]{\left(A\land B\right)
+                \lor\left(\neg A\lor\neg B\right)}
+                {
+                    \infer[\land\text{-I}]{A\land B}
+                    {
+                        \left[A\right] & \left[B\right]
+                    }
+                }
+                &
+                \infer[\lor\text{-I2}]{\left(A\land B\right)
+                \lor\left(\neg A\lor\neg B\right)}
+                {
+                    \infer[\lor\text{-I2}]{\neg A\lor\neg B}
+                    {\left[\neg B\right]}
+                }
+            }
+            &
+            \infer[\lor\text{-I2}]{\left(A\land B\right)
+            \lor\left(\neg A\lor\neg B\right)}
+            {
+                \infer[\lor\text{-I1}]{\neg A\lor\neg B}
+                {\left[\neg A\right]}
+            }
+        }
+    \end{align*}    
+
+    \normalsize
+    \hspace{1.3em}
+    Thus, exists a proof tree of 
+    $\left(A\land B\right)
+    \lor\left(\neg A\lor\neg B\right)$ without any undischarged assumptions.
+
+    \hspace{1.3em}
+    i.e. $\vdash \left(A\land B\right)
+    \lor\left(\neg A\lor\neg B\right)$,
+
+    \hspace{1.3em}
+    i.e. $\left(A\land B\right)
+    \lor\left(\neg A\lor\neg B\right)$ is provable.
+\end{proof}
+
+\vspace{1em}
+\subsection{$\boldsymbol{\left(A\land B\right)
+\lor\left(\neg A\land\neg B\right)}$ is Not Provable}
+\vspace{1em}
+\begin{proof}
+    The truth table of $\left(A\land B\right)
+    \lor\left(\neg A\land\neg B\right)$ is as follows.
+
+    \begin{table}[htbp]
+        \centering
+        \setstretch{1.2}
+        \begin{tabular}{cc|c}
+            \hline
+            $A$ & $B$ & $\left(A\land B\right)
+            \lor\left(\neg A\land\neg B\right)$
+            \\
+            \hline
+            $\mathtt{True}$ & $\mathtt{True}$ & $\mathtt{True}$ \\
+            $\mathtt{True}$ & $\mathtt{False}$ & $\mathtt{False}$ \\
+            $\mathtt{False}$ & $\mathtt{True}$ & $\mathtt{False}$ \\
+            $\mathtt{False}$ & $\mathtt{False}$ & $\mathtt{True}$ \\
+            \hline
+        \end{tabular}
+    \end{table}
+
+    \hspace{1.3em}
+    Therefore, $\nvDash \left(A\land B\right)
+    \lor\left(\neg A\land\neg B\right)$.
+
+    \hspace{1.3em}
+    By \textbf{Soundness Thm.}, for any wff $\alpha$, $\vdash\alpha\Longrightarrow\ \vDash\alpha$,    i.e. $\nvDash\alpha\Longrightarrow\ \nvdash\alpha$.
+
+    \hspace{1.3em}
+    Therefore, $\left(A\land B\right)
+    \lor\left(\neg A\land\neg B\right)$ is not provable.
+\end{proof}
+
+\newpage
+\section{Translation into wffs in First-Order Logic}
+\vspace{1em}
+\subsection{There is No Such A Set that Every Set is Its Member}
+\vspace{1em}
+\begin{solution}
+    There is no such a set that every set is its member.
+
+    \hspace{2.6em}
+    $(\neg$ there is such a set that every set is its member).
+    
+    \hspace{2.6em}
+    $(\neg\ \exists\ x$ such that every set is its member).
+
+    \hspace{2.6em}
+    $(\neg\ \exists\ x\ \forall\ y,$ $y$ is a member of $x)$.
+
+    \hspace{2.6em}
+    $\underline{\boldsymbol{(\neg\ \exists x\ \forall y\quad y\in x)}}.$
+\end{solution}
+
+\vspace{0.5em}
+\subsection{Problem 2.2}
+\vspace{1em}
+\begin{solution}
+    Every farmer who owns a donkey needs hay, and every farmer who owns a donkey beats it.
+
+    \hspace{2.6em}
+    (Every farmer who owns a donkey needs hay $\land$ every farmer who owns a donkey beats it)
+
+    \hspace{2.6em}
+    ($\forall x$ ($x$ is a farmer and owns a donkey $\rightarrow$ $x$ needs hay) $\land$ $\forall x$ ($x$ is a farmer and owns a donkey $\rightarrow$ $x$ beats the donkey))
+
+    \hspace{2.6em}
+    ($\forall x$ (($F\ x\land \exists y, $ $y$ is a donkey and $x$ owns $y$) $\rightarrow$ $H\ x$)) $\land$ $(\forall x$ (($F\ x\land\exists y$, $y$ is a donkey and $x$ owns $y$) $\rightarrow$ $x$ beats $y$))
+
+    \hspace{2.6em}
+    $\underline{(\forall x\ ((F\ x\land\exists y\ (D\ y\ \land\ O\ x\ y)) \rightarrow H\ x) \land (\forall x\ (F\ x\land\exists y\ (D\ y\ \land\ O\ x\ y))\rightarrow B\ x\ y))}$
+\end{solution}
+
+\vspace{1em}
+\section{Variables Occurring Free}
+\vspace{1em}
+\begin{solution}
+    \quad
+
+    \vspace{-2.5em}
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=0.6\textwidth]{LogicHw05-fig3.pdf}        
+    \end{figure}
+
+    \vspace{-1em} \hspace{2.6em}
+    Thus, variables occurring free in each wff are as follows.
+
+    \vspace{0.5em}
+    \begin{table}[htbp]
+        \centering
+        \setstretch{1.2}
+        \begin{tabular}{c|c}
+            \hline
+            wff & variables occurring free \\
+            \hline
+            $\forall y\ (P\ x\ y\to\forall x\ P\ x\ y)$ & $x$ \\
+            $\forall x (Q x\to \exists y\ P\ x\ z)$ & $y,z$ \\
+            $(\neg\exists y\ R(f\ y\ z))\land(\forall x\forall y\ R(f\ y\ z))$ & $z$ \\
+            \hline
+        \end{tabular}
+    \end{table}
+
+    \vspace{-3em}
+\end{solution}
+
+\newpage
+\section{Problem 4}
+\vspace{1em}
+\subsection{$\boldsymbol{\vDash_{\mathfrak{N}} \exists v_0,\ v_0\dot{+}v_0\dot{=}v_1[s]}$}
+\begin{solution}
+    There exists an assignment $s(v_0|1)$ s.t. $\overline{s(v_0|1)}(v_0)+\overline{s(v_0|1)}(v_0)=1+1=\overline{s(v_0|1)}(v_1)=2$, 
+    
+    \hspace{6em}
+    i.e. $\vDash_\mathfrak{A} v_0\dot{+}v_0\dot{=}v_1[s(v_0|1)]$.
+
+    \hspace{2.6em}
+    Thus, $\vDash_{\mathfrak{N}} \exists v_0,\ v_0\dot{+}v_0\dot{=}v_1[s]$.
+\end{solution}
+
+\vspace{1em}
+\subsection{$\boldsymbol{\nvDash_{\mathfrak{N}} \exists v_0,\ v_0\dot{\times}v_0\dot{=}v_1[s]}$}
+\begin{solution}
+    Assume $\vDash_{\mathfrak{N}} \exists v_0,\ v_0\dot{\times}v_0\dot{=}v_1[s]$.
+
+    \hspace{2.6em}
+    Then Exists an assignment $s(v_0|a)$ s.t. $\overline{s(v_0|a)}(v_0)\times\overline{s(v_0|a)}(v_0)=\overline{s(v_0|a)}(v_1)=a\times a=2,$
+
+    \hspace{2.6em}
+    i.e. $a=\sqrt{2}\notin|\mathfrak{N}|=\mathbb{N}$. \underline{\textbf{Contradiction.}}
+
+    \hspace{2.6em}
+    Thus, $\nvDash_{\mathfrak{N}} \exists v_0,\ v_0\dot{\times}v_0\dot{=}v_1[s].$
+\end{solution}
+
+\vspace{1em}
+\subsection{$\boldsymbol{\vDash_{\mathfrak{N}} \forall v_0\exists v_1\ v_0\dot{=}v_1[s]}$}
+\vspace{0.5em}
+\begin{solution}
+    For any $a\in|\mathfrak{N}|=\mathbb{N}$, exists an assignment $s(v_0|a)(v_1|b)$ where $b=a$
+
+    \hspace{15em}
+    s.t. $\overline{s(v_0|a)(v_1|b)}(v_0)=\overline{s(v_0|a)(v_1|b)}(v_1)=a.$
+
+    \hspace{6em}
+    i.e. for any $a\in|\mathfrak{N}|=\mathbb{N}$, exists $b=a$ s.t. $\vDash_\mathfrak{A}v_0\dot{=}v_1[s(v_0|a)(v_1|b)].$
+
+    \hspace{6em}
+    i.e. for any $a\in|\mathfrak{N}|=\mathbb{N}$, $\vDash_\mathfrak{A}\exists v_1\ v_0\dot{=}v_1[s(v_0|a)].$
+
+    \hspace{2.6em}
+    Thus, $\vDash_{\mathfrak{N}} \forall v_0\exists v_1\ v_0\dot{=}v_1[s].$
+\end{solution}
+
+\vspace{1em}
+\subsection{$\boldsymbol{\vDash_{\mathfrak{N}}\forall v_0\forall v_1 \ v_0\dot{+}\dot{1}\dot{<}v_1 \to \exists v_2\ v_0\dot{<}v_2 \land v_2\dot{<}v_1[s]}$}
+\vspace{1em}
+\begin{solution}
+    For any $a,b\in|\mathfrak{N}|=\mathbb{N}$, 
+    
+    \hspace{2.6em}
+    \textbf{CASE 1.} When $a+1<b$. In this case, $\vDash_\mathfrak{A} v_0\dot{+}\dot{1}\dot{<}v_1[s(v_0|a)(v_1|b)]$.
+    
+    \hspace{7.4em}
+    There exists an assignment $\hat{s}=s(v_0|a)(v_1|b)(v_2|c)$ where $c=a+1$
+    
+    \hspace{17.8em}
+    s.t. $\vDash_\mathfrak{A}v_0\dot{<}v_2\land v_2\dot{<}v_1[\hat{s}]$.
+
+    \hspace{2.6em}
+    \textbf{CASE 2}. When $a+1\geq b$. In this case, $\nvDash_\mathfrak{A} v_0\dot{+}\dot{1}\dot{<}v_1 [s(v_0|a)(v_1|b)]$.
+
+    \vspace{1em} \hspace{2.6em}
+    Thus, for any $a,b\in|\mathfrak{N}|=\mathbb{N}$, we have 
+    
+    \vspace{-1.8em}
+    $$\vDash_\mathfrak{A} v_0\dot{+}\dot{1}\dot{<}v_1 [s(v_0|a)(v_1|b)] \Longrightarrow \vDash_\mathfrak{A}\exists v_2\ v_0\dot{<}v_2 \land v_2\dot{<}v_1 [s(v_0|a)(v_1|b)]$$
+
+    \vspace{-0.75em} \hspace{2.6em}
+    i.e. for any $a,b\in|\mathfrak{N}|=\mathbb{N}$, $\vDash_\mathfrak{A} v_0\dot{+}\dot{1}\dot{<}v_1 \to \exists v_2\ v_0\dot{<}v_2 \land v_2\dot{<}v_1 [s(v_0|a)(v_1|b)]$.
+
+    \vspace{1em} \hspace{2.6em}
+    Therefore, $\ \vDash_{\mathfrak{N}}\forall v_0\forall v_1 \ v_0\dot{+}\dot{1}\dot{<}v_1 \to \exists v_2\ v_0\dot{<}v_2 \land v_2\dot{<}v_1[s].$
+\end{solution}
+
+\vspace{1em}
+\subsection{$\boldsymbol{\nvDash_{\mathfrak{N}}\forall v_0\forall v_1\ v_0\dot{<}v_2\land v_2\dot{<}v_1[s]}$}
+\vspace{1em}
+\begin{solution}
+    Exists $a=80\in|\mathfrak{N}|=\mathbb{N},\ b=1\in|\mathfrak{N}|=\mathbb{N}$ 
+    
+    \hspace{2.6em}
+    s.t. $\overline{s(v_0|a)(v_1|b)}(v_0)=80\geq\overline{s(v_0|a)(v_1|b)}(v_2)=4$ and
+    
+    \hspace{4.4em}
+    $\overline{s(v_0|a)(v_1|b)}(v_2)=4\geq\overline{s(v_0|a)(v_1|b)}(v_1)=1$.
+    
+    \hspace{2.6em}
+    i.e. $\nvDash_\mathfrak{A} v_0\dot{<}v_2\land v_2\dot{<}v_1[s(v_0|a)(v_1|b)]$.
+
+    \hspace{2.6em}
+    Thus, $\nvDash_{\mathfrak{N}}\forall v_0\forall v_1\ v_0\dot{<}v_2\land v_2\dot{<}v_1[s].$
+\end{solution}
+
+\vspace{1em}
+\section{$\boldsymbol{\vDash_{\mathfrak{A}}\left(\alpha\to\forall x\ \alpha\right)[s]}$ If $\boldsymbol{x}$ Does Not Occur Free In $\boldsymbol{\alpha}$}
+\vspace{1em}
+\begin{proof}
+    Recall the following theorem.
+
+    \hspace{1.3em}
+    \textbf{Thm.} \textit{Let $\mathfrak{A}$ be a structure for $\mathbb{L}$, $s_1$ and $s_2$ be two assignments for $\mathfrak{A}$ and $\phi$ be a wff for $\mathbb{L}$. If $s_1(y)=s_2(y)$ for every $y$ that occurs free in $\phi$, then }
+
+    \vspace{-1.5em}
+    $$\vDash_\mathfrak{A}\phi[s_1]\Longleftrightarrow\ \vDash_\mathfrak{A}\phi[s_2]$$
+
+    \vspace{-2.6em}
+    \whiteqed
+
+    \vspace{1em} \hspace{1.3em}
+    \underline{The proof of the proposition that $\vDash_{\mathfrak{A}}\left(\alpha\to\forall x\ \alpha\right)[s]$ if $x$ does not occur free in $\alpha$ is as follows.}
+
+    \hspace{1.3em}
+    Since $x$ does not occur free in $\alpha$, we know for any $a\in|\mathfrak{A}|$, $s(x|a)(y)=s(y)$ for any variable $y$ occurring free in $\alpha$ (since $y\neq x$).
+
+    \hspace{1.3em}
+    Thus, by \textbf{Theorem}, we have $\vDash_\mathfrak{A}\alpha[s]\Longleftrightarrow\ \vDash_\mathfrak{A}\alpha[s(x|a)]$ for any $a\in|\mathfrak{A}|$.
+
+    \hspace{1.3em}
+    Thus, when $\vDash_\mathfrak{A} \alpha [s]$, we have $\vDash_\mathfrak{A}\alpha[s(x|a)]$ for any $a\in|\mathfrak{A}|$.
+
+    \hspace{1.3em}
+    i.e. When $\vDash_\mathfrak{A} \alpha [s]$, we have $\vDash_\mathfrak{A} \forall x\ \alpha[s]$.
+
+    \hspace{1.3em}
+    Therefore, $\ \vDash_\mathfrak{A}\left(\alpha\to\forall x\ \alpha\right)[s]$.
+\end{proof}
+
+\vspace{1em}
+\section{Sufficient and Necessary Condition for Monoid}
+\vspace{1em}
+\begin{solution}
+    The sentence $\sigma$ should be
+
+    \vspace{-1.5em}
+    $$\left(\forall x\ (x\ \dot{\circ}\ \dot{e}\ \dot{=}x\ \land\ \dot{e}\ \dot{\circ}\ x\ \dot{=}\ x)\ \land\ \forall x\forall y\forall z\ \left(x\ \dot{\circ}\ y\right)\ \dot{\circ}\  z\ \dot{=}\ x\ \dot{\circ}\ \left(y\  \dot{\circ}\ z\right)\right)$$
+
+    \vspace{0.5em} \hspace{2.6em}
+    Now we prove that for any structure $\mathfrak{A}$, $|\mathfrak{A}|$ is a monoid with $\dot{e}^{\mathfrak{A}}$ as the identity and $\dot{\circ}^{\mathfrak{A}}$ as the associative operator \underline{\textbf{iff.}} $\vDash_\mathfrak{A}\sigma$.
+
+    \hspace{2.6em}
+    \underline{\textbf{Sufficiency.}} Suppose $\vDash_\mathfrak{A}\sigma$. 
+
+    \hspace{8.5em}
+    Then $\vDash_\mathfrak{A}\forall x\ (x\ \dot{\circ}\ \dot{e}\ \dot{=}x\ \land\ \dot{e}\ \dot{\circ}\ x\ \dot{=}\ x)$ and $
+    \vDash_\mathfrak{A}\forall x\forall y\forall z\ \left(x\ \dot{\circ}\ y\right)\ \dot{\circ}\  z\ \dot{=}\ x\ \dot{\circ}\ \left(y\  \dot{\circ}\ z\right) $.
+
+    \hspace{8.5em}
+    i.e. for any $a\in|\mathfrak{A}|$, $a\ \dot{\circ}\ e = e\ \dot{\circ}\ a = a.$ 
+    
+    \hspace{10.2em}
+    For any $a,b,c,\in|\mathfrak{A}|, \left(a\ \dot{\circ}\ b\right)\ \dot{\circ}\  c\ \dot{=}\ a\ \dot{\circ}\ \left(b\  \dot{\circ}\ c\right)$.
+
+    \hspace{2.6em}
+    Thus, $|\mathfrak{A}|$ is a monoid with $\dot{e}^{\mathfrak{A}}$ as the identity and $\dot{\circ}^{\mathfrak{A}}$ as the associative operator. \whiteqed
+
+    \vspace{1em} \hspace{2.6em}
+    \underline{\textbf{Necessity.}} Assume $|\mathfrak{A}|$ is a monoid with $\dot{e}^{\mathfrak{A}}$ as the identity and $\dot{\circ}^{\mathfrak{A}}$ as the associative operator.
+
+    \hspace{7.7em}
+    Then for any $a\in|\mathfrak{A}|$, $a\ \dot{\circ}\ e = e\ \dot{\circ}\ a = a.$
+
+    \hspace{10.3em}
+    For any $a,b,c\in|\mathfrak{A}|$, $\left(a\ \dot{\circ}\ b\right)\ \dot{\circ}\  c\ \dot{=}\ a\ \dot{\circ}\ \left(b\  \dot{\circ}\ c\right)$.
+
+    \hspace{7.7em}
+    Since $\overline{s(w|d)}(w)=d$ for any assignment $s$ for $\mathfrak{A}$ and any $d\in|\mathfrak{A}|$, we know
+
+    \hspace{10.3em}
+    For any assignment $s$ for $\mathfrak{A}$ and any $a\in|\mathfrak{A}|$, 
+    
+    \hspace{16em}
+    $\vDash_{\mathfrak{A}} (x\ \dot{\circ}\ \dot{e}\ \dot{=}x\ \land\ \dot{e}\ \dot{\circ}\ x\ \dot{=}\ x) [s(x|a)]$.
+
+    \hspace{10.3em}
+    For any assignment $s$ for $\mathfrak{A}$ and any $a,b,c\in|\mathfrak{A}|$, 
+    
+    \hspace{16em}
+    $\vDash_{\mathfrak{A}} \left(x\ \dot{\circ}\ y\right)\ \dot{\circ}\  z\ \dot{=}\ x\ \dot{\circ}\ \left(y\  \dot{\circ}\ z\right) [s(x|a)(y|b)(z|c)]$.
+
+    \hspace{7.7em}
+    i.e. for any assignment $s$ for $\mathfrak{A}$, 
+    
+    \hspace{9em}
+    $\vDash_\mathfrak{A}\forall x\ (x\ \dot{\circ}\ \dot{e}\ \dot{=}x\ \land\ \dot{e}\ \dot{\circ}\ x\ \dot{=}\ x) [s]$ and $\vDash_\mathfrak{A} \forall x\forall y\forall z\ \left(x\ \dot{\circ}\ y\right)\ \dot{\circ}\  z\ \dot{=}\ x\ \dot{\circ}\ \left(y\  \dot{\circ}\ z\right)[s]$.
+
+    \hspace{7.7em}
+    i.e. for any assignment $s$ for $\mathfrak{A}$, 
+    
+    \hspace{10em}
+    $\vDash_\mathfrak{A}\forall x\ (x\ \dot{\circ}\ \dot{e}\ \dot{=}x\ \land\ \dot{e}\ \dot{\circ}\ x\ \dot{=}\ x)\ \land\ \vDash_\mathfrak{A} \forall x\forall y\forall z\ \left(x\ \dot{\circ}\ y\right)\ \dot{\circ}\  z\ \dot{=}\ x\ \dot{\circ}\ \left(y\  \dot{\circ}\ z\right) [s]$.
+
+    \hspace{2.6em}
+    i.e. $\vDash_\mathfrak{A}\forall x\ (x\ \dot{\circ}\ \dot{e}\ \dot{=}x\ \land\ \dot{e}\ \dot{\circ}\ x\ \dot{=}\ x)\ \land\ \vDash_\mathfrak{A} \forall x\forall y\forall z\ \left(x\ \dot{\circ}\ y\right)\ \dot{\circ}\  z\ \dot{=}\ x\ \dot{\circ}\ \left(y\  \dot{\circ}\ z\right)$. 
+    
+    \hspace{2.6em}
+    i.e. $\vDash_\mathfrak{A} \sigma$.
+    \whiteqed
+
+    \vspace{1em} \hspace{2.6em}
+    In conclusion, for any structure $\mathfrak{A}$, $|\mathfrak{A}|$ is a monoid with $\dot{e}^{\mathfrak{A}}$ as the identity and $\dot{\circ}^{\mathfrak{A}}$ as the associative operator \underline{\textbf{iff.}} $\vDash_\mathfrak{A}\sigma$.
+\end{solution}
+
+\end{document}
