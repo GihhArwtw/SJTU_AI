@@ -128,3 +128,11 @@ Note that this repository only includes notes and assignments of **some** course
 
 <br/>
 
+
+### 2022-2023-1（大三第一学期）
+
+*本学期开始为电子笔记，但有几节课没有很认真地在做笔记*
+
+- Computer Vision（计算机视觉）
+- Brain-Inspired Intelligence（类脑智能）
+- Deep Learning（深度学习）
