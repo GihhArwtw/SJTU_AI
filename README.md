@@ -82,7 +82,7 @@ Note that this repository only includes notes and assignments of **some** course
     **我把两个学期的笔记合并到了同一个文件，在2020-2021-1/Mathematical_Analysis目录下。**
 
 - Data Structure [AI]（数据结构[AI]）
-- *Circuit [HONOR]（电路理论[荣誉]）[tbd]*
+- Circuit [HONOR]（电路理论[荣誉]）
 - *Digital Fundamentals（数字电子技术）[tbd]*
 - *College Physics I（大学物理1）[tbd]*
 - *AI1602 (AI Problem Solving)（人工智能问题与求解）[tbd]*
